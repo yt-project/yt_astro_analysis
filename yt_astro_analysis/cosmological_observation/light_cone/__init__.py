@@ -1,15 +1,11 @@
 """
-API for halo_finding
+Import stuff for light cone generator.
 
-Author: Matthew Turk <matthewturk@gmail.com>
-Affiliation: UCSD
-Author: J.S. Oishi <jsoishi@gmail.com>
-Affiliation: KIPAC/SLAC/Stanford
-Author: Britton Smith <brittonsmith@gmail.com>
-Affiliation: MSU
+Author: Britton Smith <brittons@origins.colorado.edu>
+Affiliation: CASA/University of CO, Boulder
 Homepage: http://yt-project.org/
 License:
-  Copyright (C) 2010-2011 Matthew Turk.  All Rights Reserved.
+  Copyright (C) 2008-2011 Britton Smith.  All Rights Reserved.
 
   This file is part of yt.
 
@@ -25,24 +21,4 @@ License:
 
   You should have received a copy of the GNU General Public License
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 """
-
-from halo_objects import \
-    Halo, \
-    HOPHalo, \
-    parallelHOPHalo, \
-    LoadedHalo, \
-    FOFHalo, \
-    HaloList, \
-    HOPHaloList, \
-    FOFHaloList, \
-    parallelHOPHaloList, \
-    LoadedHaloList, \
-    GenericHaloFinder, \
-    parallelHF, \
-    HOPHaloFinder, \
-    FOFHaloFinder, \
-    HaloFinder, \
-    LoadHaloes, \
-    LoadTextHaloes

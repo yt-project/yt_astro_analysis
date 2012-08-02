@@ -1,15 +1,11 @@
 """
-API for halo_finding
+API for Rockstar halo finding
 
 Author: Matthew Turk <matthewturk@gmail.com>
-Affiliation: UCSD
-Author: J.S. Oishi <jsoishi@gmail.com>
-Affiliation: KIPAC/SLAC/Stanford
-Author: Britton Smith <brittonsmith@gmail.com>
-Affiliation: MSU
+Affiliation: Columbia
 Homepage: http://yt-project.org/
 License:
-  Copyright (C) 2010-2011 Matthew Turk.  All Rights Reserved.
+  Copyright (C) 2011 Matthew Turk.  All Rights Reserved.
 
   This file is part of yt.
 
@@ -28,21 +24,4 @@ License:
 
 """
 
-from halo_objects import \
-    Halo, \
-    HOPHalo, \
-    parallelHOPHalo, \
-    LoadedHalo, \
-    FOFHalo, \
-    HaloList, \
-    HOPHaloList, \
-    FOFHaloList, \
-    parallelHOPHaloList, \
-    LoadedHaloList, \
-    GenericHaloFinder, \
-    parallelHF, \
-    HOPHaloFinder, \
-    FOFHaloFinder, \
-    HaloFinder, \
-    LoadHaloes, \
-    LoadTextHaloes
+from .rockstar import RockstarHaloFinder
