@@ -1,12 +1,10 @@
 """
-API for halo_finding
+API for RadMC3D Export code
 
 Author: Matthew Turk <matthewturk@gmail.com>
 Affiliation: UCSD
-Author: J.S. Oishi <jsoishi@gmail.com>
-Affiliation: KIPAC/SLAC/Stanford
-Author: Britton Smith <brittonsmith@gmail.com>
-Affiliation: MSU
+Author: Andrew Myers <atmyers2@gmail.com>
+Affiliation: UCB
 Homepage: http://yt-project.org/
 License:
   Copyright (C) 2010-2011 Matthew Turk.  All Rights Reserved.
@@ -28,25 +26,5 @@ License:
 
 """
 
-from halo_objects import \
-    Halo, \
-    HOPHalo, \
-    parallelHOPHalo, \
-    LoadedHalo, \
-    FOFHalo, \
-    HaloList, \
-    HOPHaloList, \
-    FOFHaloList, \
-    parallelHOPHaloList, \
-    LoadedHaloList, \
-    GenericHaloFinder, \
-    parallelHF, \
-    HOPHaloFinder, \
-    FOFHaloFinder, \
-    HaloFinder, \
-    LoadHaloes, \
-    LoadTextHalos, \
-    LoadTextHaloes, \
-    RockstarHalo, \
-    RockstarHaloList, \
-    LoadRockstarHalos
+from .RadMC3DInterface import \
+    RadMC3DWriter

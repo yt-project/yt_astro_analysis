@@ -1,12 +1,8 @@
 """
-API for halo_finding
+API for cosmology analysis.
 
-Author: Matthew Turk <matthewturk@gmail.com>
-Affiliation: UCSD
-Author: J.S. Oishi <jsoishi@gmail.com>
-Affiliation: KIPAC/SLAC/Stanford
 Author: Britton Smith <brittonsmith@gmail.com>
-Affiliation: MSU
+Affiliation: Michigan State University
 Homepage: http://yt-project.org/
 License:
   Copyright (C) 2010-2011 Matthew Turk.  All Rights Reserved.
@@ -28,25 +24,13 @@ License:
 
 """
 
-from halo_objects import \
-    Halo, \
-    HOPHalo, \
-    parallelHOPHalo, \
-    LoadedHalo, \
-    FOFHalo, \
-    HaloList, \
-    HOPHaloList, \
-    FOFHaloList, \
-    parallelHOPHaloList, \
-    LoadedHaloList, \
-    GenericHaloFinder, \
-    parallelHF, \
-    HOPHaloFinder, \
-    FOFHaloFinder, \
-    HaloFinder, \
-    LoadHaloes, \
-    LoadTextHalos, \
-    LoadTextHaloes, \
-    RockstarHalo, \
-    RockstarHaloList, \
-    LoadRockstarHalos
+from .cosmology_splice import \
+    CosmologySplice
+
+from .light_cone.api import \
+    LightCone, \
+    find_unique_solutions, \
+    project_unique_light_cones
+
+from .light_ray.api import \
+    LightRay
