@@ -1,5 +1,5 @@
 """
-Import stuff for light cone generator.
+API for RadMC3D Export code
 
 
 
@@ -12,3 +12,6 @@ Import stuff for light cone generator.
 #
 # The full license is in the file COPYING.txt, distributed with this software.
 #-----------------------------------------------------------------------------
+
+from .RadMC3DInterface import \
+    RadMC3DWriter
