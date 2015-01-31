@@ -1,10 +1,6 @@
 """
-API for light_cone
-
-
-
+API for ppv_cube
 """
-
 #-----------------------------------------------------------------------------
 # Copyright (c) 2013, yt Development Team.
 #
@@ -13,5 +9,4 @@ API for light_cone
 # The full license is in the file COPYING.txt, distributed with this software.
 #-----------------------------------------------------------------------------
 
-from .light_cone import \
-    LightCone
+from ppv_cube import PPVCube
