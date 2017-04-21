@@ -17,10 +17,17 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
-# import sys
+import glob
+import os
+import sys
 # sys.path.insert(0, os.path.abspath('.'))
 
+on_rtd = os.environ.get("READTHEDOCS", None) == "True"
+
+# If extensions (or modules to document with autodoc) are in another directory,
+# add these directories to sys.path here. If the directory is relative to the
+# documentation root, use os.path.abspath to make it absolute, like shown here.
+sys.path.insert(0, os.path.abspath('../extensions/'))
 
 # -- General configuration ------------------------------------------------
 
@@ -85,13 +92,27 @@ todo_include_todos = False
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'alabaster'
+import sphinx_bootstrap_theme
+html_theme = 'bootstrap'
+html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
 #
 # html_theme_options = {}
+html_theme_options = dict(
+    bootstrap_version = "3",
+    bootswatch_theme = "readable",
+    navbar_links = [
+        ("How to get help", "help/index"),
+        ("Quickstart notebooks", "quickstart/index"),
+        ("Cookbook", "cookbook/index"),
+        ],
+    navbar_sidebarrel = False,
+    globaltoc_depth = 2,
+)
+
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -155,5 +176,5 @@ texinfo_documents = [
      'Miscellaneous'),
 ]
 
-
-
+if not on_rtd:
+    autosummary_generate = glob.glob("reference/api/api.rst")
