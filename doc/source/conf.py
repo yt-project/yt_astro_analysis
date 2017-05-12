@@ -55,7 +55,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'yt_astro_analysis'
+project = 'yt Astrophysical Analysis'
 copyright = '2017, The yt project'
 author = 'The yt project'
 
@@ -105,14 +105,15 @@ html_theme_options = dict(
     bootstrap_version = "3",
     bootswatch_theme = "readable",
     navbar_links = [
-        ("How to get help", "help/index"),
-        ("Quickstart notebooks", "quickstart/index"),
-        ("Cookbook", "cookbook/index"),
+        #(<title>, <link>)
         ],
     navbar_sidebarrel = False,
     globaltoc_depth = 2,
 )
 
+# The name of an image file (relative to this directory) to place at the top
+# of the sidebar.
+html_logo = "_static/yt_icon.png"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,

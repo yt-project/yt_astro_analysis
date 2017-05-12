@@ -3,8 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to yt_astro_analysis's documentation!
-=============================================
+yt Astrophysical Analysis Modules
+=================================
 
 These semi-autonomous analysis modules are unique to specific subject matter
 like tracking halos, generating synthetic observations, exporting output to
@@ -19,10 +19,3 @@ by default when you "import yt".  Read up on these advanced tools below.
    halo_analysis
    synthetic_observation
    exporting
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
