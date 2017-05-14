@@ -171,7 +171,7 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
 
     >>> import yt
     >>> yt.enable_parallelism()
-    >>> from yt.analysis_modules.halo_finding.rockstar.api import \
+    >>> from yt.extensions.astro_analysis.halo_finding.rockstar.api import \
     ...     RockstarHaloFinder
 
     >>> # create a particle filter to remove star particles

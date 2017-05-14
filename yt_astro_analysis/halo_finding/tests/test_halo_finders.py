@@ -17,7 +17,7 @@ from yt.convenience import \
     load
 from yt.data_objects.particle_filters import \
     add_particle_filter
-from yt.analysis_modules.halo_analysis.api import \
+from yt_astro_analysis.halo_analysis.api import \
     HaloCatalog
 from yt.testing import \
     requires_file, \

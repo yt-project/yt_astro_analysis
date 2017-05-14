@@ -1,6 +1,6 @@
 from mpi4py import MPI
 import yt
-from yt.analysis_modules.halo_finding.rockstar.api import \
+from yt_astro_analysis.halo_finding.rockstar.api import \
     RockstarHaloFinder
 from yt.data_objects.particle_filters import \
     particle_filter

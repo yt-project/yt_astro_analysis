@@ -88,7 +88,7 @@ class RadMC3DWriter:
     file "dust_density.inp" in a form readable by RadMC3D.
 
     >>> import yt
-    >>> from yt.analysis_modules.radmc3d_export.api import RadMC3DWriter
+    >>> from yt.extensions.astro_analysis.radmc3d_export.api import RadMC3DWriter
 
     >>> dust_to_gas = 0.01
     >>> def _DustDensity(field, data):
@@ -109,7 +109,7 @@ class RadMC3DWriter:
     included in the radiative transfer calculation by radmc3d:
 
     >>> import yt
-    >>> from yt.analysis_modules.radmc3d_export.api import RadMC3DWriter
+    >>> from yt.extensions.astro_analysis.radmc3d_export.api import RadMC3DWriter
 
     >>> x_co = 1.0e-4
     >>> mu_h = yt.Quantity(2.34e-24, 'g')

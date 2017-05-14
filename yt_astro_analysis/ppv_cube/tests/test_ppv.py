@@ -3,7 +3,7 @@ Unit test the PPVCube analysis module.
 """
 
 #-----------------------------------------------------------------------------
-# Copyright (c) 2013, yt Development Team.
+# Copyright (c) 2013-2017, yt Development Team.
 #
 # Distributed under the terms of the Modified BSD License.
 #
@@ -11,7 +11,7 @@ Unit test the PPVCube analysis module.
 #-----------------------------------------------------------------------------
 
 from yt.frontends.stream.api import load_uniform_grid
-from yt.analysis_modules.ppv_cube.api import PPVCube
+from yt_astro_analysis.ppv_cube.api import PPVCube
 import yt.units as u
 from yt.utilities.physical_constants import kboltz, mh, clight
 import numpy as np

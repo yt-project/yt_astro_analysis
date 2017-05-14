@@ -3,7 +3,7 @@ Unit test the sunyaev_zeldovich analysis module.
 """
 
 #-----------------------------------------------------------------------------
-# Copyright (c) 2013, yt Development Team.
+# Copyright (c) 2013-2017, yt Development Team.
 #
 # Distributed under the terms of the Modified BSD License.
 #
@@ -27,7 +27,7 @@ from yt.testing import requires_module, assert_almost_equal
 from yt.utilities.answer_testing.framework import requires_ds, \
     GenericArrayTest, data_dir_load, GenericImageTest
 try:
-    from yt.analysis_modules.sunyaev_zeldovich.projection import SZProjection, I0
+    from yt_astro_analysis.sunyaev_zeldovich.projection import SZProjection, I0
 except ImportError:
     pass
 import numpy as np

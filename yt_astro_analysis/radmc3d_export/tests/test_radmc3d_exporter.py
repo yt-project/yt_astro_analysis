@@ -12,7 +12,7 @@ Unit test for the RADMC3D Exporter analysis module
 
 import yt
 from yt.testing import assert_allclose
-from yt.analysis_modules.radmc3d_export.api import RadMC3DWriter
+from yt_astro_analysis.radmc3d_export.api import RadMC3DWriter
 from yt.utilities.answer_testing.framework import \
     AnswerTestingTest, \
     requires_ds

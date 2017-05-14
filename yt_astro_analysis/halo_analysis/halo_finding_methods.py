@@ -71,9 +71,9 @@ def _rockstar_method(ds, **finder_kwargs):
 
     from yt.frontends.rockstar.data_structures import \
      RockstarDataset
-    from yt.analysis_modules.halo_finding.rockstar.api import \
+    from yt_astro_analysis.halo_finding.rockstar.api import \
      RockstarHaloFinder
-    
+
     rh = RockstarHaloFinder(ds, **finder_kwargs)
     rh.run()
     

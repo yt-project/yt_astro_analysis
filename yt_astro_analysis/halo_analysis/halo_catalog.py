@@ -73,7 +73,7 @@ class HaloCatalog(ParallelAnalysisInterface):
 
     >>> # create profiles or overdensity vs. radius for each halo and save to disk
     >>> import yt
-    >>> from yt.analysis_modules.halo_analysis.api import *
+    >>> from yt.extensions.astro_analysis.halo_analysis.api import *
     >>> data_ds = yt.load("DD0064/DD0064")
     >>> halos_ds = yt.load("rockstar_halos/halos_64.0.bin",
     ...                    output_dir="halo_catalogs/catalog_0064")
@@ -280,7 +280,7 @@ class HaloCatalog(ParallelAnalysisInterface):
         --------
 
         >>> import yt
-        >>> from yt.analysis_modules.halo_analysis.api import HaloCatalog
+        >>> from yt.extensions.astro_analysis.halo_analysis.api import HaloCatalog
         >>>
         >>> data_ds = yt.load('Enzo_64/RD0006/RedshiftOutput0006')
         >>> halos_ds = yt.load('rockstar_halos/halos_0.0.bin')
