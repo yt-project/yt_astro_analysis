@@ -13,4 +13,5 @@ API for Rockstar halo finding
 # The full license is in the file COPYING.txt, distributed with this software.
 #-----------------------------------------------------------------------------
 
-from .rockstar import RockstarHaloFinder
+from yt_astro_analysis.halo_finding.rockstar.rockstar import \
+    RockstarHaloFinder

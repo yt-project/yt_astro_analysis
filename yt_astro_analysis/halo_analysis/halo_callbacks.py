@@ -17,8 +17,6 @@ from yt.utilities.on_demand_imports import _h5py as h5py
 import numpy as np
 import os
 
-from yt.analysis_modules.cosmological_observation.light_ray.light_ray import \
-    periodic_distance
 from yt.data_objects.profiles import \
     create_profile
 from yt.frontends.ytdata.utilities import \
@@ -586,3 +584,20 @@ def iterative_center_of_mass(halo, radius_field="virial_radius", inner_ratio=0.1
     del sphere
     
 add_callback("iterative_center_of_mass", iterative_center_of_mass)
+
+def periodic_distance(coord1, coord2):
+    """
+    periodic_distance(coord1, coord2)
+
+    Calculate length of shortest vector between to points in periodic domain.
+    """
+    dif = coord1 - coord2
+
+    dim = np.ones(coord1.shape,dtype=int)
+    def periodic_bind(num):
+        pos = np.abs(num % dim)
+        neg = np.abs(num % -dim)
+        return np.min([pos,neg],axis=0)
+
+    dif = periodic_bind(dif)
+    return np.sqrt((dif * dif).sum(axis=-1))

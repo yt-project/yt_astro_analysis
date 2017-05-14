@@ -6,7 +6,7 @@ Halo quantity object
 """
 
 #-----------------------------------------------------------------------------
-# Copyright (c) 2013-2014, yt Development Team.
+# Copyright (c) 2013-2017, yt Development Team.
 #
 # Distributed under the terms of the Modified BSD License.
 #
@@ -18,7 +18,8 @@ import numpy as np
 from yt.utilities.operator_registry import \
      OperatorRegistry
 
-from .halo_callbacks import HaloCallback
+from yt_astro_analysis.halo_analysis.halo_callbacks import \
+    HaloCallback
 
 quantity_registry = OperatorRegistry()
 

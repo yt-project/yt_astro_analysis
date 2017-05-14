@@ -33,8 +33,8 @@ from yt.utilities.physical_ratios import \
     rho_crit_g_cm3_h2, \
     TINY
 
-from .hop.EnzoHop import RunHOP
-from .fof.EnzoFOF import RunFOF
+from yt_astro_analysis.halo_finding.hop.EnzoHop import RunHOP
+from yt_astro_analysis.halo_finding.fof.EnzoFOF import RunFOF
 
 from yt.utilities.parallel_tools.parallel_analysis_interface import \
     ParallelDummy, \

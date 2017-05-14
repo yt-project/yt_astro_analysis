@@ -23,8 +23,6 @@ from yt.funcs import \
     ensure_dir, \
     mylog, \
     only_on_root
-from yt.analysis_modules.cosmological_observation.cosmology_splice import \
-    CosmologySplice
 from yt.convenience import \
     load
 from yt.utilities.parallel_tools.parallel_analysis_interface import \
@@ -34,7 +32,10 @@ from yt.visualization.image_writer import \
     write_image
 from yt.units.yt_array import \
     YTArray
-from .light_cone_projection import \
+
+from yt_astro_analysis.cosmological_observation.cosmology_splice import \
+    CosmologySplice
+from yt_astro_analysis.cosmological_observation.light_cone.light_cone_projection import \
     _light_cone_projection
 
 class LightCone(CosmologySplice):

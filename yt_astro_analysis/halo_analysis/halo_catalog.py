@@ -6,7 +6,7 @@ HaloCatalog object
 """
 
 #-----------------------------------------------------------------------------
-# Copyright (c) 2013, yt Development Team.
+# Copyright (c) 2013-2017, yt Development Team.
 #
 # Distributed under the terms of the Modified BSD License.
 #
@@ -26,17 +26,17 @@ from yt.utilities.parallel_tools.parallel_analysis_interface import \
     parallel_blocking_call, \
     parallel_objects
 
-from .halo_object import \
+from yt_astro_analysis.halo_analysis.halo_object import \
     Halo
-from .halo_callbacks import \
+from yt_astro_analysis.halo_analysis.halo_callbacks import \
     callback_registry
-from .halo_filters import \
+from yt_astro_analysis.halo_analysis.halo_filters import \
     filter_registry
-from .halo_finding_methods import \
+from yt_astro_analysis.halo_analysis.halo_finding_methods import \
     finding_method_registry
-from .halo_quantities import \
+from yt_astro_analysis.halo_analysis.halo_quantities import \
     quantity_registry
-from .halo_recipes import \
+from yt_astro_analysis.halo_analysis.halo_recipes import \
     recipe_registry
 
 class HaloCatalog(ParallelAnalysisInterface):

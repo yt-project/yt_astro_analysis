@@ -15,8 +15,9 @@ Halo Finding methods
 
 import numpy as np
 
-from yt.analysis_modules.halo_finding.halo_objects import \
-    FOFHaloFinder, HOPHaloFinder
+from yt_astro_analysis.halo_finding.halo_objects import \
+    FOFHaloFinder, \
+    HOPHaloFinder
 from yt.frontends.stream.data_structures import \
     load_particles
 from yt.units.dimensions import length

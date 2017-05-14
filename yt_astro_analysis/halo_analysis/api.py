@@ -6,7 +6,7 @@ API for halo_analysis
 """
 
 #-----------------------------------------------------------------------------
-# Copyright (c) 2014, yt Development Team.
+# Copyright (c) 2014-2017, yt Development Team.
 #
 # Distributed under the terms of the Modified BSD License.
 #
@@ -14,20 +14,20 @@ API for halo_analysis
 #-----------------------------------------------------------------------------
 
 
-from .halo_catalog import \
+from yt_astro_analysis.halo_analysis.halo_catalog import \
     HaloCatalog
 
-from .halo_callbacks import \
+from yt_astro_analysis.halo_analysis.halo_callbacks import \
     add_callback
 
-from .halo_finding_methods import \
+from yt_astro_analysis.halo_analysis.halo_finding_methods import \
     add_finding_method
 
-from .halo_filters import \
+from yt_astro_analysis.halo_analysis.halo_filters import \
     add_filter
      
-from .halo_quantities import \
+from yt_astro_analysis.halo_analysis.halo_quantities import \
     add_quantity
 
-from .halo_recipes import \
+from yt_astro_analysis.halo_analysis.halo_recipes import \
     add_recipe

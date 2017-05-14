@@ -4,10 +4,9 @@ Operations to get Rockstar loaded up
 
 
 """
-from __future__ import absolute_import
 
 #-----------------------------------------------------------------------------
-# Copyright (c) 2013, yt Development Team.
+# Copyright (c) 2013-2017, yt Development Team.
 #
 # Distributed under the terms of the Modified BSD License.
 #
@@ -20,10 +19,13 @@ from yt.data_objects.time_series import \
 from yt.funcs import \
     is_root, mylog
 from yt.utilities.parallel_tools.parallel_analysis_interface import \
-    ParallelAnalysisInterface, ProcessorPool
-from yt.utilities.exceptions import YTRockstarMultiMassNotSupported
+    ParallelAnalysisInterface, \
+    ProcessorPool
+from yt.utilities.exceptions import \
+    YTRockstarMultiMassNotSupported
 
-from . import rockstar_interface
+from yt_astro_analysis.halo_finding.rockstar import \
+    rockstar_interface
 
 import socket
 import time
