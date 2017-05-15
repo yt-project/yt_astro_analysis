@@ -11,7 +11,7 @@ _fields = (("halos", "particle_position_x"),
            ("halos", "particle_position_z"),
            ("halos", "particle_mass"))
 
-@requires_sim("Enzo_64/64.param", "Enzo", big_data=True)
+@requires_sim("enzo_tiny_cosmology/32Mpc_32.enzo", "Enzo", big_data=True)
 def test_rockstar():
     from mpi4py import MPI
     filename = os.path.join(os.path.dirname(__file__),

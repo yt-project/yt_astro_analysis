@@ -16,7 +16,7 @@ _fields = (("halos", "particle_position_x"),
 methods = {"fof": 2, "hop": 2, "rockstar": 3}
 decimals = {"fof": 10, "hop": 10, "rockstar": 1}
 
-e64 = "Enzo_64/DD0043/data0043"
+e64 = "enzo_tiny_cosmology/DD0046/DD0046"
 @requires_ds(e64, big_data=True)
 def test_halo_finders():
     from mpi4py import MPI

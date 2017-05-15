@@ -20,7 +20,7 @@ methods = {"fof": {}, "hop": {},
 def _dm_filter(pfilter, data):
     return data["creation_time"] <= 0.0
 
-ds = yt.load("Enzo_64/DD0043/data0043")
+ds = yt.load("enzo_tiny_cosmology/DD0046/DD0046")
 ds.add_particle_filter("dark_matter")
 
 output_dir = os.path.join(os.path.dirname(__file__),
