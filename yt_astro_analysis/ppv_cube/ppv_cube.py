@@ -51,7 +51,7 @@ fits_info = {"velocity": ("m/s", "VOPT", "v"),
 class PPVCube(object):
     def __init__(self, ds, normal, field, velocity_bounds, center="c",
                  width=(1.0,"unitary"), dims=100, thermal_broad=False,
-                 atomic_weight=56., depth=(1.0,"unitary"), depth_res=256,
+                 atomic_weight=56., depth=(1.0,"unitary"),
                  method="integrate", weight_field=None, no_shifting=False,
                  north_vector=None, no_ghost=True, data_source=None):
         r""" Initialize a PPVCube object.
@@ -96,9 +96,6 @@ class PPVCube(object):
             A tuple containing the depth to project through and the string
             key of the unit: (width, 'unit').  If set to a float, code units
             are assumed. Only for off-axis cubes.
-        depth_res : integer, optional
-            Deprecated, this is still in the function signature for API
-            compatibility
         method : string, optional
             Set the projection method to be used.
             "integrate" : line of sight integration over the line element.
