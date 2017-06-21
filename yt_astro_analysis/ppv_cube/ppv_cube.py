@@ -279,8 +279,8 @@ class PPVCube(object):
 
         Notes
         -----
-        Additional keyword arguments are passed to
-        :meth:`~astropy.io.fits.HDUList.writeto`.
+        All other optional arguments are passed to
+        :meth:`~yt.visualization.fits_image.FITSImageData.create_sky_wcs`.
 
         Examples
         --------
@@ -312,8 +312,8 @@ class PPVCube(object):
         fib.update_all_headers("bunit", re.sub('()', '', str(self.proj_units)))
         fib.update_all_headers("btype", self.field)
         if sky_scale is not None and sky_center is not None:
-            fib.create_sky_wcs(sky_center, sky_scale)
-        fib.writeto(filename, overwrite=overwrite, **kwargs)
+            fib.create_sky_wcs(sky_center, sky_scale, **kwargs)
+        fib.writeto(filename, overwrite=overwrite)
 
     def __repr__(self):
         return "PPVCube [%d %d %d] (%s < %s < %s)" % (self.nx, self.ny, self.nv,
