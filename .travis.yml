@@ -75,4 +75,4 @@ before_script:
 
 script:
   - |
-    #pytest tests
+    pytest tests
