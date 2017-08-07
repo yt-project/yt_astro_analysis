@@ -1,0 +1,78 @@
+language: python
+sudo: false
+cache:
+  directories:
+    - $HOME/yt-git
+  pip: true
+
+addons:
+  apt:
+    packages:
+      - libhdf5-serial-dev
+
+env:
+  global:
+    NUMPY=numpy
+    CYTHON=cython
+    MATPLOTLIB=matplotlib
+    SYMPY=sympy
+    H5PY=h5py
+    SCIPY=scipy
+    IPYTHON=ipython
+    FASTCACHE=fastcache
+    ROCKSTAR_DIR=$HOME/rockstar
+    YT_DIR=$HOME/yt-git
+    YT_DATA=$HOME/ytree_test
+
+matrix:
+  include:
+    #- python: 2.7
+    #  env: NUMPY=numpy==1.10.4 CYTHON=cython==0.24 MATPLOTLIB=matplotlib==1.5.3 SYMPY=sympy==1.0 H5PY= SCIPY= FASTCACHE= IPYTHON=ipython==1.0
+    - python: 2.7
+    #- python: 3.5
+    #- python: 3.6
+
+before_install:
+  - |
+    mkdir -p $HOME/.config/yt
+    echo "[yt]" > $HOME/.config/yt/ytrc
+    echo "suppressStreamLogging = True" >> $HOME/.config/yt/ytrc
+    echo "test_data_dir = $YT_DATA" >> $HOME/.config/yt/ytrc
+    cat $HOME/.config/yt/ytrc
+
+install:
+  - |
+    # Upgrade pip and setuptools and wheel to get clean install
+    pip install --upgrade pip
+    pip install --upgrade wheel
+    pip install --upgrade setuptools
+    # Install dependencies
+    pip install mock $NUMPY $SCIPY $H5PY $CYTHON $MATPLOTLIB $SYMPY $FASTCACHE $IPYTHON flake8 pytest girder-client
+    # install yt
+    if [ ! -f $YT_DIR/README.md ]; then
+        git clone --branch=master https://github.com/yt-project/yt $YT_DIR
+    fi
+    pushd $YT_DIR
+    git pull
+    git checkout master
+    pip install -e .
+    popd
+    # install rockstar
+    git clone https://github.com/yt-project/rockstar $ROCKSTAR_DIR
+    pushd $ROCKSTAR_DIR
+    make lib
+    popd
+    # install yt_astro_analysis
+    echo $ROCKSTAR_DIR > rockstar.cfg
+    pip install -e .
+
+before_script:
+  - |
+    # download test data
+    #if [ ! -d $YT_DATA/rockstar ]; then
+    #    girder-cli --api-url https://girder.hub.yt/api/v1 download 59835a1ee2a67400016a2cda $YT_DATA
+    #fi
+
+script:
+  - |
+    #pytest tests
