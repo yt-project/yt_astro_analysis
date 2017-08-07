@@ -13,6 +13,8 @@ addons:
   apt:
     packages:
       - libhdf5-serial-dev
+      - openmpi-bin
+      - libopenmpi-dev
 
 env:
   global:
