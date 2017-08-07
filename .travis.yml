@@ -2,6 +2,7 @@ language: python
 sudo: false
 cache:
   directories:
+    - $HOME/.ccache  # https://github.com/travis-ci/travis-ci/issues/5853
     - $HOME/yt-git
   pip: true
 
@@ -39,6 +40,11 @@ matrix:
 
 before_install:
   - |
+    pip install --upgrade virtualenv
+    python -m virtualenv venv
+    source venv/bin/activate
+    export PATH=/usr/lib/ccache:$PATH
+    # configure yt
     mkdir -p $HOME/.config/yt
     echo "[yt]" > $HOME/.config/yt/ytrc
     echo "suppressStreamLogging = True" >> $HOME/.config/yt/ytrc
@@ -47,12 +53,14 @@ before_install:
 
 install:
   - |
+    # setup environment
+    ccache -s
     # Upgrade pip and setuptools and wheel to get clean install
     pip install --upgrade pip
     pip install --upgrade wheel
     pip install --upgrade setuptools
     # Install dependencies
-    pip install mock $NUMPY $SCIPY $H5PY $CYTHON $MATPLOTLIB $SYMPY $FASTCACHE $IPYTHON flake8 nose nose-timer girder-client
+    pip install mock $NUMPY $SCIPY $H5PY $CYTHON $MATPLOTLIB $SYMPY $FASTCACHE $IPYTHON flake8 nose nose-timer girder-client mpi4py
     # install yt
     if [ ! -f $YT_DIR/README.md ]; then
         git clone --branch=master https://github.com/yt-project/yt $YT_DIR
