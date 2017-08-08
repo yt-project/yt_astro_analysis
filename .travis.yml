@@ -50,7 +50,6 @@ before_install:
     # configure yt
     mkdir -p $HOME/.config/yt
     echo "[yt]" > $HOME/.config/yt/ytrc
-    echo "suppressStreamLogging = True" >> $HOME/.config/yt/ytrc
     echo "test_data_dir = $YT_DATA" >> $HOME/.config/yt/ytrc
     cat $HOME/.config/yt/ytrc
 
@@ -78,6 +77,7 @@ install:
     pushd $ROCKSTAR_DIR
     make lib
     popd
+    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ROCKSTAR_DIR
     # install yt_astro_analysis
     echo $ROCKSTAR_DIR > rockstar.cfg
     pip install -e .
