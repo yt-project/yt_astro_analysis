@@ -23,15 +23,12 @@ etiny = "enzo_tiny_cosmology/DD0046/DD0046"
 
 class RockstarTest(TempDirTest):
 
-    def setUp(self):
+    @requires_ds(etiny, big_data=True)
+    def test_halo_analysis_finders(self):
         try:
             from mpi4py import MPI
         except:
             self.skipTest("cannot import MPI")
-        super(RockstarTest, self).setUp()
-
-    @requires_ds(etiny, big_data=True)
-    def test_halo_analysis_finders(self):
         filename = os.path.join(os.path.dirname(__file__),
                                 "run_halo_finder.py")
         for method in methods:

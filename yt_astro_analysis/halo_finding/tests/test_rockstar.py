@@ -16,15 +16,12 @@ _fields = (("halos", "particle_position_x"),
 
 class RockstarTest(TempDirTest):
 
-    def setUp(self):
+    @requires_sim("enzo_tiny_cosmology/32Mpc_32.enzo", "Enzo", big_data=True)
+    def test_rockstar(self):
         try:
             from mpi4py import MPI
         except:
             self.skipTest("cannot import MPI")
-        super(RockstarTest, self).setUp()
-
-    @requires_sim("enzo_tiny_cosmology/32Mpc_32.enzo", "Enzo", big_data=True)
-    def test_rockstar(self):
         filename = os.path.join(os.path.dirname(__file__),
                                 "run_rockstar.py")
         comm = MPI.COMM_SELF.Spawn(sys.executable,
