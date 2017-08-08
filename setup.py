@@ -175,6 +175,7 @@ setup(
         'numpy',
         'IPython',
         'cython',
+        'yt>=3.3.5',
     ],
     extras_require = {
         'hub':  ["girder_client"]
