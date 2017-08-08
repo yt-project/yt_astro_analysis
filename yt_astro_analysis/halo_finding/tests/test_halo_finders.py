@@ -42,7 +42,7 @@ enzotiny = "enzo_tiny_cosmology/DD0046/DD0046"
 class HaloFinderTest(TempDirTest):
 
     @requires_file(enzotiny)
-    def test_datacontainer_data(self):
+    def test_halofinder_ptype(self):
         ds = data_dir_load(enzotiny)
         ds.add_particle_filter("dm")
 
