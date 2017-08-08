@@ -9,6 +9,7 @@ from yt.data_objects.particle_filters import \
 yt.enable_parallelism()
 
 method = sys.argv[1]
+data_dir = sys.argv[2]
 comm = MPI.Comm.Get_parent()
 
 methods = {"fof": {}, "hop": {},
@@ -23,8 +24,7 @@ def _dm_filter(pfilter, data):
 ds = yt.load("enzo_tiny_cosmology/DD0046/DD0046")
 ds.add_particle_filter("dark_matter")
 
-output_dir = os.path.join(os.path.dirname(__file__),
-                          "halo_catalogs", method)
+output_dir = os.path.join(data_dir, "halo_catalogs", method)
 hc = HaloCatalog(data_ds=ds, output_dir=output_dir,
                  finder_method=method, finder_kwargs=methods[method])
 hc.create()
