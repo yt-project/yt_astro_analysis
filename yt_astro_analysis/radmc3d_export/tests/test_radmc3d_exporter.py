@@ -90,6 +90,6 @@ def test_radmc3d_exporter_continuum():
     def _DustDensity(field, data):
         return dust_to_gas * data["density"]
     ds.add_field(("gas", "dust_density"), function=_DustDensity,
-                 units="g/cm**3")
+                 sampling_type="cell", units="g/cm**3")
 
     yield RadMC3DValuesTest(ds, ("gas", "dust_density"))
