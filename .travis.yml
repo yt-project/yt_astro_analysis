@@ -79,9 +79,7 @@ install:
     make lib
     popd
     export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ROCKSTAR_DIR
-    # install yt_astro_analysis
     echo $ROCKSTAR_DIR > rockstar.cfg
-    pip install -e .
 
 before_script:
   - |
@@ -93,5 +91,9 @@ before_script:
 
 script:
   - |
+    git checkout gold-standard-v1
+    pip install -e .
     nosetests $TEST_FLAGS --answer-store
+    git checkout master
+    pip install -e .
     nosetests $TEST_FLAGS
