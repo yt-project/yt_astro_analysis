@@ -28,10 +28,6 @@ from yt.utilities.answer_testing.framework import \
 from yt_astro_analysis.utilities.testing import \
     TempDirTest
 
-import tempfile
-import os
-import shutil
-
 def dm(pfilter, data):
     return data["creation_time"] <= 0.
 add_particle_filter("dm", dm, filtered_type='all',

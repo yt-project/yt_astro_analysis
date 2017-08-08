@@ -13,6 +13,12 @@ testing utilities
 # The full license is in the file COPYING.txt, distributed with this software.
 #-----------------------------------------------------------------------------
 
+import os
+import shutil
+import tempfile
+from unittest import \
+    TestCase
+
 class TempDirTest(TestCase):
     """
     A test class that runs in a temporary directory and
