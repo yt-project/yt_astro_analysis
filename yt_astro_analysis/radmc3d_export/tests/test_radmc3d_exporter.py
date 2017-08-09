@@ -73,11 +73,9 @@ class RadMC3DValuesTest(AnswerTestingTest):
         assert_allclose(new_result, old_result, 10.**(-self.decimals),
                         err_msg=err_msg, verbose=True)
 
+etiny = "enzo_tiny_cosmology/DD0046/DD0046"
 
-ISO_GAL = "IsolatedGalaxy/galaxy0030/galaxy0030"
-
-
-@requires_ds(ISO_GAL)
+@requires_ds(etiny)
 def test_radmc3d_exporter_continuum():
     """
     This test is simply following the description in the docs for how to
@@ -85,12 +83,13 @@ def test_radmc3d_exporter_continuum():
     dust for one of our sample datasets.
     """
 
-    ds = yt.load(ISO_GAL)
+    ds = yt.load(etiny)
 
     # Make up a dust density field where dust density is 1% of gas density
     dust_to_gas = 0.01
     def _DustDensity(field, data):
         return dust_to_gas * data["density"]
-    ds.add_field(("gas", "dust_density"), function=_DustDensity, units="g/cm**3")
+    ds.add_field(("gas", "dust_density"), function=_DustDensity,
+                 sampling_type="cell", units="g/cm**3")
 
     yield RadMC3DValuesTest(ds, ("gas", "dust_density"))

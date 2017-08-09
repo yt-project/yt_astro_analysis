@@ -25,9 +25,8 @@ from yt.testing import \
 from yt.utilities.answer_testing.framework import \
     data_dir_load
 
-import tempfile
-import os
-import shutil
+from yt_astro_analysis.utilities.testing import \
+    TempDirTest
 
 def dm(pfilter, data):
     return data["creation_time"] <= 0.
@@ -35,27 +34,24 @@ add_particle_filter("dm", dm, filtered_type='all',
                     requires=["creation_time"])
 
 enzotiny = "enzo_tiny_cosmology/DD0046/DD0046"
-@requires_file(enzotiny)
-def test_datacontainer_data():
-    tmpdir = tempfile.mkdtemp()
-    curdir = os.getcwd()
-    os.chdir(tmpdir)
-    ds = data_dir_load(enzotiny)
-    ds.add_particle_filter("dm")
 
-    for method in ["fof", "hop"]:
-        hc = HaloCatalog(data_ds=ds, finder_method=method,
-                         output_dir="hc1",
-                         finder_kwargs={"dm_only": True})
-        hc.create()
-        hc = HaloCatalog(data_ds=ds, finder_method=method,
-                         output_dir="hc2",
-                         finder_kwargs={"dm_only": False, "ptype": "dm"})
-        hc.create()
+class HaloFinderTest(TempDirTest):
 
-        ds1 = load("hc1/hc1.0.h5")
-        ds2 = load("hc2/hc2.0.h5")
-        assert_array_equal(ds1.r["particle_mass"], ds2.r["particle_mass"])
+    @requires_file(enzotiny)
+    def test_halofinder_ptype(self):
+        ds = data_dir_load(enzotiny)
+        ds.add_particle_filter("dm")
 
-    os.chdir(curdir)
-    shutil.rmtree(tmpdir)
+        for method in ["fof", "hop"]:
+            hc = HaloCatalog(data_ds=ds, finder_method=method,
+                             output_dir="hc1",
+                             finder_kwargs={"dm_only": True})
+            hc.create()
+            hc = HaloCatalog(data_ds=ds, finder_method=method,
+                             output_dir="hc2",
+                             finder_kwargs={"dm_only": False, "ptype": "dm"})
+            hc.create()
+
+            ds1 = load("hc1/hc1.0.h5")
+            ds2 = load("hc2/hc2.0.h5")
+            assert_array_equal(ds1.r["particle_mass"], ds2.r["particle_mass"])
