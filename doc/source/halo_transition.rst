@@ -49,7 +49,7 @@ Specifically, all quantities can be accessed as shown:
 .. code-block:: python
 
    import yt
-   from yt.analysis_modules.halo_analysis.api import HaloCatalog
+   from yt.extensions.astro_analysis.halo_analysis.api import HaloCatalog
    data_ds = yt.load('Enzo_64/RD0006/RedshiftOutput0006')
    hc = HaloCatalog(data_ds=data_ds, finder_method='hop')
    hc.create()
@@ -67,7 +67,7 @@ is shown below
 .. code-block:: python
 
    import yt
-   from yt.analysis_modules.halo_analysis.api import HaloCatalog
+   from yt.extensions.astro_analysis.halo_analysis.api import HaloCatalog
    data_ds = yt.load('Enzo_64/RD0006/RedshiftOutput0006')
    hc = HaloCatalog(data_ds=data_ds, finder_method='hop')
    hc.add_filter("quantity_value", "particle_mass", ">", 1e13, "Msun")
@@ -92,7 +92,7 @@ passed to the annotate halo call rather than a halo list.
 .. code-block:: python
 
    import yt
-   from yt.analysis_modules.halo_analysis.api import HaloCatalog
+   from yt.extensions.astro_analysis.halo_analysis.api import HaloCatalog
 
    data_ds = yt.load('Enzo_64/RD0006/RedshiftOutput0006')
    hc = HaloCatalog(data_ds=data_ds, finder_method='hop')
