@@ -14,6 +14,7 @@ on their own schedule.
    Installation
    Importing
    Modules
+   cookbook/index
    Contributing
    Help
    reference

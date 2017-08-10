@@ -26,27 +26,15 @@ Example Scripts
 .. toctree::
    :maxdepth: 2
 
-   simple_plots
-   calculating_information
-   complex_plots
    cosmological_analysis
-   constructing_data_objects
 
 .. _example-notebooks:
 
 Example Notebooks
 -----------------
-.. toctree::
-   :maxdepth: 1
 
-   notebook_tutorial
-   custom_colorbar_tickmarks
-   gadget_notebook
-   owls_notebook
-   ../visualizing/transfer_function_helper
-   sunyaev_zeldovich
-   fits_radio_cubes
-   fits_xray_images
-   tipsy_notebook
-   halo_analysis_example
-   ../visualizing/volume_rendering_tutorial
+- `Halo Analysis Example <https://github.com/yt-project/yt_astro_analysis/blob/master/doc/source/cookbook/Halo_Analysis.ipynb>`__
+
+- `PPV Cube <https://github.com/yt-project/yt_astro_analysis/blob/master/doc/source/PPVCube.ipynb>`__
+
+- `Sunyaev Zeldovich <https://github.com/yt-project/yt_astro_analysis/blob/master/doc/source/SZ_projections.ipynb>`__

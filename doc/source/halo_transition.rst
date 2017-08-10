@@ -80,7 +80,7 @@ The halo profiler available in yt-2.x has been removed, and
 profiling functionality is now completely contained within the
 halo catalog. A complete example of how to profile halos by
 radius using the new infrastructure is given in
-:ref:`halo-analysis-example`.
+`Halo Analysis Example <https://github.com/yt-project/yt_astro_analysis/blob/master/doc/source/cookbook/Halo_Analysis.ipynb>`__.
 
 Plotting Halos
 --------------

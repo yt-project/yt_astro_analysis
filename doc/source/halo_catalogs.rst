@@ -500,4 +500,4 @@ Halo Catalog in Action
 ----------------------
 
 For a full example of how to use these methods together see
-:ref:`halo-analysis-example`.
+`Halo Analysis Example <https://github.com/yt-project/yt_astro_analysis/blob/master/doc/source/cookbook/Halo_Analysis.ipynb>`__.
