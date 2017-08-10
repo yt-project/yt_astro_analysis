@@ -40,7 +40,7 @@ sys.path.insert(0, os.path.abspath('../extensions/'))
 # ones.
 extensions = ['sphinx.ext.autodoc',
     'sphinx.ext.imgmath',
-    'sphinx.ext.githubpages']
+    'sphinx.ext.autosummary']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -178,4 +178,4 @@ texinfo_documents = [
 ]
 
 if not on_rtd:
-    autosummary_generate = glob.glob("reference/api/api.rst")
+    autosummary_generate = glob.glob("reference.rst")

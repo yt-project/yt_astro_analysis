@@ -15,6 +15,6 @@ syntax: glob
 .idea/*
 tests/results/*
 doc/build/*
-doc/source/reference/api/generated/*
+doc/source/generated/*
 doc/_temp/*
 dist

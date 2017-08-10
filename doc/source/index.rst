@@ -1,21 +1,19 @@
-.. yt_astro_analysis documentation master file, created by
-   sphinx-quickstart on Thu Apr 20 17:13:08 2017.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+The yt Astrophysical Analysis Extension
+=======================================
 
-yt Astrophysical Analysis Modules
-=================================
-
-These semi-autonomous analysis modules are unique to specific subject matter
-like tracking halos, generating synthetic observations, exporting output to
-external visualization routines, and more.  Because they are somewhat
-specialized, they exist in their own corners of yt, and they do not get loaded
-by default when you "import yt".  Read up on these advanced tools below.
+This is ``yt_astro_analysis``, the `yt <https://github.com/yt-project/yt>`_
+extension package for astrophysical analysis.  This is primarily machinery that
+used to be in yt's analysis_modules.  These were made into a separate package to
+allow yt to become less astro-specifc and to allow these modules to be developed
+on their own schedule.
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
-   halo_analysis
-   synthetic_observation
-   exporting
+   Installation
+   Importing
+   Modules
+   Contributing
+   Help
+   reference
