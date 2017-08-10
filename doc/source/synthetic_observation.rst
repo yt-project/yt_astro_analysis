@@ -10,11 +10,13 @@ from simulation data.
    :maxdepth: 2
 
    light_cone_generator
-   light_ray_generator
    planning_cosmology_simulations
-   absorption_spectrum
-   star_analysis
-   xray_emission_fields
    sunyaev_zeldovich
-   photon_simulator
    ppv_cubes
+
+The following routines have been moved to the `Trident
+<http://trident-project.org/>`__ package.
+
+- :ref:`trident:light-ray-generator`
+
+- :ref:`trident:absorption_spectrum`

@@ -17,7 +17,7 @@ Halo Finding
 ------------
 
 If you already have a halo catalog, either produced by one of the methods
-below or in a format described in :ref:`halo-catalog-data`, and want to
+below or in a format described in :ref:`yt:halo-catalog-data`, and want to
 perform further analysis, skip to :ref:`halo_catalog_analysis`.
 
 Three halo finding methods exist within yt.  These are:
