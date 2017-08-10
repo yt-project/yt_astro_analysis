@@ -282,7 +282,7 @@ Currently quantity_value is the only available filter, but more can be
 added by the user by defining a function that accepts a halo object as
 the first argument and then adding it as an available filter. If you
 think that your filter may be of use to the general community, you can
-add it to ``yt/analysis_modules/halo_analysis/halo_filters.py`` and issue a
+add it to ``yt_astro_analysis/halo_analysis/halo_filters.py`` and issue a
 pull request.
 
 An example of defining your own filter:
@@ -317,7 +317,7 @@ Quantities may be available in the initial fields found in the halo catalog,
 or calculated from a function after supplying a definition. An example
 definition of center of mass is shown below. Currently available quantities
 are center_of_mass and bulk_velocity. Their definitions are available in
-``yt/analysis_modules/halo_analysis/halo_quantities.py``. If you think that
+``yt_astro_analysis/halo_analysis/halo_quantities.py``. If you think that
 your quantity may be of use to the general community, add it to
 ``halo_quantities.py`` and issue a pull request.  Default halo quantities are:
 
@@ -382,7 +382,7 @@ each halo with a radius that is twice the saved ``radius``.
    hc.add_callback("sphere", factor=2.0)
 
 Currently available callbacks are located in
-``yt/analysis_modules/halo_analysis/halo_callbacks.py``.  New callbacks may
+``yt_astro_analysis/halo_analysis/halo_callbacks.py``.  New callbacks may
 be added by using the syntax shown below. If you think that your
 callback may be of use to the general community, add it to
 halo_callbacks.py and issue a pull request.
@@ -423,7 +423,7 @@ with one call.  For example,
    hc.add_recipe("calculate_virial_quantities", ["radius", "matter_mass"])
 
 The available recipes are located in
-``yt/analysis_modules/halo_analysis/halo_recipes.py``.  New recipes can be
+``yt_astro_analysis/halo_analysis/halo_recipes.py``.  New recipes can be
 created in the following manner:
 
 .. code-block:: python

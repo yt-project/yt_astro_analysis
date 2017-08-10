@@ -1,5 +1,5 @@
 import yt
-from yt.analysis_modules.halo_analysis.halo_catalog import HaloCatalog
+from yt.extensions.astro_analysis.halo_analysis.halo_catalog import HaloCatalog
 
 # Load the dataset
 ds = yt.load("Enzo_64/RD0006/RedshiftOutput0006")

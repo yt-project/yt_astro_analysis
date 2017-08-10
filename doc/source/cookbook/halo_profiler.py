@@ -1,5 +1,5 @@
 import yt
-from yt.analysis_modules.halo_analysis.api import HaloCatalog
+from yt.extensions.astro_analysis.halo_analysis.api import HaloCatalog
 
 # Load the data set with the full simulation information
 # and rockstar halos
