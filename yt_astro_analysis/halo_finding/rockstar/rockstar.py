@@ -24,8 +24,15 @@ from yt.utilities.parallel_tools.parallel_analysis_interface import \
 from yt.utilities.exceptions import \
     YTRockstarMultiMassNotSupported
 
-from yt_astro_analysis.halo_finding.rockstar import \
-    rockstar_interface
+try:
+    from yt_astro_analysis.halo_finding.rockstar import \
+     rockstar_interface
+except ImportError:
+    mylog.warn(
+        ("Cannot import the rockstar interface.  Rockstar will not run.\n" +
+         "If you need Rockstar, see the installation instructions at " +
+         "http://yt-astro-analysis.readthedocs.io/."))
+    rockstar_interface = None
 
 import socket
 import time
