@@ -1,4 +1,4 @@
-.. _installation::
+.. _installation:
 
 Installation
 ============
@@ -12,6 +12,8 @@ the git repository and install like this:
    $ git clone https://github.com/yt-project/yt_astro_analysis
    $ cd yt_astro_analysis
    $ pip install -e .
+
+.. _installation-rockstar:
 
 Installing with Rockstar support
 --------------------------------

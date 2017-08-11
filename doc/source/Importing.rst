@@ -1,4 +1,4 @@
-.. _importing::
+.. _importing:
 
 Importing from ``yt_astro_analysis``
 ====================================

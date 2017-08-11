@@ -12,7 +12,5 @@ catalogs and simply want to load them into yt, see
    :maxdepth: 2
 
    halo_catalogs
-   halo_mass_function
    halo_transition
    halo_merger_tree
-   ellipsoid_analysis

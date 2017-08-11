@@ -1,5 +1,5 @@
 import yt
-from yt.analysis_modules.cosmological_observation.api import \
+from yt.extensions.astro_analysis.cosmological_observation.api import \
      LightCone
 
 # Create a LightCone object extending from z = 0 to z = 0.1.

@@ -5,7 +5,7 @@ Halo Finding and Analysis
 
 In yt-3.x, halo finding and analysis are combined into a single
 framework called the
-:class:`~yt.analysis_modules.halo_analysis.halo_catalog.HaloCatalog`.
+:class:`~yt_astro_analysis.halo_analysis.halo_catalog.HaloCatalog`.
 This framework is substantially different from the halo analysis
 machinery available in yt-2.x and is entirely backward incompatible.
 For a direct translation of various halo analysis tasks using yt-2.x
@@ -17,7 +17,7 @@ Halo Finding
 ------------
 
 If you already have a halo catalog, either produced by one of the methods
-below or in a format described in :ref:`halo-catalog-data`, and want to
+below or in a format described in :ref:`yt:halo-catalog-data`, and want to
 perform further analysis, skip to :ref:`halo_catalog_analysis`.
 
 Three halo finding methods exist within yt.  These are:
@@ -31,17 +31,17 @@ Three halo finding methods exist within yt.  These are:
   2011 <http://adsabs.harvard.edu/abs/2011arXiv1110.4372B>`_)
 
 Halo finding is performed through the creation of a
-:class:`~yt.analysis_modules.halo_analysis.halo_catalog.HaloCatalog`
+:class:`~yt_astro_analysis.halo_analysis.halo_catalog.HaloCatalog`
 object.  The dataset on which halo finding is to be performed should
 be loaded and given to the
-:class:`~yt.analysis_modules.halo_analysis.halo_catalog.HaloCatalog`
+:class:`~yt_astro_analysis.halo_analysis.halo_catalog.HaloCatalog`
 along with the ``finder_method`` keyword to specify the method to be
 used.
 
 .. code-block:: python
 
    import yt
-   from yt.analysis_modules.halo_analysis.api import HaloCatalog
+   from yt.extensions.astro_analysis.halo_analysis.api import HaloCatalog
 
    data_ds = yt.load('Enzo_64/RD0006/RedshiftOutput0006')
    hc = HaloCatalog(data_ds=data_ds, finder_method='hop')
@@ -55,7 +55,7 @@ of a dictinoary using the ``finder_kwargs`` keyword.
 .. code-block:: python
 
    import yt
-   from yt.analysis_modules.halo_analysis.api import HaloCatalog
+   from yt.extensions.astro_analysis.halo_analysis.api import HaloCatalog
 
    data_ds = yt.load('Enzo_64/RD0006/RedshiftOutput0006')
    hc = HaloCatalog(data_ds=data_ds, finder_method='fof',
@@ -64,10 +64,10 @@ of a dictinoary using the ``finder_kwargs`` keyword.
    hc.create()
 
 For a full list of keywords for each halo finder, see
-:class:`~yt.analysis_modules.halo_finding.halo_objects.FOFHaloFinder`,
-:class:`~yt.analysis_modules.halo_finding.halo_objects.HOPHaloFinder`,
+:class:`~yt_astro_analysis.halo_finding.halo_objects.FOFHaloFinder`,
+:class:`~yt_astro_analysis.halo_finding.halo_objects.HOPHaloFinder`,
 and
-:class:`~yt.analysis_modules.halo_finding.rockstar.rockstar.RockstarHaloFinder`.
+:class:`~yt_astro_analysis.halo_finding.rockstar.rockstar.RockstarHaloFinder`.
 
 .. _fof_finding:
 
@@ -78,7 +78,7 @@ This is a basic friends-of-friends algorithm.  See
 `Efstathiou et al. (1985)
 <http://adsabs.harvard.edu/abs/1985ApJS...57..241E>`_ for more
 details as well as
-:class:`~yt.analysis_modules.halo_finding.halo_objects.FOFHaloFinder`.
+:class:`~yt_astro_analysis.halo_finding.halo_objects.FOFHaloFinder`.
 
 .. _hop_finding:
 
@@ -109,7 +109,7 @@ groups in this fashion:
 See the `HOP method paper
 <http://adsabs.harvard.edu/abs/1998ApJ...498..137E>`_ for
 full details as well as
-:class:`~yt.analysis_modules.halo_finding.halo_objects.HOPHaloFinder`.
+:class:`~yt_astro_analysis.halo_finding.halo_objects.HOPHaloFinder`.
 
 .. _rockstar_finding:
 
@@ -197,26 +197,11 @@ that records the connection between ds names and the Rockstar file names.
 Installing Rockstar
 """""""""""""""""""
 
-Because of changes in the Rockstar API over time, yt only currently works with
-a slightly older version of Rockstar.  This version of Rockstar has been
-slightly patched and modified to run as a library inside of yt. By default it
-is not installed with yt, but installation is very easy.  The
-:ref:`install-script` used to install yt from source has a line:
-``INST_ROCKSTAR=0`` that must be changed to ``INST_ROCKSTAR=1``.  You can
-rerun this installer script over the top of an existing installation, and
-it will only install components missing from the existing installation.
-You can do this as follows.  Put your freshly modified install_script in
-the parent directory of the yt installation directory (e.g. the parent of
-``$YT_DEST``, ``yt-x86_64``, ``yt-i386``, etc.), and rerun the installer:
-
-.. code-block:: bash
-
-    cd $YT_DEST
-    cd ..
-    vi install_script.sh  // or your favorite editor to change INST_ROCKSTAR=1
-    bash < install_script.sh
-
-This will download Rockstar and install it as a library in yt.
+Because of changes in the Rockstar API over time, ``yt_astro_analysis``
+only currently works with a slightly older version of Rockstar.  This
+version of Rockstar has been slightly patched and modified to run as a
+library inside of ``yt_astro_analysis``.  For installation instructions,
+see :ref:`installation-rockstar`.
 
 .. _halo_catalog_analysis:
 
@@ -229,7 +214,7 @@ As a reminder, all halo catalogs created by the methods outlined in
 Once a halo catalog has been created, further analysis can be performed
 by providing both the halo catalog and the original simulation dataset to
 the
-:class:`~yt.analysis_modules.halo_analysis.halo_catalog.HaloCatalog`.
+:class:`~yt_astro_analysis.halo_analysis.halo_catalog.HaloCatalog`.
 
 .. code-block:: python
 
@@ -241,13 +226,13 @@ A data object can also be supplied via the keyword ``data_source``,
 associated with either dataset, to control the spatial region in
 which halo analysis will be performed.
 
-The :class:`~yt.analysis_modules.halo_analysis.halo_catalog.HaloCatalog`
+The :class:`~yt_astro_analysis.halo_analysis.halo_catalog.HaloCatalog`
 allows the user to create a pipeline of analysis actions that will be
 performed on all halos in the existing catalog.  The analysis can be
 performed in parallel with separate processors or groups of processors
 being allocated to perform the entire pipeline on individual halos.
 The pipeline is setup by adding actions to the
-:class:`~yt.analysis_modules.halo_analysis.halo_catalog.HaloCatalog`.
+:class:`~yt_astro_analysis.halo_analysis.halo_catalog.HaloCatalog`.
 Each action is represented by a callback function that will be run on
 each halo.  There are four types of actions:
 
@@ -282,7 +267,7 @@ Currently quantity_value is the only available filter, but more can be
 added by the user by defining a function that accepts a halo object as
 the first argument and then adding it as an available filter. If you
 think that your filter may be of use to the general community, you can
-add it to ``yt/analysis_modules/halo_analysis/halo_filters.py`` and issue a
+add it to ``yt_astro_analysis/halo_analysis/halo_filters.py`` and issue a
 pull request.
 
 An example of defining your own filter:
@@ -317,7 +302,7 @@ Quantities may be available in the initial fields found in the halo catalog,
 or calculated from a function after supplying a definition. An example
 definition of center of mass is shown below. Currently available quantities
 are center_of_mass and bulk_velocity. Their definitions are available in
-``yt/analysis_modules/halo_analysis/halo_quantities.py``. If you think that
+``yt_astro_analysis/halo_analysis/halo_quantities.py``. If you think that
 your quantity may be of use to the general community, add it to
 ``halo_quantities.py`` and issue a pull request.  Default halo quantities are:
 
@@ -382,7 +367,7 @@ each halo with a radius that is twice the saved ``radius``.
    hc.add_callback("sphere", factor=2.0)
 
 Currently available callbacks are located in
-``yt/analysis_modules/halo_analysis/halo_callbacks.py``.  New callbacks may
+``yt_astro_analysis/halo_analysis/halo_callbacks.py``.  New callbacks may
 be added by using the syntax shown below. If you think that your
 callback may be of use to the general community, add it to
 halo_callbacks.py and issue a pull request.
@@ -411,7 +396,7 @@ Recipes
 Recipes allow you to create analysis tasks that consist of a series of
 callbacks, quantities, and filters that are run in succession.  An example
 of this is
-:func:`~yt.analysis_modules.halo_analysis.halo_recipes.calculate_virial_quantities`,
+:func:`~yt_astro_analysis.halo_analysis.halo_recipes.calculate_virial_quantities`,
 which calculates virial quantities by first creating a sphere container,
 performing 1D radial profiles, and then interpolating to get values at a
 specified threshold overdensity.  All of these operations are separate
@@ -423,7 +408,7 @@ with one call.  For example,
    hc.add_recipe("calculate_virial_quantities", ["radius", "matter_mass"])
 
 The available recipes are located in
-``yt/analysis_modules/halo_analysis/halo_recipes.py``.  New recipes can be
+``yt_astro_analysis/halo_analysis/halo_recipes.py``.  New recipes can be
 created in the following manner:
 
 .. code-block:: python
@@ -466,7 +451,7 @@ final catalog. The looping over halos uses a call to parallel_objects
 allowing the user to control how many processors work on each halo.
 The final catalog is written to disk in the output directory given
 when the
-:class:`~yt.analysis_modules.halo_analysis.halo_catalog.HaloCatalog`
+:class:`~yt_astro_analysis.halo_analysis.halo_catalog.HaloCatalog`
 object was created.
 
 All callbacks, quantities, and filters are stored in an actions list,
@@ -479,13 +464,13 @@ is not warranted.
 Saving and Reloading Halo Catalogs
 ----------------------------------
 
-A :class:`~yt.analysis_modules.halo_analysis.halo_catalog.HaloCatalog`
+A :class:`~yt_astro_analysis.halo_analysis.halo_catalog.HaloCatalog`
 saved to disk can be reloaded as a yt dataset with the
 standard call to ``yt.load``.  See :ref:`halocatalog` for a demonstration
 of loading and working only with the catalog.
 Any side data, such as profiles, can be reloaded
 with a ``load_profiles`` callback and a call to
-:func:`~yt.analysis_modules.halo_analysis.halo_catalog.HaloCatalog.load`.
+:func:`~yt_astro_analysis.halo_analysis.halo_catalog.HaloCatalog.load`.
 
 .. code-block:: python
 
@@ -500,4 +485,4 @@ Halo Catalog in Action
 ----------------------
 
 For a full example of how to use these methods together see
-:ref:`halo-analysis-example`.
+`Halo Analysis Example <https://github.com/yt-project/yt_astro_analysis/blob/master/doc/source/cookbook/Halo_Analysis.ipynb>`__.

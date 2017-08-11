@@ -7,9 +7,9 @@
 # Usage: mpirun -np <num_procs> --mca btl ^openib python this_script.py
 
 import yt
-from yt.analysis_modules.halo_analysis.halo_catalog import HaloCatalog
+from yt.extensions.astro_analysis.halo_analysis.halo_catalog import HaloCatalog
 from yt.data_objects.particle_filters import add_particle_filter
-from yt.analysis_modules.halo_finding.rockstar.api import RockstarHaloFinder
+from yt.extensions.astro_analysis.halo_finding.rockstar.api import RockstarHaloFinder
 yt.enable_parallelism() # rockstar halofinding requires parallelism
 
 # Create a dark matter particle filter

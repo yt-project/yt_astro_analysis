@@ -15,7 +15,7 @@ Exporting to RADMC-3D
 <http://www.ita.uni-heidelberg.de/~dullemond/software/radmc-3d/>`_ is a
 three-dimensional Monte-Carlo radiative transfer code that is capable of
 handling both line and continuum emission. yt comes equipped with a
-:class:`~yt.analysis_modules.radmc3d_export.RadMC3DInterface.RadMC3DWriter`
+:class:`~yt_astro_analysis.radmc3d_export.RadMC3DInterface.RadMC3DWriter`
 class that exports AMR data to a format that RADMC-3D can read. Currently, only
 the ASCII-style data format is supported.
 In principle, this allows one to use RADMC-3D to make synthetic observations
@@ -33,9 +33,9 @@ by default:
 
     import yt
     import numpy as np
-    from yt.analysis_modules.radmc3d_export.api import RadMC3DWriter, RadMC3DSource
+    from yt.extensions.astro_analysis.radmc3d_export.api import RadMC3DWriter, RadMC3DSource
 
-Next, load up a dataset and instantiate the :class:`~yt.analysis_modules.radmc3d_export.RadMC3DInterface.RadMC3DWriter`.
+Next, load up a dataset and instantiate the :class:`~yt_astro_analysis.radmc3d_export.RadMC3DInterface.RadMC3DWriter`.
 For this example, we'll use the "StarParticle" dataset,
 available `here
 <http://yt-project.org/data/>`_.
@@ -71,7 +71,7 @@ We save this information into a file called "dust_density.inp".
 
 Finally, we must give RADMC-3D information about any stellar sources that are
 present. To do this, we have provided the
-:class:`~yt.analysis_modules.radmc3d_export.RadMC3DInterface.RadMC3DSource`
+:class:`~yt_astro_analysis.radmc3d_export.RadMC3DInterface.RadMC3DSource`
 class. For this example, we place a single source with temperature 5780 K
 at the center of the domain:
 
@@ -143,7 +143,7 @@ and an np.array containing the image values. To plot this image in pyplot, you c
 
    import matplotlib.pyplot as plt
    import numpy as np
-   from yt.analysis_modules.radmc3d_export.api import read_radmc3d_image
+   from yt.extensions.astro_analysis.radmc3d_export.api import read_radmc3d_image
    header, image = read_radmc3d_image("image.out")
 
    Nx = header['Nx']
@@ -186,7 +186,7 @@ doppler broadening.
 .. code-block:: python
 
     import yt
-    from yt.analysis_modules.radmc3d_export.api import RadMC3DWriter
+    from yt.extensions.astro_analysis.radmc3d_export.api import RadMC3DWriter
 
     x_co = 1.0e-4
     mu_h = yt.YTQuantity(2.34e-24, 'g')

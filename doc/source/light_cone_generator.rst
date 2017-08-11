@@ -24,13 +24,13 @@ Configuring the Light Cone Generator
 ------------------------------------
 
 The required arguments to instantiate a
-:class:`~yt.analysis_modules.cosmological_observation.light_cone.light_cone.LightCone`
+:class:`~yt_astro_analysis.cosmological_observation.light_cone.light_cone.LightCone`
 object are the path to the simulation parameter file, the simulation type, the
 nearest redshift, and the furthest redshift of the light cone.
 
 .. code-block:: python
 
-  from yt.analysis_modules.cosmological_observation.api import \
+  from yt.extensions.astro_analysis.cosmological_observation.api import \
        LightCone
 
   lc = LightCone('enzo_tiny_cosmology/32Mpc_32.enzo',
@@ -75,7 +75,7 @@ Creating Light Cone Solutions
 A light cone solution consists of a list of datasets spanning a redshift
 interval with a random orientation for each dataset.  A new solution
 is calculated with the
-:func:`~yt.analysis_modules.cosmological_observation.light_cone.light_cone.LightCone.calculate_light_cone_solution`
+:func:`~yt_astro_analysis.cosmological_observation.light_cone.light_cone.LightCone.calculate_light_cone_solution`
 function:
 
 .. code-block:: python
