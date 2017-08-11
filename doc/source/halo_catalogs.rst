@@ -197,26 +197,11 @@ that records the connection between ds names and the Rockstar file names.
 Installing Rockstar
 """""""""""""""""""
 
-Because of changes in the Rockstar API over time, yt only currently works with
-a slightly older version of Rockstar.  This version of Rockstar has been
-slightly patched and modified to run as a library inside of yt. By default it
-is not installed with yt, but installation is very easy.  The
-:ref:`install-script` used to install yt from source has a line:
-``INST_ROCKSTAR=0`` that must be changed to ``INST_ROCKSTAR=1``.  You can
-rerun this installer script over the top of an existing installation, and
-it will only install components missing from the existing installation.
-You can do this as follows.  Put your freshly modified install_script in
-the parent directory of the yt installation directory (e.g. the parent of
-``$YT_DEST``, ``yt-x86_64``, ``yt-i386``, etc.), and rerun the installer:
-
-.. code-block:: bash
-
-    cd $YT_DEST
-    cd ..
-    vi install_script.sh  // or your favorite editor to change INST_ROCKSTAR=1
-    bash < install_script.sh
-
-This will download Rockstar and install it as a library in yt.
+Because of changes in the Rockstar API over time, ``yt_astro_analysis``
+only currently works with a slightly older version of Rockstar.  This
+version of Rockstar has been slightly patched and modified to run as a
+library inside of ``yt_astro_analysis``.  For installation instructions,
+see :ref:`installation-rockstar`.
 
 .. _halo_catalog_analysis:
 

@@ -13,6 +13,8 @@ the git repository and install like this:
    $ cd yt_astro_analysis
    $ pip install -e .
 
+.. _installation-rockstar:
+
 Installing with Rockstar support
 --------------------------------
 
