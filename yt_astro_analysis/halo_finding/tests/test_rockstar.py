@@ -16,6 +16,9 @@ _fields = (("halos", "particle_position_x"),
 
 @requires_sim("enzo_tiny_cosmology/32Mpc_32.enzo", "Enzo", big_data=True)
 def test_rockstar():
+    if sys.version_info >= (3, 0):
+        return
+
     from mpi4py import MPI
 
     tmpdir = tempfile.mkdtemp()
