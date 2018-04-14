@@ -47,7 +47,17 @@ extensions = [
 
 intersphinx_mapping = \
   {'yt': ('http://yt-project.org/docs/dev/', None),
-   'trident': ('http://trident.readthedocs.io/en/latest/', None)}
+   'trident': ('http://trident.readthedocs.io/en/latest/', None),
+   'http://docs.python.org/': None,
+   'http://ipython.org/ipython-doc/stable/': None,
+   'http://docs.scipy.org/doc/numpy/': None,
+   'http://matplotlib.org/': None,
+  'http://docs.astropy.org/en/stable': None,}
+
+intersphinx_mapping = {
+                       }
+
+
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -173,6 +183,7 @@ man_pages = [
 ]
 
 
+
 # -- Options for Texinfo output -------------------------------------------
 
 # Grouping the document tree into Texinfo files. List of tuples
@@ -183,6 +194,9 @@ texinfo_documents = [
      author, 'yt_astro_analysis', 'One line description of project.',
      'Miscellaneous'),
 ]
+
+# Example configuration for intersphinx: refer to the Python standard library.
+>>>>>>> ec78916fc... Add info to docstrings about how additional keyword arguments get passed to writeto, and add AstroPy's intersphinx mapping
 
 if not on_rtd:
     autosummary_generate = glob.glob("reference.rst")
