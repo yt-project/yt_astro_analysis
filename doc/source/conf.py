@@ -54,11 +54,6 @@ intersphinx_mapping = \
    'http://matplotlib.org/': None,
   'http://docs.astropy.org/en/stable': None,}
 
-intersphinx_mapping = {
-                       }
-
-
-
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
@@ -194,9 +189,6 @@ texinfo_documents = [
      author, 'yt_astro_analysis', 'One line description of project.',
      'Miscellaneous'),
 ]
-
-# Example configuration for intersphinx: refer to the Python standard library.
->>>>>>> ec78916fc... Add info to docstrings about how additional keyword arguments get passed to writeto, and add AstroPy's intersphinx mapping
 
 if not on_rtd:
     autosummary_generate = glob.glob("reference.rst")
