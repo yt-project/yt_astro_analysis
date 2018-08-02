@@ -387,7 +387,7 @@ class Halo(object):
         Returns
         -------
         radius : float
-            The virial raius in code units of the particles in the halo.  -1
+            The virial radius in code units of the particles in the halo.  -1
             if not virialized.
 
         Examples
