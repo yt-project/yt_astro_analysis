@@ -169,6 +169,7 @@ setup(
         'cython>=0.24',
     ],
     install_requires=[
+        'h5py',
         'matplotlib',
         'setuptools>=19.6',
         'sympy',
@@ -182,7 +183,7 @@ setup(
     },
     cmdclass={'sdist': sdist, 'build_ext': build_ext, 'build_py': build_py},
     author="The yt project",
-    author_email="yt-dev@lists.spacepope.org",
+    author_email="yt-dev@python.org",
     url="http://yt-project.org/",
     license="BSD",
     zip_safe=False,
