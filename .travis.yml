@@ -92,9 +92,9 @@ before_script:
 
 script:
   - |
-    git checkout gold-standard-v1
+    git checkout gold-standard-v2
     pip install -e .
     nosetests $TEST_FLAGS --answer-store
-    git checkout master
+    git checkout FETCH_HEAD
     pip install -e .
     nosetests $TEST_FLAGS
