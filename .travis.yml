@@ -31,12 +31,12 @@ env:
     YT_DIR=$HOME/yt-git
     YT_DATA=$HOME/yt_test
     TEST_DIR=$HOME/test_results
-    TEST_FLAGS="--with-answer-testing --local --local-dir $TEST_DIR --answer-name=astro_analysis --answer-big-data"
+    TEST_FLAGS="--nologcapture -v --with-answer-testing --local --local-dir $TEST_DIR --answer-name=astro_analysis --answer-big-data"
 
 matrix:
   include:
     - python: 2.7
-      env: NUMPY=numpy==1.10.4 CYTHON=cython==0.24 MATPLOTLIB=matplotlib==1.5.3 SYMPY=sympy==1.0 H5PY= SCIPY= FASTCACHE= IPYTHON=ipython==1.0
+      env: NUMPY=numpy==1.10.4 CYTHON=cython==0.24 MATPLOTLIB=matplotlib==1.5.3 SYMPY=sympy==1.0 H5PY=h5py SCIPY= FASTCACHE= IPYTHON=ipython==1.0
     - python: 2.7
     - python: 3.5
     - python: 3.6
@@ -52,6 +52,7 @@ before_install:
     echo "[yt]" > $HOME/.config/yt/ytrc
     echo "suppressStreamLogging = True" >> $HOME/.config/yt/ytrc
     echo "test_data_dir = $YT_DATA" >> $HOME/.config/yt/ytrc
+    echo "loglevel = 30" >> $HOME/.config/yt/ytrc
     cat $HOME/.config/yt/ytrc
 
 install:
