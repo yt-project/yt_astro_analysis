@@ -22,9 +22,6 @@ etiny = "enzo_tiny_cosmology/DD0046/DD0046"
 
 @requires_ds(etiny, big_data=True)
 def test_halo_analysis_finders():
-    if sys.version_info >= (3, 0):
-        return
-
     from mpi4py import MPI
 
     curdir = os.getcwd()
