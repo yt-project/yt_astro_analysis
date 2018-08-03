@@ -18,7 +18,7 @@ import os
 import shutil
 import tempfile
 
-from yt.analysis_modules.halo_analysis.api import \
+from yt_astro_analysis.halo_analysis.api import \
     HaloCatalog, \
     add_quantity
 from yt.convenience import \

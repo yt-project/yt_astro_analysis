@@ -20,7 +20,7 @@ import os
 import shutil
 import tempfile
 
-from yt.analysis_modules.cosmological_observation.api import \
+from yt_astro_analysis.cosmological_observation.api import \
      LightCone
 from yt.testing import \
     assert_equal, \
