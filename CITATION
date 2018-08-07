@@ -1,8 +1,9 @@
-To cite yt in publications, please use:
+To cite yt_astro_analysis in publications, please use:
 
 Turk, M. J., Smith, B. D., Oishi, J. S., et al. 2011, ApJS, 192, 9
 
-In the body of the text, please add a footnote to the yt webpage:
+In the body of the text, please refer to "the yt_astro_analysis
+extension of yt" and add a footnote to the yt webpage:
 
 http://yt-project.org/
 

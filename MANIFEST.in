@@ -1,0 +1,7 @@
+include README* CREDITS COPYING.txt CITATION  setupext.py CONTRIBUTING.rst
+recursive-include yt_astro_analysis *.py *.pyx *.pxd *.h README* *.txt LICENSE* *.cu
+recursive-include doc *.rst *.txt *.py *.ipynb *.png *.jpg *.css *.html
+recursive-include doc *.h *.c *.sh *.svgz *.pdf *.svg *.pyx
+include doc/extensions/README doc/Makefile
+prune doc/source/generated
+prune doc/build
