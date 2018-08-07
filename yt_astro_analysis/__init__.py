@@ -13,6 +13,8 @@ API for yt astro analysis.
 # The full license is in the file COPYING.txt, distributed with this software.
 #-----------------------------------------------------------------------------
 
+__version__ = '1.0.0.dev1'
+
 from yt_astro_analysis import \
     cosmological_observation, \
     halo_analysis, \
