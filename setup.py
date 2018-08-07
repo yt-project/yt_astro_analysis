@@ -9,7 +9,7 @@ from setuptools.command.sdist import sdist as _sdist
 from setuptools.command.build_py import build_py as _build_py
 from setupext import \
     check_for_openmp, check_for_pyembree, read_embree_location, \
-    get_mercurial_changeset_id, in_conda_env
+    in_conda_env
 from distutils.version import LooseVersion
 import pkg_resources
 
@@ -89,25 +89,25 @@ if os.path.exists("rockstar.cfg"):
                              os.path.join(rd, "io"), os.path.join(rd, "util")]
     extensions += rockstar_extensions
 
-class build_py(_build_py):
-    def run(self):
-        # honor the --dry-run flag
-        if not self.dry_run:
-            target_dir = os.path.join(self.build_lib, 'yt')
-            src_dir = os.getcwd()
-            changeset = get_mercurial_changeset_id(src_dir)
-            self.mkpath(target_dir)
-            with open(os.path.join(target_dir, '__hg_version__.py'), 'w') as fobj:
-                fobj.write("hg_version = '%s'\n" % changeset)
-        _build_py.run(self)
+# class build_py(_build_py):
+#     def run(self):
+#         # honor the --dry-run flag
+#         if not self.dry_run:
+#             target_dir = os.path.join(self.build_lib, 'yt')
+#             src_dir = os.getcwd()
+#             changeset = get_mercurial_changeset_id(src_dir)
+#             self.mkpath(target_dir)
+#             with open(os.path.join(target_dir, '__hg_version__.py'), 'w') as fobj:
+#                 fobj.write("hg_version = '%s'\n" % changeset)
+#         _build_py.run(self)
 
-    def get_outputs(self):
-        # http://bitbucket.org/yt_analysis/yt/issues/1296
-        outputs = _build_py.get_outputs(self)
-        outputs.append(
-            os.path.join(self.build_lib, 'yt', '__hg_version__.py')
-        )
-        return outputs
+#     def get_outputs(self):
+#         # http://bitbucket.org/yt_analysis/yt/issues/1296
+#         outputs = _build_py.get_outputs(self)
+#         outputs.append(
+#             os.path.join(self.build_lib, 'yt', '__hg_version__.py')
+#         )
+#         return outputs
 
 
 class build_ext(_build_ext):
@@ -181,7 +181,7 @@ setup(
     extras_require = {
         'hub':  ["girder_client"]
     },
-    cmdclass={'sdist': sdist, 'build_ext': build_ext, 'build_py': build_py},
+    cmdclass={'sdist': sdist, 'build_ext': build_ext},
     author="The yt project",
     author_email="yt-dev@python.org",
     url="http://yt-project.org/",
