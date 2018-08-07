@@ -32,7 +32,7 @@ try:
 except pkg_resources.DistributionNotFound:
     pass  # yay!
 
-VERSION = "0.0.1"
+VERSION = "1.0.0.dev1"
 
 if os.path.exists('MANIFEST'):
     os.remove('MANIFEST')
@@ -149,11 +149,9 @@ setup(
     ],
     install_requires=[
         'h5py',
-        'matplotlib',
         'setuptools>=19.6',
         'sympy',
         'numpy',
-        'IPython',
         'cython',
         'yt>=3.3.5',
     ],
