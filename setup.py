@@ -168,9 +168,9 @@ setup(
     url="https://github.com/yt-project/yt_astro_analysis",
     project_urls={
         'Homepage': 'https://yt-project.org/',
-        'Documentation': 'https://yt-project.org/doc/',
-        'Source': 'https://github.com/yt-project/yt/',
-        'Tracker': 'https://github.com/yt-project/yt/issues'
+        'Documentation': 'https://yt-astro-analysis.readthedocs.io/',
+        'Source': 'https://github.com/yt-project/yt_astro_analysis/',
+        'Tracker': 'https://github.com/yt-project/yt_astro_analysis/issues'
     },
     license="BSD 3-Clause",
     zip_safe=False,
