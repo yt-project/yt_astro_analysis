@@ -13,9 +13,9 @@ from setupext import \
 from distutils.version import LooseVersion
 import pkg_resources
 
-if sys.version_info < (2, 7) or (3, 0) < sys.version_info < (3, 6):
+if sys.version_info < (2, 7) or (3, 0) < sys.version_info < (3, 5):
     print("yt_astro_analysis currently supports Python 2.7 or versions " +
-          "newer than Python 3.6 certain features may fail unexpectedly " +
+          "newer than Python 3.5. Certain features may fail unexpectedly " +
           "and silently with older versions.")
     sys.exit(1)
 
