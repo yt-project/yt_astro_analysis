@@ -13,10 +13,10 @@ from setupext import \
 from distutils.version import LooseVersion
 import pkg_resources
 
-
-if sys.version_info < (2, 7):
-    print("yt currently requires Python version 2.7")
-    print("certain features may fail unexpectedly and silently with older versions.")
+if sys.version_info < (2, 7) or (3, 0) < sys.version_info < (3, 6):
+    print("yt_astro_analysis currently supports Python 2.7 or versions " +
+          "newer than Python 3.6 certain features may fail unexpectedly " +
+          "and silently with older versions.")
     sys.exit(1)
 
 try:
@@ -37,6 +37,8 @@ VERSION = "1.0.0.dev1"
 if os.path.exists('MANIFEST'):
     os.remove('MANIFEST')
 
+with open('README.md') as file:
+    long_description = file.read()
 
 if check_for_openmp() is True:
     omp_args = ['-fopenmp']
@@ -122,6 +124,8 @@ setup(
     name="yt_astro_analysis",
     version=VERSION,
     description="yt astrophysical analysis modules extension",
+    long_description = long_description,
+    long_description_content_type='text/markdown',
     classifiers=["Development Status :: 5 - Production/Stable",
                  "Environment :: Console",
                  "Intended Audience :: Science/Research",
