@@ -442,7 +442,6 @@ class HaloCatalog(ParallelAnalysisInterface):
                 elif action_type == "filter":
                     halo_filter = action(new_halo)
                     if not halo_filter:
-                        pbar.update(my_i)
                         break
                 elif action_type == "quantity":
                     key, quantity = action
