@@ -467,6 +467,7 @@ class HaloCatalog(ParallelAnalysisInterface):
 
             pbar.update(my_i)
 
+        pbar.finish()
         self.catalog.sort(key=lambda a:a['particle_identifier'].to_ndarray())
         if save_catalog:
             self.save_catalog()
