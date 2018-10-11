@@ -1,4 +1,4 @@
-.. _api-reference:
+.. _api_reference:
 
 API Reference
 =============
@@ -58,6 +58,7 @@ Light cone generation and simulation analysis.  (See also
 .. autosummary::
    :toctree: generated/
 
+   ~yt_astro_analysis.cosmological_observation.cosmology_splice.CosmologySplice
    ~yt_astro_analysis.cosmological_observation.light_cone.light_cone.LightCone
 
 RADMC-3D exporting
