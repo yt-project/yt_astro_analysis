@@ -191,5 +191,4 @@ texinfo_documents = [
      'Miscellaneous'),
 ]
 
-if not on_rtd:
-    autosummary_generate = glob.glob("api_reference.rst")
+autosummary_generate = glob.glob("api_reference.rst")
