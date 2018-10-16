@@ -5,6 +5,7 @@ cache:
     - $HOME/.ccache  # https://github.com/travis-ci/travis-ci/issues/5853
     - $YT_DIR
     - $YT_DATA
+    - $TEST_DIR
   pip: true
 
 git:
@@ -27,6 +28,7 @@ env:
     SCIPY=scipy
     IPYTHON=ipython
     FASTCACHE=fastcache
+    GOLD_STANDARD=gold-standard-v4
     ROCKSTAR_DIR=$HOME/rockstar
     YT_DIR=$HOME/yt-git
     YT_DATA=$HOME/yt_test
@@ -92,9 +94,12 @@ before_script:
 
 script:
   - |
-    git checkout gold-standard-v4
-    pip install -e .
-    nosetests $TEST_FLAGS --answer-store
+    # generate test answers if not cached
+    if [ ! -f $TEST_DIR/astro_analysis/astro_analysis.dat ]; then
+      git checkout $GOLD_STANDARD
+      pip install -e .
+      nosetests $TEST_FLAGS --answer-store
+    fi
     git checkout FETCH_HEAD
     pip install -e .
     nosetests $TEST_FLAGS
