@@ -96,6 +96,7 @@ script:
   - |
     # generate test answers if not cached
     ls $TEST_DIR/astro_analysis
+    echo $TEST_FLAGS
     if [ ! -f $TEST_DIR/astro_analysis/astro_analysis.dat ]; then
       git checkout $GOLD_STANDARD
       pip install -e .
