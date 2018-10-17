@@ -152,10 +152,6 @@ setup(
     entry_points={},
     packages=find_packages(),
     include_package_data = True,
-    setup_requires=[
-        'numpy',
-        'cython>=0.24',
-    ],
     install_requires=[
         'h5py',
         'setuptools>=19.6',
