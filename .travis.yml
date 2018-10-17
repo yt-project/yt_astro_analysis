@@ -33,7 +33,7 @@ env:
     YT_DIR=$HOME/yt-git
     YT_DATA=$HOME/yt_test
     TEST_DIR=$HOME/test_results
-    TEST_FLAGS="--nologcapture -v --with-answer-testing --local --local-dir $TEST_DIR --answer-name=astro_analysis --answer-big-data"
+    TEST_FLAGS="--nologcapture -v --with-answer-testing --local --local-dir $HOME/test_results --answer-name=astro_analysis --answer-big-data"
 
 matrix:
   include:
