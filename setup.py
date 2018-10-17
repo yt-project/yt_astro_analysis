@@ -65,6 +65,11 @@ extensions = [
               glob.glob("yt_astro_analysis/halo_finding/hop/*.c")),
 ]
 
+dev_requirements = [
+    'astropy', 'flake8', 'girder-client', 'gitpython', 'nose',
+    'nose-timer', 'scipy', 'sphinx', 'sphinx_bootstrap_theme',
+    'twine', 'wheel']
+
 # ROCKSTAR
 if os.path.exists("rockstar.cfg"):
     try:
@@ -160,7 +165,7 @@ setup(
         'yt>=3.5.0',
     ],
     extras_require = {
-        'hub':  ["girder_client"]
+        'dev':  dev_requirements,
     },
     cmdclass={'sdist': sdist, 'build_ext': build_ext},
     author="The yt project",
