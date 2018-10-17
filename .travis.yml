@@ -73,6 +73,8 @@ install:
     fi
     export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ROCKSTAR_DIR
     echo $ROCKSTAR_DIR > rockstar.cfg
+    # install yt_astro_analysis with extra dev dependencies
+    pip install -e .[dev]
 
 before_script:
   - |
@@ -87,11 +89,11 @@ script:
     # generate test answers if not cached
     if [ ! -f $TEST_DIR/$TEST_NAME/$TEST_NAME ]; then
       git checkout $GOLD_STANDARD
-      pip install -e .[dev]
+      pip install -e .
       nosetests $TEST_FLAGS --answer-store
     fi
     git checkout HEAD
-    pip install -e .[dev]
+    pip install -e .
     nosetests $TEST_FLAGS
 
 jobs:
