@@ -15,9 +15,11 @@ git:
 addons:
   apt:
     packages:
+      - dvipng
       - libhdf5-serial-dev
-      - openmpi-bin
       - libopenmpi-dev
+      - openmpi-bin
+      - texlive-latex-extra
 
 env:
   global:
@@ -28,12 +30,6 @@ env:
     TEST_DIR=$HOME/test_results
     TEST_NAME=astro_analysis
     TEST_FLAGS="--nologcapture -v --with-answer-testing --local --local-dir $TEST_DIR --answer-name=$TEST_NAME --answer-big-data"
-
-matrix:
-  include:
-    - python: 2.7
-    - python: 3.5
-    - python: 3.6
 
 before_install:
   - |
@@ -97,3 +93,36 @@ script:
     git checkout HEAD
     pip install -e .[dev]
     nosetests $TEST_FLAGS
+
+jobs:
+  include:
+    - stage: tests
+      name: "tests with Python 2.7"
+      python: 2.7
+
+    - stage: tests
+      name: "tests with Python 3.5"
+      python: 3.5
+
+    - stage: tests
+      name: "tests with Python 3.6"
+      python: 3.6
+
+    - stage: docs
+      name: "docs build test"
+      python: 3.6
+      before_script: skip
+      install:
+        - |
+          # setup environment
+          ccache -s
+          # Upgrade pip and setuptools and wheel to get clean install
+          pip install --upgrade pip
+          pip install --upgrade wheel
+          pip install --upgrade setuptools
+          # install yt_astro_analysis
+          pip install -e .[dev]
+      script:
+        - |
+          cd doc/source
+          python -m sphinx -M html "." "_build" -W
