@@ -3,8 +3,10 @@ sudo: false
 cache:
   directories:
     - $HOME/.ccache  # https://github.com/travis-ci/travis-ci/issues/5853
+    - $ROCKSTAR_DIR
     - $YT_DIR
     - $YT_DATA
+    - $TEST_DIR
   pip: true
 
 git:
@@ -27,11 +29,12 @@ env:
     SCIPY=scipy
     IPYTHON=ipython
     FASTCACHE=fastcache
+    GOLD_STANDARD=gold-standard-v4
     ROCKSTAR_DIR=$HOME/rockstar
     YT_DIR=$HOME/yt-git
     YT_DATA=$HOME/yt_test
     TEST_DIR=$HOME/test_results
-    TEST_FLAGS="--nologcapture -v --with-answer-testing --local --local-dir $TEST_DIR --answer-name=astro_analysis --answer-big-data"
+    TEST_FLAGS="--nologcapture -v --with-answer-testing --local --local-dir $HOME/test_results --answer-name=astro_analysis --answer-big-data"
 
 matrix:
   include:
@@ -74,11 +77,13 @@ install:
     git checkout master
     pip install -e .
     popd
-    # install rockstar
-    git clone https://github.com/yt-project/rockstar $ROCKSTAR_DIR
-    pushd $ROCKSTAR_DIR
-    make lib
-    popd
+    if [ ! -f $ROCKSTAR_DIR/VERSION ]; then
+      # install rockstar
+      git clone https://github.com/yt-project/rockstar $ROCKSTAR_DIR
+      pushd $ROCKSTAR_DIR
+      make lib
+      popd
+    fi
     export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ROCKSTAR_DIR
     echo $ROCKSTAR_DIR > rockstar.cfg
 
@@ -92,9 +97,15 @@ before_script:
 
 script:
   - |
-    git checkout gold-standard-v4
-    pip install -e .
-    nosetests $TEST_FLAGS --answer-store
+    # generate test answers if not cached
+    ls $TEST_DIR/astro_analysis
+    echo $TEST_FLAGS
+    if [ ! -f $TEST_DIR/astro_analysis/astro_analysis.dat ]; then
+      git checkout $GOLD_STANDARD
+      pip install -e .
+      nosetests $TEST_FLAGS --answer-store
+    fi
+    ls $TEST_DIR/astro_analysis
     git checkout FETCH_HEAD
     pip install -e .
     nosetests $TEST_FLAGS
