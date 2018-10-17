@@ -3,6 +3,7 @@ sudo: false
 cache:
   directories:
     - $HOME/.ccache  # https://github.com/travis-ci/travis-ci/issues/5853
+    - $ROCKSTAR_DIR
     - $YT_DIR
     - $YT_DATA
     - $TEST_DIR
@@ -77,11 +78,13 @@ install:
     git checkout master
     pip install -e .
     popd
-    # install rockstar
-    git clone https://github.com/yt-project/rockstar $ROCKSTAR_DIR
-    pushd $ROCKSTAR_DIR
-    make lib
-    popd
+    if [ ! -f $ROCKSTAR_DIR/VERSION ]; then
+      # install rockstar
+      git clone https://github.com/yt-project/rockstar $ROCKSTAR_DIR
+      pushd $ROCKSTAR_DIR
+      make lib
+      popd
+    fi
     export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ROCKSTAR_DIR
     echo $ROCKSTAR_DIR > rockstar.cfg
 
