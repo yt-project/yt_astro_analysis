@@ -32,7 +32,7 @@ try:
 except pkg_resources.DistributionNotFound:
     pass  # yay!
 
-VERSION = "1.0.0"
+VERSION = "1.1.0.dev0"
 
 if os.path.exists('MANIFEST'):
     os.remove('MANIFEST')
@@ -157,7 +157,7 @@ setup(
         'sympy',
         'numpy',
         'cython',
-        'yt>=3.3.5',
+        'yt>=3.5.0',
     ],
     extras_require = {
         'hub':  ["girder_client"]

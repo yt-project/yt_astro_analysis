@@ -3,9 +3,21 @@
 Installation
 ============
 
-To install ``yt_astro_analysis``, you will first need to 
-`install yt <https://github.com/yt-project/yt#installation>`__.  Then, clone
-the git repository and install like this:
+The most straightforward way to install ``yt_astro_analysis`` is to
+first `install yt <https://github.com/yt-project/yt#installation>`__.
+This will take care of all ``yt_astro_analysis`` dependencies. After
+that, ``yt_astro_analysis`` can be installed with pip:
+
+.. code-block:: bash
+
+   $ pip install yt_astro_analysis
+
+Installing from source
+----------------------
+
+To install from source, it is still recommended to first install ``yt``
+in the manner described above. Then, clone the git repository and install
+like this:
 
 .. code-block:: bash
 
@@ -18,6 +30,7 @@ the git repository and install like this:
 Installing with Rockstar support
 --------------------------------
 
+Rockstar support requires ``yt_astro_analysis`` to be installed from source.
 In order to run the Rockstar halo finder from within ``yt_astro_analysis``,
 you will need to install the `yt-project's fork of Rockstar
 <https://github.com/yt-project/rockstar>`__ and then provide this path to

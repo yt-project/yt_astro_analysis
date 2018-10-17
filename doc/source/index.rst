@@ -16,5 +16,8 @@ on their own schedule.
    Modules
    cookbook/index
    Contributing
+   Citing
    Help
    reference
+
+.. include:: ../../CITATION.rst

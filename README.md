@@ -4,6 +4,8 @@
 [![Devel Mailing List](https://img.shields.io/badge/Devel-List-lightgrey.svg)](http://lists.spacepope.org/listinfo.cgi/yt-dev-spacepope.org/)
 [![Build Status](https://travis-ci.org/yt-project/yt_astro_analysis.svg?branch=master)](https://travis-ci.org/yt-project/yt_astro_analysis)
 [![Documentation Status](https://readthedocs.org/projects/yt-astro-analysis/badge/?version=latest)](http://yt-astro-analysis.readthedocs.io/en/latest/?badge=latest)
+[![PyPI version](https://badge.fury.io/py/yt-astro-analysis.svg)](https://badge.fury.io/py/yt-astro-analysis)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1458961.svg)](https://doi.org/10.5281/zenodo.1458961)
 [![Data Hub](https://img.shields.io/badge/data-hub-orange.svg)](https://hub.yt/)
 [![Powered by NumFOCUS](https://img.shields.io/badge/powered%20by-NumFOCUS-orange.svg?style=flat&colorA=E1523D&colorB=007D8A)](http://numfocus.org)
 
