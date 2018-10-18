@@ -94,7 +94,10 @@ script:
     fi
     git checkout HEAD
     pip install -e .
-    nosetests $TEST_FLAGS
+    coverage run nosetests $TEST_FLAGS
+
+after_success:
+  - codecov
 
 jobs:
   include:
@@ -109,12 +112,12 @@ jobs:
     - stage: tests
       name: "tests with Python 3.6"
       python: 3.6
-      after_success: codecov
 
     - stage: docs
       name: "docs build test"
       python: 3.6
       before_script: skip
+      after_success: skip
       install:
         - |
           # setup environment
