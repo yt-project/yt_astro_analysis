@@ -94,7 +94,7 @@ script:
     fi
     git checkout HEAD
     pip install -e .
-    coverage run nosetests $TEST_FLAGS
+    coverage run `which nosetests` $TEST_FLAGS
 
 after_success:
   - codecov
