@@ -12,6 +12,13 @@ that, ``yt_astro_analysis`` can be installed with pip:
 
    $ pip install yt_astro_analysis
 
+If you use ``conda`` to manage packages, you can install ``yt_astro_analysis``
+from conda-forge:
+
+.. code-block:: bash
+
+   $ conda install -c conda-forge yt_astro_analysis
+   
 Installing from source
 ----------------------
 

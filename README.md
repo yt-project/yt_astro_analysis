@@ -5,6 +5,7 @@
 [![Build Status](https://travis-ci.org/yt-project/yt_astro_analysis.svg?branch=master)](https://travis-ci.org/yt-project/yt_astro_analysis)
 [![Documentation Status](https://readthedocs.org/projects/yt-astro-analysis/badge/?version=latest)](http://yt-astro-analysis.readthedocs.io/en/latest/?badge=latest)
 [![PyPI version](https://badge.fury.io/py/yt-astro-analysis.svg)](https://badge.fury.io/py/yt-astro-analysis)
+[![Conda Version](https://img.shields.io/conda/vn/conda-forge/yt_astro_analysis.svg)](https://anaconda.org/conda-forge/yt_astro_analysis)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1458961.svg)](https://doi.org/10.5281/zenodo.1458961)
 [![Data Hub](https://img.shields.io/badge/data-hub-orange.svg)](https://hub.yt/)
 [![Powered by NumFOCUS](https://img.shields.io/badge/powered%20by-NumFOCUS-orange.svg?style=flat&colorA=E1523D&colorB=007D8A)](http://numfocus.org)
@@ -18,8 +19,20 @@ schedule.
 ## Installation
 
 To install yt_astro_analysis, you will first need to 
-[install yt](https://github.com/yt-project/yt#installation).  Then, clone the
-git repository and install like this:
+[install yt](https://github.com/yt-project/yt#installation). Then do,
+
+```
+$ pip install yt_astro_analysis
+```
+
+If you use conda, do,
+
+```
+$ conda install -c conda-forge yt_astro_analysis
+```
+
+If you would like to build `yt_astro_analysis` from source, clone the git
+repository and install like this:
 
 ```
 git clone https://github.com/yt-project/yt_astro_analysis
