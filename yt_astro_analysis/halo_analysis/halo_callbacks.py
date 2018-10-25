@@ -532,8 +532,8 @@ def delete_attribute(halo, attribute):
 
 add_callback("delete_attribute", delete_attribute)
 
-def iterative_center_of_mass(halo, radius_field="virial_radius", inner_ratio=0.1, step_ratio=0.9,
-                             units="pc"):
+def iterative_center_of_mass(halo, radius_field="virial_radius", 
+                             inner_ratio=0.1, outer_radius=0.9, step_ratio=0.9, units="pc"):
     r"""
     Adjust halo position by iteratively recalculating the center of mass while 
     decreasing the radius.
@@ -550,6 +550,11 @@ def iterative_center_of_mass(halo, radius_field="virial_radius", inner_ratio=0.1
         mass to the initial radius.  The sphere radius is reduced and center of mass 
         recalculated until the sphere has reached this size.
         Default: 0.1
+    outer_radius : float
+        Sets the starting radius to begin testing the iterative technique in
+        units of the radius field.  When outer_radius starts out too large,
+        sometimes the iterative algorithm wanders into a different halo.
+        Default: 0.9
     step_ratio : float
         The multiplicative factor used to reduce the radius of the sphere after the 
         center of mass is calculated.
@@ -566,7 +571,8 @@ def iterative_center_of_mass(halo, radius_field="virial_radius", inner_ratio=0.1
 
     center_orig = halo.halo_catalog.data_ds.arr([halo.quantities["particle_position_%s" % axis]
                                                  for axis in "xyz"])
-    sphere = halo.halo_catalog.data_ds.sphere(center_orig, halo.quantities[radius_field])
+    sphere = halo.halo_catalog.data_ds.sphere(center_orig, 
+                                              outer_radius * halo.quantities[radius_field])
 
     while sphere.radius > inner_ratio * halo.quantities[radius_field]:
         new_center = sphere.quantities.center_of_mass(use_gas=True, use_particles=True)
