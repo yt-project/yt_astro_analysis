@@ -335,14 +335,9 @@ class LightCone(CosmologySplice):
                 pixel_area = (proper_box_size.in_cgs() / pixels)**2 #in proper cm^2
                 factor = pixel_area / (4.0 * np.pi * dL.in_cgs()**2)
                 mylog.info("Distance to slice = %s" % dL)
-                frb[field] *= factor #in erg/s/cm^2/Hz on observer"s image plane.
+                frb['field'] *= factor #in erg/s/cm^2/Hz on observer"s image plane.
 
-            if weight_field is None:
-                my_storage.result = {"field": frb[field]}
-            else:
-                my_storage.result = {"field": (frb[field] *
-                                               frb["weight_field"]),
-                                     "weight_field": frb["weight_field"]}
+            my_storage.result = frb
 
             del output["object"]
 
@@ -365,7 +360,8 @@ class LightCone(CosmologySplice):
 
             projection_stack.append(all_storage[my_slice]["field"])
             if weight_field is not None:
-                projection_weight_stack.append(all_storage[my_slice]["field"])
+                projection_weight_stack.append(
+                    all_storage[my_slice]["weight_field"])
 
         projection_stack = self.simulation.arr(projection_stack)
         projection_weight_stack = self.simulation.arr(projection_weight_stack)
@@ -376,7 +372,7 @@ class LightCone(CosmologySplice):
         else:
             light_cone_projection = \
               projection_stack.sum(axis=0) / \
-              self.simulation.arr(projection_weight_stack).sum(axis=0)
+              projection_weight_stack.sum(axis=0)
 
         filename = os.path.join(self.output_dir, self.output_prefix)
 
