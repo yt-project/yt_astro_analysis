@@ -23,7 +23,7 @@ addons:
 
 env:
   global:
-    GOLD_STANDARD=gold-standard-v4
+    GOLD_STANDARD=gold-standard-v5
     ROCKSTAR_DIR=$HOME/rockstar
     YT_DIR=$HOME/yt-git
     YT_DATA=$HOME/yt_test

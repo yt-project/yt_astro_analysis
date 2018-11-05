@@ -13,6 +13,8 @@ light cone generator test
 # The full license is in the file COPYING.txt, distributed with this software.
 #-----------------------------------------------------------------------------
 
+from yt.units.yt_array import \
+    YTQuantity
 from yt.utilities.on_demand_imports import \
     _h5py as h5py
 import numpy as np
@@ -30,20 +32,28 @@ from yt.utilities.answer_testing.framework import \
     requires_sim
 
 ETC = "enzo_tiny_cosmology/32Mpc_32.enzo"
+_funits = {'density': YTQuantity(1, 'g/cm**3'),
+           'temperature': YTQuantity(1, 'K'),
+           'length': YTQuantity(1, 'cm')}
 
 @requires_module("h5py")
 class LightConeProjectionTest(AnswerTestingTest):
     _type_name = "LightConeProjection"
     _attrs = ()
  
-    def __init__(self, parameter_file, simulation_type):
+    def __init__(self, parameter_file, simulation_type,
+                 field, weight_field=None):
         self.parameter_file = parameter_file
         self.simulation_type = simulation_type
         self.ds = os.path.basename(self.parameter_file)
+        self.field = field
+        self.weight_field = weight_field
 
     @property
     def storage_name(self):
-        return os.path.basename(self.parameter_file)
+        return "_".join(
+            (os.path.basename(self.parameter_file),
+             self.field, str(self.weight_field)))
 
     def run(self):
         # Set up in a temp dir
@@ -57,13 +67,22 @@ class LightConeProjectionTest(AnswerTestingTest):
         lc.calculate_light_cone_solution(
             seed=123456789, filename="LC/solution.txt")
         lc.project_light_cone(
-            (600.0, "arcmin"), (60.0, "arcsec"), "density",
-            weight_field=None, save_stack=True)
+            (600.0, "arcmin"), (60.0, "arcsec"), self.field,
+            weight_field=self.weight_field, save_stack=True)
 
+        dname = "%s_%s" % (self.field, self.weight_field)
         fh = h5py.File("LC/LightCone.h5")
-        data = fh["density_None"].value
-        units = fh["density_None"].attrs["units"]
-        assert units == "g/cm**2"
+        data = fh[dname].value
+        units = fh[dname].attrs["units"]
+        if self.weight_field is None:
+            punits = _funits[self.field] * _funits['length']
+        else:
+            punits = _funits[self.field] * _funits[self.weight_field] * \
+              _funits['length']
+            wunits = fh['weight_field_%s' % self.weight_field].attrs['units']
+            pwunits = _funits[self.weight_field] * _funits['length']
+            assert wunits == str(pwunits.units)
+        assert units == str(punits.units)
         fh.close()
 
         # clean up
@@ -80,4 +99,6 @@ class LightConeProjectionTest(AnswerTestingTest):
 
 @requires_sim(ETC, "Enzo")
 def test_light_cone_projection():
-    yield LightConeProjectionTest(ETC, "Enzo")
+    yield LightConeProjectionTest(ETC, "Enzo", 'density')
+    yield LightConeProjectionTest(ETC, "Enzo", 'temperature',
+                                  weight_field='density')

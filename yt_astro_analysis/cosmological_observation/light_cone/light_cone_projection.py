@@ -85,25 +85,37 @@ def _light_cone_projection(my_slice, field, pixels, weight_field=None,
 
     # Make projection.
     proj = my_slice["object"].proj(field, my_slice["projection_axis"], 
-        weight_field, center=region_center,
+        weight_field=weight_field, center=region_center,
         data_source=cut_region)
     proj_field = proj.field[0]
 
+    if weight_field is not None:
+        proj_weight_field = proj.weight_field
+        # Do a projection of the weight field so we can keep it.
+        weight_proj = my_slice["object"].proj(
+            proj_weight_field, my_slice["projection_axis"],
+            weight_field=None, center=region_center,
+            data_source=cut_region)
+
     del data_source, cut_region
-    
+
     # 2. The Tile Problem
     # Tile projection to specified width.
 
     # Original projection data.
-    original_px = proj.field_data["px"].in_units("code_length").copy()
-    original_py = proj.field_data["py"].in_units("code_length").copy()
-    original_pdx = proj.field_data["pdx"].in_units("code_length").copy()
-    original_pdy = proj.field_data["pdy"].in_units("code_length").copy()
-    original_field = proj.field_data[proj_field].copy()
-    original_weight_field = proj.field_data["weight_field"].copy()
+    original_px = proj["px"].in_units("code_length").copy()
+    original_py = proj["py"].in_units("code_length").copy()
+    original_pdx = proj["pdx"].in_units("code_length").copy()
+    original_pdy = proj["pdy"].in_units("code_length").copy()
+    original_field = proj[proj_field].copy()
+    if weight_field is not None:
+        original_weight_field = weight_proj[proj_weight_field].copy()
 
-    for my_field in ["px", "py", "pdx", "pdy", proj_field, "weight_field"]:
+    for my_field in ["px", "py", "pdx", "pdy", proj_field]:
         proj.field_data[my_field] = [proj.field_data[my_field]]
+    if weight_field is not None:
+        weight_proj.field_data[proj_weight_field] = \
+          [weight_proj.field_data[proj_weight_field]]
 
     # Copy original into offset positions to make tiles.
     for x in range(int(np.ceil(my_slice["box_width_fraction"]))):
@@ -115,12 +127,18 @@ def _light_cone_projection(my_slice, field, pixels, weight_field=None,
                 proj.field_data["py"] += [original_py+y]
                 proj.field_data["pdx"] += [original_pdx]
                 proj.field_data["pdy"] += [original_pdy]
-                proj.field_data["weight_field"] += [original_weight_field]
                 proj.field_data[proj_field] += [original_field]
+                if weight_field is not None:
+                    weight_proj.field_data[proj_weight_field] += \
+                      [original_weight_field]
 
-    for my_field in ["px", "py", "pdx", "pdy", proj_field, "weight_field"]:
+    for my_field in ["px", "py", "pdx", "pdy", proj_field]:
         proj.field_data[my_field] = \
           my_slice["object"].arr(proj.field_data[my_field]).flatten()
+    if weight_field is not None:
+        weight_proj.field_data[proj_weight_field] = \
+          my_slice["object"].arr(
+              weight_proj.field_data[proj_weight_field]).flatten()
 
     # Delete originals.
     del original_px
@@ -128,7 +146,8 @@ def _light_cone_projection(my_slice, field, pixels, weight_field=None,
     del original_pdx
     del original_pdy
     del original_field
-    del original_weight_field
+    if weight_field is not None:
+        del original_weight_field
 
     # 3. The Shift Problem
     # Shift projection by random x and y offsets.
@@ -165,7 +184,9 @@ def _light_cone_projection(my_slice, field, pixels, weight_field=None,
     add_x_pdx = proj.field_data["pdx"][add_x_right]
     add_x_pdy = proj.field_data["pdy"][add_x_right]
     add_x_field = proj.field_data[proj_field][add_x_right]
-    add_x_weight_field = proj.field_data["weight_field"][add_x_right]
+    if weight_field is not None:
+        add_x_weight_field = weight_proj.field_data[
+            proj_weight_field][add_x_right]
     del add_x_right
 
     # Cells hanging off the left edge.
@@ -176,7 +197,9 @@ def _light_cone_projection(my_slice, field, pixels, weight_field=None,
     add2_x_pdx = proj.field_data["pdx"][add_x_left]
     add2_x_pdy = proj.field_data["pdy"][add_x_left]
     add2_x_field = proj.field_data[proj_field][add_x_left]
-    add2_x_weight_field = proj.field_data["weight_field"][add_x_left]
+    if weight_field is not None:
+        add2_x_weight_field = weight_proj.field_data[
+            proj_weight_field][add_x_left]
     del add_x_left
 
     # Cells hanging off the top edge.
@@ -188,7 +211,9 @@ def _light_cone_projection(my_slice, field, pixels, weight_field=None,
     add_y_pdx = proj.field_data["pdx"][add_y_right]
     add_y_pdy = proj.field_data["pdy"][add_y_right]
     add_y_field = proj.field_data[proj_field][add_y_right]
-    add_y_weight_field = proj.field_data["weight_field"][add_y_right]
+    if weight_field is not None:
+        add_y_weight_field = weight_proj.field_data[
+            proj_weight_field][add_y_right]
     del add_y_right
 
     # Cells hanging off the bottom edge.
@@ -199,7 +224,9 @@ def _light_cone_projection(my_slice, field, pixels, weight_field=None,
     add2_y_pdx = proj.field_data["pdx"][add_y_left]
     add2_y_pdy = proj.field_data["pdy"][add_y_left]
     add2_y_field = proj.field_data[proj_field][add_y_left]
-    add2_y_weight_field = proj.field_data["weight_field"][add_y_left]
+    if weight_field is not None:
+        add2_y_weight_field = weight_proj.field_data[
+            proj_weight_field][add_y_left]
     del add_y_left
 
     # Add the hanging cells back to the projection data.
@@ -218,10 +245,11 @@ def _light_cone_projection(my_slice, field, pixels, weight_field=None,
     proj.field_data[proj_field] = uconcatenate(
         [proj.field_data[proj_field], add_x_field,
          add_y_field, add2_x_field, add2_y_field])
-    proj.field_data["weight_field"] = uconcatenate(
-        [proj.field_data["weight_field"],
-         add_x_weight_field, add_y_weight_field,
-         add2_x_weight_field, add2_y_weight_field])
+    if weight_field is not None:
+        weight_proj.field_data[proj_weight_field] = uconcatenate(
+            [weight_proj.field_data[proj_weight_field],
+             add_x_weight_field, add_y_weight_field,
+             add2_x_weight_field, add2_y_weight_field])
 
     # Delete original copies of hanging cells.
     del add_x_px, add_y_px, add2_x_px, add2_y_px
@@ -229,7 +257,9 @@ def _light_cone_projection(my_slice, field, pixels, weight_field=None,
     del add_x_pdx, add_y_pdx, add2_x_pdx, add2_y_pdx
     del add_x_pdy, add_y_pdy, add2_x_pdy, add2_y_pdy
     del add_x_field, add_y_field, add2_x_field, add2_y_field
-    del add_x_weight_field, add_y_weight_field, add2_x_weight_field, add2_y_weight_field
+    if weight_field is not None:
+        del add_x_weight_field, add_y_weight_field, \
+          add2_x_weight_field, add2_y_weight_field
 
     # Tiles were made rounding up the width to the nearest integer.
     # Cut off the edges to get the specified width.
@@ -241,7 +271,9 @@ def _light_cone_projection(my_slice, field, pixels, weight_field=None,
     proj.field_data["pdx"] = proj.field_data["pdx"][cut_x]
     proj.field_data["pdy"] = proj.field_data["pdy"][cut_x]
     proj.field_data[proj_field] = proj.field_data[proj_field][cut_x]
-    proj.field_data["weight_field"] = proj.field_data["weight_field"][cut_x]
+    if weight_field is not None:
+        weight_proj.field_data[proj_weight_field] = \
+          weight_proj.field_data[proj_weight_field][cut_x]
     del cut_x
 
     # Cut in the y direction.
@@ -252,7 +284,9 @@ def _light_cone_projection(my_slice, field, pixels, weight_field=None,
     proj.field_data["pdx"] = proj.field_data["pdx"][cut_y]
     proj.field_data["pdy"] = proj.field_data["pdy"][cut_y]
     proj.field_data[proj_field] = proj.field_data[proj_field][cut_y]
-    proj.field_data["weight_field"] = proj.field_data["weight_field"][cut_y]
+    if weight_field is not None:
+        weight_proj.field_data[proj_weight_field] = \
+          weight_proj.field_data[proj_weight_field][cut_y]
     del cut_y
 
     # Create fixed resolution buffer to return back to the light cone object.
@@ -261,5 +295,16 @@ def _light_cone_projection(my_slice, field, pixels, weight_field=None,
         (di_left_x, di_right_x * my_slice["box_width_fraction"],
          di_left_y, di_right_y * my_slice["box_width_fraction"]),
         (pixels, pixels), antialias=False)
+    rdata = {"field": frb[proj_field]}
 
-    return frb
+    if weight_field is not None:
+        for f in ['px', 'py', 'pdx', 'pdy']:
+            weight_proj.field_data[f] = proj.field_data[f]
+        wfrb = FixedResolutionBuffer(weight_proj,
+             (di_left_x, di_right_x * my_slice["box_width_fraction"],
+              di_left_y, di_right_y * my_slice["box_width_fraction"]),
+             (pixels, pixels), antialias=False)
+        rdata["weight_field"] = wfrb[proj_weight_field]
+        rdata["field"] *= rdata["weight_field"]
+
+    return rdata
