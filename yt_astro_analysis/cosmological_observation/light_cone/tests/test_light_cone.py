@@ -52,13 +52,8 @@ class LightConeProjectionTest(AnswerTestingTest):
     @property
     def storage_name(self):
         return "_".join(
-            (self._type_name,
-             os.path.basename(self.parameter_file),
+            (os.path.basename(self.parameter_file),
              self.field, str(self.weight_field)))
-
-    @property
-    def description(self):
-        return self.storage_name
 
     def run(self):
         # Set up in a temp dir
