@@ -22,6 +22,7 @@ BbTeX entries are provided below:
   @misc{yt.astro.analysis,
     author       = {Britton Smith and
                     Matthew Turk and
+                    John ZuHone and
                     Nathan Goldbaum and
                     Cameron Hummels and
                     Hilary Egan and
