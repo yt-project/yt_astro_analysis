@@ -26,6 +26,7 @@ BbTeX entries are provided below:
                     Cameron Hummels and
                     Hilary Egan and
                     John Wise and
+                    Anthony Scopatz and
                     Miguel de Val-Borro and
                     Ben Keller and
                     Mark Richardson},
