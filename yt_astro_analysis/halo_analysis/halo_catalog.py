@@ -442,7 +442,6 @@ class HaloCatalog(ParallelAnalysisInterface):
                 elif action_type == "filter":
                     halo_filter = action(new_halo)
                     if not halo_filter:
-                        pbar.update(my_i)
                         break
                 elif action_type == "quantity":
                     key, quantity = action
@@ -468,6 +467,7 @@ class HaloCatalog(ParallelAnalysisInterface):
 
             pbar.update(my_i)
 
+        pbar.finish()
         self.catalog.sort(key=lambda a:a['particle_identifier'].to_ndarray())
         if save_catalog:
             self.save_catalog()
