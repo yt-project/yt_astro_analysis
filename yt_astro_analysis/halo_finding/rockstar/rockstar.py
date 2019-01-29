@@ -91,9 +91,11 @@ class StandardRunner(ParallelAnalysisInterface):
         else:
             self.num_writers = min(num_writers, psize)
         if self.num_readers + self.num_writers + 1 != psize:
-            mylog.error('%i reader + %i writers + 1 server != %i mpi',
-                    self.num_readers, self.num_writers, psize)
-            raise RuntimeError
+            raise RuntimeError(
+                'The number of MPI processes (%i) does not equal the '
+                'number of readers (%i) plus the number of writers '
+                '(%i) plus 1 server' % (
+                    self.num_readers, self.num_writers, psize))
     
     def run(self, handler, wg):
         # Not inline so we just launch them directly from our MPI threads.
