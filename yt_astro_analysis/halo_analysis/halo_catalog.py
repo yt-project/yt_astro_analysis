@@ -501,7 +501,7 @@ class HaloCatalog(ParallelAnalysisInterface):
                       "particle_position_x", "particle_position_y",
                       "particle_position_z", "virial_radius"]:
             field_name = (field_type, field)
-            if field_name not in self.halos_ds.field_list:
+            if field_name not in self.halos_ds.derived_field_list:
                 mylog.warn("Halo dataset %s has no field %s." %
                            (self.halos_ds, str(field_name)))
                 continue
