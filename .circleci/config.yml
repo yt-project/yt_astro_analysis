@@ -1,0 +1,207 @@
+version: 2.1
+
+commands:
+  set-env:
+    description: "Set environment variables."
+    steps:
+      - run: |
+          echo 'export GOLD_STANDARD=HEAD' >> $BASH_ENV
+          echo 'export ROCKSTAR_DIR=$HOME/rockstar' >> $BASH_ENV
+          echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ROCKSTAR_DIR' >> $BASH_ENV
+          echo 'export YT_DIR=$HOME/yt-git' >> $BASH_ENV
+          echo 'export YT_DATA=$HOME/yt_test' >> $BASH_ENV
+          echo 'export TEST_DIR=$HOME/test_results' >> $BASH_ENV
+          echo 'export TEST_NAME=astro_analysis' >> $BASH_ENV
+          echo 'export TEST_FLAGS="--nologcapture -v --with-answer-testing --local --local-dir $TEST_DIR --answer-name=$TEST_NAME --answer-big-data"' >> $BASH_ENV
+
+  install-dependencies:
+    description: "Install dependencies."
+    steps:
+      - run: |
+          sudo apt-get update
+          sudo apt-get install -y dvipng texlive-latex-extra
+          python3 -m venv $HOME/venv
+          source $HOME/venv/bin/activate
+          pip install --upgrade pip
+          pip install --upgrade wheel
+          pip install --upgrade setuptools
+          pip install Cython numpy
+          pip install -e .[dev]
+
+  install-with-yt-dev:
+    description: "Install dependencies with yt from source."
+    steps:
+      - run: |
+          source $BASH_ENV
+          sudo apt-get update
+          sudo apt-get install -y libopenmpi-dev openmpi-bin
+          python3 -m venv $HOME/venv
+          source $HOME/venv/bin/activate
+          pip install --upgrade pip
+          pip install --upgrade wheel
+          pip install --upgrade setuptools
+          pip install Cython mpi4py numpy
+          # install yt from source
+          if [ ! -f $YT_DIR/README.md ]; then
+              git clone --branch=master https://github.com/yt-project/yt $YT_DIR
+          fi
+          pushd $YT_DIR
+          git pull origin master
+          git checkout master
+          pip install -e .
+          popd
+          # install rockstar
+          if [ ! -f $ROCKSTAR_DIR/VERSION ]; then
+              git clone https://github.com/yt-project/rockstar $ROCKSTAR_DIR
+              pushd $ROCKSTAR_DIR
+              make lib
+              popd
+          fi
+          echo $ROCKSTAR_DIR > rockstar.cfg
+          # install yt_astro_analysis with extra dev dependencies
+          pip install -e .[dev]
+          # configure yt
+          mkdir -p $HOME/.config/yt
+          echo "[yt]" > $HOME/.config/yt/ytrc
+          echo "suppressStreamLogging = True" >> $HOME/.config/yt/ytrc
+          echo "test_data_dir = $YT_DATA" >> $HOME/.config/yt/ytrc
+          echo "loglevel = 30" >> $HOME/.config/yt/ytrc
+
+  download-test-data:
+    description: "Download test data."
+    steps:
+      - run: |
+          if [ ! -f $YT_DATA/enzo_tiny_cosmology/DD0046/DD0046 ]; then
+              source $BASH_ENV
+              source $HOME/venv/bin/activate
+              mkdir -p $YT_DATA
+              girder-cli --api-url https://girder.hub.yt/api/v1 download 577c09480d7c6b0001ad5be2 $YT_DATA/enzo_tiny_cosmology
+          fi
+
+  build-and-test:
+    description: "Build yt_astro_analysis and run tests."
+    steps:
+      - run: |
+          source $BASH_ENV
+          source $HOME/venv/bin/activate
+          # generate answers if not cached
+          if [ ! -f $TEST_DIR/$TEST_NAME/$TEST_NAME ]; then
+            git checkout $GOLD_STANDARD
+            pip install -e .
+            nosetests $TEST_FLAGS --answer-store
+          fi
+          # return to tip and run comparison tests
+          git checkout -
+          pip install -e .
+          coverage run `which nosetests` $TEST_FLAGS
+          # code coverage report
+          codecov
+
+  build-docs:
+    description: "Test the docs build."
+    steps:
+      - run: |
+          source $HOME/venv/bin/activate
+          cd doc/source
+          python -m sphinx -M html "." "_build" -W
+
+executors:
+  python:
+    parameters:
+      tag:
+        type: string
+        default: latest
+    docker:
+      - image: circleci/python:<< parameters.tag >>
+
+jobs:
+  run-tests:
+    parameters:
+      tag:
+        type: string
+        default: latest
+    executor:
+      name: python
+      tag: << parameters.tag >>
+
+    working_directory: ~/yt_astro_analysis
+
+    steps:
+      - checkout
+      - set-env
+
+      - restore_cache:
+          name: "Restore dependencies cache."
+          key: python-<< parameters.tag >>-dependencies-v3
+
+      - install-with-yt-dev
+
+      - save_cache:
+          name: "Save dependencies cache"
+          key: python-<< parameters.tag >>-dependencies-v3
+          paths:
+            - ~/.cache/pip
+            - ~/venv
+            - ~/yt-git
+            - ~/rockstar
+
+      - restore_cache:
+          name: "Restore test data cache."
+          key: test-data-v2
+
+      - download-test-data
+
+      - save_cache:
+          name: "Save test data cache."
+          key: test-data-v2
+          paths:
+            - ~/yt_test
+
+      - restore_cache:
+          name: "Restore test answers."
+          key: python-<< parameters.tag >>-test-answers-v1
+
+      - build-and-test
+
+      - save_cache:
+          name: "Save test answers cache."
+          key: python-<< parameters.tag >>-test-answers-v1
+          paths:
+            - ~/test_results
+
+  docs-test:
+    parameters:
+      tag:
+        type: string
+        default: latest
+    executor:
+      name: python
+      tag: << parameters.tag >>
+
+    working_directory: ~/yt_astro_analysis
+
+    steps:
+      - checkout
+      - install-dependencies
+      - build-docs
+
+workflows:
+   version: 2
+
+   normal-tests:
+     jobs:
+       - run-tests:
+           name: "Python 3.5 tests"
+           tag: "3.5.7"
+
+       - run-tests:
+           name: "Python 3.6 tests"
+           tag: "3.6.8"
+
+       - run-tests:
+           name: "Python 3.7 tests"
+           tag: "3.7.2"
+
+       - docs-test:
+           name: "Test docs build"
+           tag: "3.7.2"
