@@ -5,7 +5,7 @@ commands:
     description: "Set environment variables."
     steps:
       - run: |
-          echo 'export GOLD_STANDARD=HEAD' >> $BASH_ENV
+          echo 'export GOLD_STANDARD=gold-standard-v6' >> $BASH_ENV
           echo 'export ROCKSTAR_DIR=$HOME/rockstar' >> $BASH_ENV
           echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ROCKSTAR_DIR' >> $BASH_ENV
           echo 'export YT_DIR=$HOME/yt-git' >> $BASH_ENV
