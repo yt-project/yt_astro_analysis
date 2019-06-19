@@ -185,7 +185,7 @@ class PPVCube(object):
             self.proj_units = self.field_units
 
         storage = {}
-        pbar = get_pbar("Generating cube.", self.nv)
+        pbar = get_pbar("Generating cube", self.nv)
         for sto, i in parallel_objects(range(self.nv), storage=storage):
             self.current_v = self.vmid_cgs[i]
             if isinstance(normal, str):
