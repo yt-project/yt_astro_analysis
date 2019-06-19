@@ -173,11 +173,11 @@ class PPVCube(object):
 
         _vlos = create_vlos(normal, self.no_shifting)
         self.ds.add_field(("gas","v_los"), function=_vlos, units="cm/s",
-                          sampling_type='cell')
+                          sampling_type='local')
 
         _intensity = self._create_intensity()
         self.ds.add_field(("gas","intensity"), function=_intensity,
-                          units=self.field_units, sampling_type='cell')
+                          units=self.field_units, sampling_type='local')
 
         if method == "integrate" and weight_field is None:
             self.proj_units = str(ds.quan(1.0, self.field_units+"*cm").units)
