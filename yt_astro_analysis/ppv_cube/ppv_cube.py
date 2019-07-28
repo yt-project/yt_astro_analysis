@@ -128,7 +128,6 @@ class PPVCube(object):
         """
 
         self.ds = ds
-        self.field = field
         self.width = width
         self.particle_mass = atomic_weight*mh
         self.thermal_broad = thermal_broad
@@ -157,6 +156,7 @@ class PPVCube(object):
 
         dd = ds.all_data()
         fd = dd._determine_fields(field)[0]
+        self.field = fd
         self.field_units = ds._get_field_info(fd).units
 
         self.vbins = ds.arr(np.linspace(velocity_bounds[0],
@@ -202,7 +202,7 @@ class PPVCube(object):
                                           north_vector=north_vector, no_ghost=no_ghost,
                                           method=method, weight=weight_field)
             sto.result_id = i
-            sto.result = buf.swapaxes(0,1)
+            sto.result = buf
             pbar.update(i)
         pbar.finish()
 
