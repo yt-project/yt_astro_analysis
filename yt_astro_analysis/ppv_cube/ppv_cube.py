@@ -310,8 +310,6 @@ class PPVCube(object):
 
         fib = FITSImageData(self.data, fields=self.field, wcs=w)
         fib.update_header("all", "wcsname", "spectral_cube")
-        fib.update_header("all", "bunit", re.sub('()', '', str(self.proj_units)))
-        fib.update_header("all", "btype", self.field)
         if sky_scale is not None and sky_center is not None:
             fib.create_sky_wcs(sky_center, sky_scale, **kwargs)
         fib.writeto(filename, overwrite=overwrite)
