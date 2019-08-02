@@ -22,26 +22,8 @@ from yt.units.yt_array import YTQuantity
 from yt.funcs import iterable
 from yt.utilities.parallel_tools.parallel_analysis_interface import \
     parallel_root_only, parallel_objects
-import re
 from . import ppv_utils
 from yt.funcs import is_root
-
-def create_vlos(normal, no_shifting):
-    if no_shifting:
-        def _v_los(field, data):
-            return data.ds.arr(data["index", "zeros"], "cm/s")
-    elif isinstance(normal, str):
-        def _v_los(field, data):
-            return -data["gas", "velocity_%s" % normal]
-    else:
-        orient = Orientation(normal)
-        los_vec = orient.unit_vectors[2]
-        def _v_los(field, data):
-            vz = data["gas", "velocity_x"]*los_vec[0] + \
-                data["gas", "velocity_y"]*los_vec[1] + \
-                data["gas", "velocity_z"]*los_vec[2]
-            return -vz
-    return _v_los
 
 fits_info = {"velocity": ("m/s", "VOPT", "v"),
              "frequency": ("Hz", "FREQ", "f"),
@@ -131,7 +113,6 @@ class PPVCube(object):
         self.width = width
         self.particle_mass = atomic_weight*mh
         self.thermal_broad = thermal_broad
-        self.no_shifting = no_shifting
 
         if not isinstance(normal, str):
             width = ds.coordinates.sanitize_width(normal, width, depth)
@@ -171,7 +152,13 @@ class PPVCube(object):
 
         self.current_v = 0.0
 
-        _vlos = create_vlos(normal, self.no_shifting)
+        if no_shifting:
+            def _vlos(field, data):
+                return data.ds.arr(data["index", "zeros"], "cm/s")
+        else:
+            def _vlos(field, data):
+                return -data["gas","velocity_los"]
+
         self.ds.add_field(("gas","v_los"), function=_vlos, units="cm/s",
                           sampling_type='local')
 
@@ -326,15 +313,15 @@ class PPVCube(object):
     def _create_intensity(self):
         if self.thermal_broad:
             def _intensity(field, data):
-                v = self.current_v-data["gas", "v_los"].in_cgs().v
-                T = data["gas", "temperature"].in_cgs().v
+                v = self.current_v-data["gas", "v_los"].to_value("cm/s")
+                T = data["gas", "temperature"].to_value("K")
                 w = ppv_utils.compute_weight(self.thermal_broad, self.dv_cgs,
                                              self.particle_mass, v.flatten(), T.flatten())
                 w[np.isnan(w)] = 0.0
                 return data[self.field]*w.reshape(v.shape)
         else:
             def _intensity(field, data):
-                w = 1.-np.fabs(self.current_v-data["gas", "v_los"].in_cgs().v)/self.dv_cgs
+                w = 1.-np.fabs(self.current_v-data["gas", "v_los"].to_value("cm/s"))/self.dv_cgs
                 w[w < 0.0] = 0.0
                 return data[self.field]*w
         return _intensity
