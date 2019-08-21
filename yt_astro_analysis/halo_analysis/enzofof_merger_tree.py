@@ -38,7 +38,7 @@ from yt.utilities.on_demand_imports import _h5py as h5py
 import glob
 import os
 
-from yt.extern.six.moves import cPickle
+import pickle
 from yt.extern.pykdtree import KDTree
 from yt.funcs import mylog, get_pbar
 
@@ -325,12 +325,12 @@ class EnzoFOFMergerTree(object):
                 del self.redshifts[cycle]
 
     def save_tree(self, filename):
-        cPickle.dump((self.redshifts, self.relationships),
+        pickle.dump((self.redshifts, self.relationships),
                      open(filename, "wb"))
 
     def load_tree(self, filename):
         self.redshifts, self.relationships = \
-                        cPickle.load(open(filename, "rb"))
+                        pickle.load(open(filename, "rb"))
 
     def clear_data(self):
         r"""Deletes previous merger tree, but keeps parentage
@@ -683,7 +683,7 @@ def find_halo_relationships(output1_id, output2_id, output_basename = None,
                             hid1, output1_id, p2, hid2, output2_id, p1))
         f.close()
 
-        cPickle.dump(pfrac, open("%s.cpkl" % (output_basename), "wb"))
+        pickle.dump(pfrac, open("%s.cpkl" % (output_basename), "wb"))
 
     return HC1.redshift, HC2.redshift, pfrac
 

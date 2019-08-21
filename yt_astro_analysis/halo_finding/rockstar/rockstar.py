@@ -16,8 +16,6 @@ Operations to get Rockstar loaded up
 from yt.config import ytcfg
 from yt.data_objects.time_series import \
     DatasetSeries
-from yt.extern import \
-    six
 from yt.funcs import \
     is_root, mylog
 from yt.utilities.parallel_tools.parallel_analysis_interface import \
@@ -225,7 +223,7 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
             ts = DatasetSeries([ts])
         self.ts = ts
         self.particle_type = particle_type
-        self.outbase = six.b(outbase)
+        self.outbase = bytes(outbase, 'utf-8')
         self.min_halo_size = min_halo_size
         if force_res is None:
             tds = ts[-1] # Cache a reference
@@ -307,8 +305,8 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
             server_address, port = None, None
         self.server_address, self.port = self.comm.mpi_bcast(
             (server_address, port))
-        self.server_address = six.b(str(self.server_address))
-        self.port = six.b(str(self.port))
+        self.server_address = bytes(str(self.server_address), 'utf-8')
+        self.port = bytes(str(self.port), 'utf-8')
 
     def run(self, block_ratio = 1, callbacks = None, restart = False):
         """
