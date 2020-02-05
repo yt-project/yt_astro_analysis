@@ -112,12 +112,12 @@ class CosmologySplice(object):
         for i, output in enumerate(self.splice_outputs):
             if i == 0:
                 output['previous'] = None
-                output['next'] = self.splice_outputs[i + 1]
-            elif i == len(self.splice_outputs) - 1:
-                output['previous'] = self.splice_outputs[i - 1]
-                output['next'] = None
             else:
                 output['previous'] = self.splice_outputs[i - 1]
+
+            if i == len(self.splice_outputs) - 1:
+                output['next'] = None
+            else:
                 output['next'] = self.splice_outputs[i + 1]
 
         # Calculate maximum delta z for each data dump.
