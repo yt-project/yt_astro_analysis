@@ -1456,6 +1456,9 @@ class HOPHaloFinder(GenericHaloFinder, HOPHaloList):
         mass in the entire volume.
         Default = None, which means the total mass is automatically
         calculated.
+    save_particles : bool
+        If True, output member particles for each halo.
+        Default: True.
 
     Examples
     --------
@@ -1463,11 +1466,13 @@ class HOPHaloFinder(GenericHaloFinder, HOPHaloList):
     >>> halos = HaloFinder(ds)
     """
     def __init__(self, ds, subvolume=None, threshold=160, dm_only=True,
-                 ptype=None, padding=0.02, total_mass=None):
+                 ptype=None, padding=0.02, total_mass=None,
+                 save_particles=True):
         if subvolume is not None:
             ds_LE = np.array(subvolume.left_edge)
             ds_RE = np.array(subvolume.right_edge)
         self.period = ds.domain_right_edge - ds.domain_left_edge
+        self.save_particles = save_particles
         self._data_source = ds.all_data()
         GenericHaloFinder.__init__(self, ds, self._data_source, padding,
                                    ptype=ptype)
@@ -1573,6 +1578,9 @@ class FOFHaloFinder(GenericHaloFinder, FOFHaloList):
         with duplicated particles for halo finidng to work. This number
         must be no smaller than the radius of the largest halo in the box
         in code units. Default = 0.02.
+    save_particles : bool
+        If True, output member particles for each halo.
+        Default: True.
 
     Examples
     --------
@@ -1580,7 +1588,7 @@ class FOFHaloFinder(GenericHaloFinder, FOFHaloList):
     >>> halos = FOFHaloFinder(ds)
     """
     def __init__(self, ds, subvolume=None, link=0.2, dm_only=True,
-                 ptype=None, padding=0.02):
+                 ptype=None, padding=0.02, save_particles=True):
         if subvolume is not None:
             ds_LE = np.array(subvolume.left_edge)
             ds_RE = np.array(subvolume.right_edge)
@@ -1588,6 +1596,7 @@ class FOFHaloFinder(GenericHaloFinder, FOFHaloList):
         self.ds = ds
         self.index = ds.index
         self.redshift = ds.current_redshift
+        self.save_particles = save_particles
         self._data_source = ds.all_data()
         GenericHaloFinder.__init__(self, ds, self._data_source, padding)
         self.padding = 0.0  # * ds["unitary"] # This should be clevererer
