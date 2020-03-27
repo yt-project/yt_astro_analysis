@@ -196,19 +196,19 @@ workflows:
 
        - run-tests:
            name: "Python 3.6 tests"
-           tag: "3.6.9"
+           tag: "3.6.10"
 
        - run-tests:
            name: "Python 3.7 tests"
-           tag: "3.7.6"
+           tag: "3.7.7"
 
        - run-tests:
            name: "Python 3.8 tests"
-           tag: "3.8.1"
+           tag: "3.8.2"
 
        - docs-test:
            name: "Test docs build"
-           tag: "3.8.1"
+           tag: "3.8.2"
 
    weekly:
      triggers:
@@ -221,8 +221,8 @@ workflows:
      jobs:
        - run-tests:
            name: "Python 3.8 tests"
-           tag: "3.8.1"
+           tag: "3.8.2"
 
        - docs-test:
            name: "Test docs build"
-           tag: "3.8.1"
+           tag: "3.8.2"
