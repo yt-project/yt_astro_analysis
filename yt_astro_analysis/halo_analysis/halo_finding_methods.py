@@ -171,7 +171,7 @@ def _parse_old_halo_list(data_ds, halo_list):
         particle_ds.particles = {
             'ids': member_ids,
             'particle_number': n_particles,
-            'particle_start_index': start,
-            'particle_end_index': end}
+            'particle_index_start': start,
+            'particle_index_end': end}
 
     return particle_ds
