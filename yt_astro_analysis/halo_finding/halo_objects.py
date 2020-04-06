@@ -18,7 +18,6 @@ from yt.utilities.on_demand_imports import _h5py as h5py
 import math
 import numpy as np
 import os.path as path
-from functools import cmp_to_key
 from yt.extern.six.moves import zip as izip
 
 from yt.config import ytcfg
