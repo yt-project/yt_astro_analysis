@@ -166,12 +166,10 @@ def _parse_old_halo_list(data_ds, halo_list):
                                       length, "\\rm{%s}/(1+z)" % my_unit)
 
     if save_particles:
-        end = n_particles.cumsum()
-        start = end - n_particles
+        start = n_particles.cumsum() - n_particles
         particle_ds.particles = {
             'ids': member_ids,
             'particle_number': n_particles,
-            'particle_index_start': start,
-            'particle_index_end': end}
+            'particle_index_start': start}
 
     return particle_ds

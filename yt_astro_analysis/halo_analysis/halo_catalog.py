@@ -496,8 +496,7 @@ class HaloCatalog(ParallelAnalysisInterface):
             particles = getattr(self.halos_ds, 'particles', None)
             if particles is not None:
                 for key in ['particle_number',
-                            'particle_index_start',
-                            'particle_index_end']:
+                            'particle_index_start']:
                     ftypes[key] = "."
                     data[key] = particles.pop(key)
 
