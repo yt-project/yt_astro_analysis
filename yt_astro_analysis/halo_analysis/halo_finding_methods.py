@@ -118,7 +118,7 @@ def _parse_old_halo_list(data_ds, halo_list):
     # Iterate through the halos pulling out their positions and virial quantities
     # and filling in the properties dictionary
     for i,halo in enumerate(halo_list):
-        halo_properties['particle_identifier'][0][i] = i
+        halo_properties['particle_identifier'][0][i] = halo.id
         halo_properties['particle_mass'][0][i] = halo.virial_mass().in_cgs()
         halo_properties['virial_radius'][0][i] = halo.virial_radius().in_cgs()
 

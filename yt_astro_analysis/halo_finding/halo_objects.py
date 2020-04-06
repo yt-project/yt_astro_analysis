@@ -1241,58 +1241,15 @@ class GenericHaloFinder(HaloList, ParallelAnalysisInterface):
         self._max_dens = max_dens
 
     def _join_halolists(self):
-        # First we get the total number of halos the entire collection
-        # has identified
-        # Note I have added a new method here to help us get information
-        # about processors and ownership and so forth.
-        # _mpi_info_dict returns a dict of {proc: whatever} where whatever is
-        # what is fed in on each proc.
-        mine, halo_info = self.comm.mpi_info_dict(len(self))
-        nhalos = sum(halo_info.values())
-        # Figure out our offset
-        my_first_id = sum([v for k, v in halo_info.items() if k < mine])
-        # Fix our max_dens
-        max_dens = {}
-        for i, m in self._max_dens.items():
-            max_dens[i + my_first_id] = m
-        self._max_dens = max_dens
-        for halo in self._groups:
-            halo._max_dens = self._max_dens
-        # sort the list by the size of the groups
-        # Now we add ghost halos and reassign all the IDs
-        # Note: we already know which halos we own!
-        after = my_first_id + len(self._groups)
-        # One single fake halo, not owned, does the trick
-        self._groups = [self._halo_class(self, i, ptype=self.ptype)
-                        for i in range(my_first_id)] + \
-                       self._groups + \
-                       [self._halo_class(self, i, ptype=self.ptype)
-                        for i in range(after, nhalos)]
-        id = 0
-        for proc in sorted(halo_info.keys()):
-            for halo in self._groups[id:id + halo_info[proc]]:
-                halo.id = id
-                halo._distributed = self._distributed
-                halo._owner = proc
-                id += 1
+        groups = {self.comm.rank: len(self)}
+        groups = self.comm.par_combine_object(
+            groups, datatype='dict', op='join')
 
-        def haloCmp(h1, h2):
-            def cmp(a, b):
-                return (a > b) ^ (a < b)
-            c = cmp(h1.total_mass(), h2.total_mass())
-            if c != 0:
-                return -1 * c
-            if c == 0:
-                return cmp(h1.center_of_mass()[0], h2.center_of_mass()[0])
-        self._groups.sort(key=cmp_to_key(haloCmp))
-        sorted_max_dens = {}
-        for i, halo in enumerate(self._groups):
-            if halo.id in self._max_dens:
-                sorted_max_dens[i] = self._max_dens[halo.id]
-            halo.id = i
-        self._max_dens = sorted_max_dens
-        for i, halo in enumerate(self._groups):
-            halo._max_dens = self._max_dens
+        ngroups = np.array([groups[rank] for rank in sorted(groups)])
+        offsets = ngroups.cumsum() - ngroups
+        my_offset = offsets[self.comm.rank]
+        for halo in self:
+            halo.id += my_offset
 
     def _reposition_particles(self, bounds):
         # This only does periodicity.  We do NOT want to deal with anything
@@ -1536,7 +1493,7 @@ class HOPHaloFinder(GenericHaloFinder, HOPHaloList):
         HOPHaloList.__init__(self, self._data_source,
             threshold * total_mass / sub_mass, dm_only, ptype=self.ptype)
         self._parse_halolist(total_mass / sub_mass)
-
+        self._join_halolists()
 
 class FOFHaloFinder(GenericHaloFinder, FOFHaloList):
     r"""Friends-of-friends halo finder.
@@ -1648,6 +1605,7 @@ class FOFHaloFinder(GenericHaloFinder, FOFHaloList):
         FOFHaloList.__init__(self, self._data_source, linking_length, dm_only,
                              redshift=self.redshift, ptype=self.ptype)
         self._parse_halolist(1.)
+        self._join_halolists()
 
 HaloFinder = HOPHaloFinder
 
