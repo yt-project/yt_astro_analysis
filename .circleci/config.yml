@@ -132,13 +132,13 @@ jobs:
 
       - restore_cache:
           name: "Restore dependencies cache."
-          key: python-<< parameters.tag >>-dependencies-v3
+          key: python-<< parameters.tag >>-dependencies-v4
 
       - install-with-yt-dev
 
       - save_cache:
           name: "Save dependencies cache"
-          key: python-<< parameters.tag >>-dependencies-v3
+          key: python-<< parameters.tag >>-dependencies-v4
           paths:
             - ~/.cache/pip
             - ~/venv
@@ -192,16 +192,41 @@ workflows:
      jobs:
        - run-tests:
            name: "Python 3.5 tests"
-           tag: "3.5.7"
+           tag: "3.5.9"
 
        - run-tests:
-           name: "Python 3.6 tests"
-           tag: "3.6.8"
-
-       - run-tests:
-           name: "Python 3.7 tests"
-           tag: "3.7.2"
+           name: "Python 3.8 tests"
+           tag: "3.8.2"
 
        - docs-test:
            name: "Test docs build"
-           tag: "3.7.2"
+           tag: "3.8.2"
+
+   weekly:
+     triggers:
+       - schedule:
+           cron: "0 0 * * 2"
+           filters:
+            branches:
+              only:
+                - master
+     jobs:
+       - run-tests:
+           name: "Python 3.5 tests"
+           tag: "3.5.9"
+
+       - run-tests:
+           name: "Python 3.6 tests"
+           tag: "3.6.10"
+
+       - run-tests:
+           name: "Python 3.7 tests"
+           tag: "3.7.7"
+
+       - run-tests:
+           name: "Python 3.8 tests"
+           tag: "3.8.2"
+
+       - docs-test:
+           name: "Test docs build"
+           tag: "3.8.2"
