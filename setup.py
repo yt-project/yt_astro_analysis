@@ -150,6 +150,7 @@ setup(
         'h5py',
         'setuptools>=19.6',
         'sympy',
+        'matplotlib<3.2.0',
         'numpy',
         'cython',
         'yt>=3.5.0',

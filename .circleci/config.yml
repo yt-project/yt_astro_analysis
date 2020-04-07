@@ -132,13 +132,13 @@ jobs:
 
       - restore_cache:
           name: "Restore dependencies cache."
-          key: python-<< parameters.tag >>-dependencies-v3
+          key: python-<< parameters.tag >>-dependencies-v4
 
       - install-with-yt-dev
 
       - save_cache:
           name: "Save dependencies cache"
-          key: python-<< parameters.tag >>-dependencies-v3
+          key: python-<< parameters.tag >>-dependencies-v4
           paths:
             - ~/.cache/pip
             - ~/venv
