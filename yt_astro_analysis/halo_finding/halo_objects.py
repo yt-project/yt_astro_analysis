@@ -18,7 +18,6 @@ from yt.utilities.on_demand_imports import _h5py as h5py
 import math
 import numpy as np
 import os.path as path
-from functools import cmp_to_key
 from yt.extern.six.moves import zip as izip
 
 from yt.config import ytcfg
@@ -1241,58 +1240,15 @@ class GenericHaloFinder(HaloList, ParallelAnalysisInterface):
         self._max_dens = max_dens
 
     def _join_halolists(self):
-        # First we get the total number of halos the entire collection
-        # has identified
-        # Note I have added a new method here to help us get information
-        # about processors and ownership and so forth.
-        # _mpi_info_dict returns a dict of {proc: whatever} where whatever is
-        # what is fed in on each proc.
-        mine, halo_info = self.comm.mpi_info_dict(len(self))
-        nhalos = sum(halo_info.values())
-        # Figure out our offset
-        my_first_id = sum([v for k, v in halo_info.items() if k < mine])
-        # Fix our max_dens
-        max_dens = {}
-        for i, m in self._max_dens.items():
-            max_dens[i + my_first_id] = m
-        self._max_dens = max_dens
-        for halo in self._groups:
-            halo._max_dens = self._max_dens
-        # sort the list by the size of the groups
-        # Now we add ghost halos and reassign all the IDs
-        # Note: we already know which halos we own!
-        after = my_first_id + len(self._groups)
-        # One single fake halo, not owned, does the trick
-        self._groups = [self._halo_class(self, i, ptype=self.ptype)
-                        for i in range(my_first_id)] + \
-                       self._groups + \
-                       [self._halo_class(self, i, ptype=self.ptype)
-                        for i in range(after, nhalos)]
-        id = 0
-        for proc in sorted(halo_info.keys()):
-            for halo in self._groups[id:id + halo_info[proc]]:
-                halo.id = id
-                halo._distributed = self._distributed
-                halo._owner = proc
-                id += 1
+        groups = {self.comm.rank: len(self)}
+        groups = self.comm.par_combine_object(
+            groups, datatype='dict', op='join')
 
-        def haloCmp(h1, h2):
-            def cmp(a, b):
-                return (a > b) ^ (a < b)
-            c = cmp(h1.total_mass(), h2.total_mass())
-            if c != 0:
-                return -1 * c
-            if c == 0:
-                return cmp(h1.center_of_mass()[0], h2.center_of_mass()[0])
-        self._groups.sort(key=cmp_to_key(haloCmp))
-        sorted_max_dens = {}
-        for i, halo in enumerate(self._groups):
-            if halo.id in self._max_dens:
-                sorted_max_dens[i] = self._max_dens[halo.id]
-            halo.id = i
-        self._max_dens = sorted_max_dens
-        for i, halo in enumerate(self._groups):
-            halo._max_dens = self._max_dens
+        ngroups = np.array([groups[rank] for rank in sorted(groups)])
+        offsets = ngroups.cumsum() - ngroups
+        my_offset = offsets[self.comm.rank]
+        for halo in self:
+            halo.id += my_offset
 
     def _reposition_particles(self, bounds):
         # This only does periodicity.  We do NOT want to deal with anything
@@ -1456,6 +1412,9 @@ class HOPHaloFinder(GenericHaloFinder, HOPHaloList):
         mass in the entire volume.
         Default = None, which means the total mass is automatically
         calculated.
+    save_particles : bool
+        If True, output member particles for each halo.
+        Default: True.
 
     Examples
     --------
@@ -1463,11 +1422,13 @@ class HOPHaloFinder(GenericHaloFinder, HOPHaloList):
     >>> halos = HaloFinder(ds)
     """
     def __init__(self, ds, subvolume=None, threshold=160, dm_only=True,
-                 ptype=None, padding=0.02, total_mass=None):
+                 ptype=None, padding=0.02, total_mass=None,
+                 save_particles=True):
         if subvolume is not None:
             ds_LE = np.array(subvolume.left_edge)
             ds_RE = np.array(subvolume.right_edge)
         self.period = ds.domain_right_edge - ds.domain_left_edge
+        self.save_particles = save_particles
         self._data_source = ds.all_data()
         GenericHaloFinder.__init__(self, ds, self._data_source, padding,
                                    ptype=ptype)
@@ -1531,7 +1492,7 @@ class HOPHaloFinder(GenericHaloFinder, HOPHaloList):
         HOPHaloList.__init__(self, self._data_source,
             threshold * total_mass / sub_mass, dm_only, ptype=self.ptype)
         self._parse_halolist(total_mass / sub_mass)
-
+        self._join_halolists()
 
 class FOFHaloFinder(GenericHaloFinder, FOFHaloList):
     r"""Friends-of-friends halo finder.
@@ -1573,6 +1534,9 @@ class FOFHaloFinder(GenericHaloFinder, FOFHaloList):
         with duplicated particles for halo finidng to work. This number
         must be no smaller than the radius of the largest halo in the box
         in code units. Default = 0.02.
+    save_particles : bool
+        If True, output member particles for each halo.
+        Default: True.
 
     Examples
     --------
@@ -1580,7 +1544,7 @@ class FOFHaloFinder(GenericHaloFinder, FOFHaloList):
     >>> halos = FOFHaloFinder(ds)
     """
     def __init__(self, ds, subvolume=None, link=0.2, dm_only=True,
-                 ptype=None, padding=0.02):
+                 ptype=None, padding=0.02, save_particles=True):
         if subvolume is not None:
             ds_LE = np.array(subvolume.left_edge)
             ds_RE = np.array(subvolume.right_edge)
@@ -1588,6 +1552,7 @@ class FOFHaloFinder(GenericHaloFinder, FOFHaloList):
         self.ds = ds
         self.index = ds.index
         self.redshift = ds.current_redshift
+        self.save_particles = save_particles
         self._data_source = ds.all_data()
         GenericHaloFinder.__init__(self, ds, self._data_source, padding)
         self.padding = 0.0  # * ds["unitary"] # This should be clevererer
@@ -1639,6 +1604,7 @@ class FOFHaloFinder(GenericHaloFinder, FOFHaloList):
         FOFHaloList.__init__(self, self._data_source, linking_length, dm_only,
                              redshift=self.redshift, ptype=self.ptype)
         self._parse_halolist(1.)
+        self._join_halolists()
 
 HaloFinder = HOPHaloFinder
 

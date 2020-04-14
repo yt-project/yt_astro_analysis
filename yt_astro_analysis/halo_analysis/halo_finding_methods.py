@@ -111,17 +111,29 @@ def _parse_old_halo_list(data_ds, halo_list):
     halo_properties = { f : (np.zeros(num_halos),unit) \
         for f, unit in zip(new_fields,new_units)}
 
+    save_particles = getattr(halo_list, "save_particles", False)
+    if save_particles:
+        n_particles = np.zeros(num_halos, dtype=np.int32)
+
     # Iterate through the halos pulling out their positions and virial quantities
     # and filling in the properties dictionary
     for i,halo in enumerate(halo_list):
-        halo_properties['particle_identifier'][0][i] = i
+        halo_properties['particle_identifier'][0][i] = halo.id
         halo_properties['particle_mass'][0][i] = halo.virial_mass().in_cgs()
         halo_properties['virial_radius'][0][i] = halo.virial_radius().in_cgs()
+
+        if save_particles:
+            n_particles[i] = halo.indices.size
 
         com = halo.center_of_mass().in_cgs()
         halo_properties['particle_position_x'][0][i] = com[0]
         halo_properties['particle_position_y'][0][i] = com[1]
         halo_properties['particle_position_z'][0][i] = com[2]
+
+    if save_particles:
+        member_ids = np.empty(n_particles.sum(), dtype=np.int64)
+        np.concatenate([halo['particle_index'].astype(np.int64)
+                        for halo in halo_list], out=member_ids)
 
     # Define a bounding box based on original data ds
     bbox = np.array([data_ds.domain_left_edge.in_cgs(),
@@ -149,5 +161,12 @@ def _parse_old_halo_list(data_ds, halo_list):
         particle_ds.unit_registry.add(new_unit, particle_ds.unit_registry.lut[my_unit][0] /
                                       (1 + particle_ds.current_redshift),
                                       length, "\\rm{%s}/(1+z)" % my_unit)
-    
+
+    if save_particles:
+        start = n_particles.cumsum() - n_particles
+        particle_ds.particles = {
+            'ids': member_ids,
+            'particle_number': n_particles,
+            'particle_index_start': start}
+
     return particle_ds
