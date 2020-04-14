@@ -131,12 +131,9 @@ def _parse_old_halo_list(data_ds, halo_list):
         halo_properties['particle_position_z'][0][i] = com[2]
 
     if save_particles:
-        i = 0
         member_ids = np.empty(n_particles.sum(), dtype=np.int64)
-        for halo in halo_list:
-            hsize = halo.indices.size
-            member_ids[i:i+hsize] = halo['particle_index'].astype(np.int64)
-            i += hsize
+        np.concatenate([halo['particle_index'].astype(np.int64)
+                        for halo in halo_list], out=member_ids)
 
     # Define a bounding box based on original data ds
     bbox = np.array([data_ds.domain_left_edge.in_cgs(),
