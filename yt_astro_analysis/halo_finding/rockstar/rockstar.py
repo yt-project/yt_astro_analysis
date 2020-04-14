@@ -6,7 +6,7 @@ Operations to get Rockstar loaded up
 """
 
 #-----------------------------------------------------------------------------
-# Copyright (c) 2013-2017, yt Development Team.
+# Copyright (c) yt Development Team. All rights reserved.
 #
 # Distributed under the terms of the Modified BSD License.
 #
@@ -16,8 +16,6 @@ Operations to get Rockstar loaded up
 from yt.config import ytcfg
 from yt.data_objects.time_series import \
     DatasetSeries
-from yt.extern import \
-    six
 from yt.funcs import \
     is_root, mylog
 from yt.utilities.parallel_tools.parallel_analysis_interface import \
@@ -40,7 +38,6 @@ import socket
 import time
 import os
 import numpy as np
-from os import path
 
 class InlineRunner(ParallelAnalysisInterface):
     def __init__(self):
@@ -149,6 +146,12 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
     particle_type : str
         This is the "particle type" that can be found in the data.  This can be
         a filtered particle or an inherent type.
+    star_types : str list/array
+        The types (as returned by data((particle_type, particle_type)) to be
+        recognized as star particles.
+    multi_mass : bool
+        If True all the particle species in particle_type will be passed to
+        Rockstar even if they have different masses
     force_res : float
         This parameter specifies the force resolution that Rockstar uses
         in units of Mpc/h.
@@ -157,6 +160,17 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
         last data snapshot (i.e. the one where time has evolved the
         longest) in the time series:
         ``ds_last.index.get_smallest_dx().in_units("Mpc/h")``.
+    initial_metric_scaling : float
+        The position element of the fof distance metric is divided by this
+        parameter, set to 1 by default. If the initial_metric_scaling=0.1 the
+        position element will have 10 times more weight than the velocity element,
+        biasing the metric towards position information more so than velocity
+        information. That was found to be needed for hydro-ART simulations
+        with 10's of parsecs resolution.
+    non_dm_metric_scaling : float
+        The metric scaling to be used for non-dm particles (not yet supported).
+    suppress_galaxies : int
+        Wether to include non-dm halos (i.e. galaxies) in the catalogs (not yet supported).
     total_particles : int
         If supplied, this is a pre-calculated total number of particles present
         in the simulation. For example, this is useful when analyzing a series
@@ -202,15 +216,17 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
 
     """
     def __init__(self, ts, num_readers = 1, num_writers = None,
-            outbase="rockstar_halos", particle_type="all",
-            force_res=None, total_particles=None, dm_only=False,
-            particle_mass=None, min_halo_size=25):
+                 outbase="rockstar_halos", particle_type="all", star_types=[], multi_mass=False,
+                 force_res=None, initial_metric_scaling=1.0, non_dm_metric_scaling=10.0,
+                 suppress_galaxies=1, total_particles=None, dm_only=False, particle_mass=None,
+                 min_halo_size=25):
+
         if is_root():
             mylog.info("The citation for the Rockstar halo finder can be found at")
             mylog.info("http://adsabs.harvard.edu/abs/2013ApJ...762..109B")
         ParallelAnalysisInterface.__init__(self)
         # Decide how we're working.
-        if ytcfg.getboolean("yt", "inline") is True:
+        if ytcfg.getboolean("yt", "inline") == True:
             self.runner = InlineRunner()
         else:
             self.runner = StandardRunner(num_readers, num_writers)
@@ -225,15 +241,20 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
             ts = DatasetSeries([ts])
         self.ts = ts
         self.particle_type = particle_type
-        self.outbase = six.b(outbase)
+        self.star_types = star_types
+        self.multi_mass = multi_mass
+        self.outbase = bytearray(outbase, 'utf-8')
         self.min_halo_size = min_halo_size
         if force_res is None:
             tds = ts[-1] # Cache a reference
-            self.force_res = tds.index.get_smallest_dx().in_units("Mpc/h")
+            self.force_res = tds.arr(tds.index.get_smallest_dx(), 'code_length').in_units("Mpc/h")
             # We have to delete now to wipe the index
             del tds
         else:
             self.force_res = force_res
+        self.initial_metric_scaling = initial_metric_scaling
+        self.non_dm_metric_scaling = non_dm_metric_scaling
+        self.suppress_galaxies = suppress_galaxies
         self.total_particles = total_particles
         self.dm_only = dm_only
         self.particle_mass = particle_mass
@@ -255,14 +276,16 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
 
         dd = tds.all_data()
         # Get DM particle mass.
+        all_fields = set(tds.derived_field_list + tds.field_list)
+        has_particle_type = ("particle_type" in all_fields)
 
         particle_mass = self.particle_mass
         if particle_mass is None:
             pmass_min, pmass_max = dd.quantities.extrema(
                 (ptype, "particle_mass"), non_zero = True)
-            if np.abs(pmass_max - pmass_min) / pmass_max > 0.01:
-                raise YTRockstarMultiMassNotSupported(pmass_min, pmass_max,
-                    ptype)
+            if (np.abs(pmass_max - pmass_min) / pmass_max > 0.01) and (self.multi_mass==False):
+                raise YTRockstarMultiMassNotSupported(pmass_min, pmass_max, ptype)
+                print ('Set multi_mass=True if you are using a Rockstar version with multi-mass support')
             particle_mass = pmass_min
 
         p = {}
@@ -307,8 +330,8 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
             server_address, port = None, None
         self.server_address, self.port = self.comm.mpi_bcast(
             (server_address, port))
-        self.server_address = six.b(str(self.server_address))
-        self.port = six.b(str(self.port))
+        self.server_address = bytearray(str(self.server_address), 'utf-8')
+        self.port = bytearray(str(self.port), 'utf-8')
 
     def run(self, block_ratio = 1, callbacks = None, restart = False):
         """
@@ -339,11 +362,10 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
             self.ts._pre_outputs = self.ts._pre_outputs[restart_num:]
         else:
             restart_num = 0
-        self.handler.setup_rockstar(
-                    self.server_address,
-                    self.port,
+        self.handler.setup_rockstar(self.server_address, self.port,
                     num_outputs, self.total_particles, 
                     self.particle_type,
+                    star_types = self.star_types,
                     particle_mass = self.particle_mass,
                     parallel = self.comm.size > 1,
                     num_readers = self.num_readers,
@@ -352,6 +374,9 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
                     block_ratio = block_ratio,
                     outbase = self.outbase,
                     force_res = self.force_res,
+                    initial_metric_scaling = self.initial_metric_scaling,
+                    non_dm_metric_scaling = self.non_dm_metric_scaling,
+                    suppress_galaxies = self.suppress_galaxies,
                     callbacks = callbacks,
                     restart_num = restart_num,
                     min_halo_size = self.min_halo_size)
@@ -363,10 +388,10 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
                 os.makedirs(self.outbase)
             # Make a record of which dataset corresponds to which set of
             # output files because it will be easy to lose this connection.
-            fp = open(self.outbase.decode() + '/datasets.txt', 'w')
+            fp = open(self.outbase.decode('utf-8') + '/datasets.txt', 'w')
             fp.write("# dsname\tindex\n")
             for i, ds in enumerate(self.ts):
-                dsloc = path.join(path.relpath(ds.fullpath), ds.basename)
+                dsloc = os.path.join(os.path.relpath(ds.fullpath), ds.basename)
                 line = "%s\t%d\n" % (dsloc, i)
                 fp.write(line)
             fp.close()
@@ -379,3 +404,10 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
             self.runner.run(self.handler, self.workgroup)
         self.comm.barrier()
         self.pool.free_all()
+
+    def halo_list(self,file_name='out_0.list'):
+        """
+        Reads in the out_0.list file and generates RockstarHaloList
+        and RockstarHalo objects.
+        """
+        return RockstarHaloList(self.ts[0], self.outbase+'/%s'%file_name)

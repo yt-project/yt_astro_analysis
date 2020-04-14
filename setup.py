@@ -84,7 +84,7 @@ if os.path.exists("rockstar.cfg"):
     ]
     for ext in rockstar_extensions:
         ext.library_dirs.append(rd)
-        ext.libraries.append("rockstar")
+        ext.libraries.append("rockstar-galaxies")
         ext.define_macros.append(("THREADSAFE", ""))
         ext.include_dirs += [rd,
                              os.path.join(rd, "io"), os.path.join(rd, "util")]
