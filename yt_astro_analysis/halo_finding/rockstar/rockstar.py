@@ -21,8 +21,6 @@ from yt.funcs import \
 from yt.utilities.parallel_tools.parallel_analysis_interface import \
     ParallelAnalysisInterface, \
     ProcessorPool
-from yt.utilities.exceptions import \
-    YTRockstarMultiMassNotSupported
 
 try:
     from yt_astro_analysis.halo_finding.rockstar import \
@@ -149,9 +147,6 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
     star_types : str list/array
         The types (as returned by data((particle_type, particle_type)) to be
         recognized as star particles.
-    multi_mass : bool
-        If True all the particle species in particle_type will be passed to
-        Rockstar even if they have different masses
     force_res : float
         This parameter specifies the force resolution that Rockstar uses
         in units of Mpc/h.
@@ -167,10 +162,15 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
         biasing the metric towards position information more so than velocity
         information. That was found to be needed for hydro-ART simulations
         with 10's of parsecs resolution.
+        Default: 1.0.
     non_dm_metric_scaling : float
-        The metric scaling to be used for non-dm particles (not yet supported).
+        The metric scaling to be used for non-dm particles. The effect of
+        this parameter is currently unknown.
+        Default: 10.
     suppress_galaxies : int
-        Wether to include non-dm halos (i.e. galaxies) in the catalogs (not yet supported).
+        Wether to include non-dm halos (i.e. galaxies) in the catalogs. The effect
+        of this parameter is currently unknown.
+        Default: 1.
     total_particles : int
         If supplied, this is a pre-calculated total number of particles present
         in the simulation. For example, this is useful when analyzing a series
@@ -216,7 +216,7 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
 
     """
     def __init__(self, ts, num_readers = 1, num_writers = None,
-                 outbase="rockstar_halos", particle_type="all", star_types=[], multi_mass=False,
+                 outbase="rockstar_halos", particle_type="all", star_types=None,
                  force_res=None, initial_metric_scaling=1.0, non_dm_metric_scaling=10.0,
                  suppress_galaxies=1, total_particles=None, dm_only=False, particle_mass=None,
                  min_halo_size=25):
@@ -226,7 +226,7 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
             mylog.info("http://adsabs.harvard.edu/abs/2013ApJ...762..109B")
         ParallelAnalysisInterface.__init__(self)
         # Decide how we're working.
-        if ytcfg.getboolean("yt", "inline") == True:
+        if ytcfg.getboolean("yt", "inline"):
             self.runner = InlineRunner()
         else:
             self.runner = StandardRunner(num_readers, num_writers)
@@ -241,9 +241,10 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
             ts = DatasetSeries([ts])
         self.ts = ts
         self.particle_type = particle_type
+        if star_types is None:
+            star_types = []
         self.star_types = star_types
-        self.multi_mass = multi_mass
-        self.outbase = bytearray(outbase, 'utf-8')
+        self.outbase = outbase
         self.min_halo_size = min_halo_size
         if force_res is None:
             tds = ts[-1] # Cache a reference
@@ -276,16 +277,10 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
 
         dd = tds.all_data()
         # Get DM particle mass.
-        all_fields = set(tds.derived_field_list + tds.field_list)
-        has_particle_type = ("particle_type" in all_fields)
-
         particle_mass = self.particle_mass
         if particle_mass is None:
             pmass_min, pmass_max = dd.quantities.extrema(
                 (ptype, "particle_mass"), non_zero = True)
-            if (np.abs(pmass_max - pmass_min) / pmass_max > 0.01) and (self.multi_mass==False):
-                raise YTRockstarMultiMassNotSupported(pmass_min, pmass_max, ptype)
-                print ('Set multi_mass=True if you are using a Rockstar version with multi-mass support')
             particle_mass = pmass_min
 
         p = {}
@@ -293,10 +288,10 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
             # Get total_particles in parallel.
             tp = dd.quantities.total_quantity((ptype, "particle_ones"))
             p['total_particles'] = int(tp)
-            mylog.warning("Total Particle Count: %0.3e", int(tp))
+            mylog.info("Total Particle Count: %d.", int(tp))
         p['left_edge'] = tds.domain_left_edge.in_units("Mpccm/h")
         p['right_edge'] = tds.domain_right_edge.in_units("Mpccm/h")
-        p['center'] = (tds.domain_right_edge.in_units("Mpccm/h") + tds.domain_left_edge.in_units("Mpccm/h"))/2.0
+        p['center'] = tds.domain_center.in_units("Mpccm/h")
         p['particle_mass'] = self.particle_mass = particle_mass
         p['particle_mass'].convert_to_units("Msun / h")
         del tds
@@ -362,6 +357,7 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
             self.ts._pre_outputs = self.ts._pre_outputs[restart_num:]
         else:
             restart_num = 0
+        outbase = bytearray(self.outbase, 'utf-8')
         self.handler.setup_rockstar(self.server_address, self.port,
                     num_outputs, self.total_particles, 
                     self.particle_type,
@@ -372,7 +368,7 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
                     num_writers = self.num_writers,
                     writing_port = -1,
                     block_ratio = block_ratio,
-                    outbase = self.outbase,
+                    outbase = outbase,
                     force_res = self.force_res,
                     initial_metric_scaling = self.initial_metric_scaling,
                     non_dm_metric_scaling = self.non_dm_metric_scaling,
@@ -388,7 +384,7 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
                 os.makedirs(self.outbase)
             # Make a record of which dataset corresponds to which set of
             # output files because it will be easy to lose this connection.
-            fp = open(self.outbase.decode('utf-8') + '/datasets.txt', 'w')
+            fp = open(os.path.join(self.outbase, 'datasets.txt'), 'w')
             fp.write("# dsname\tindex\n")
             for i, ds in enumerate(self.ts):
                 dsloc = os.path.join(os.path.relpath(ds.fullpath), ds.basename)

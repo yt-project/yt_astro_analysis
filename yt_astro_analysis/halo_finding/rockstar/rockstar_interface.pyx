@@ -345,7 +345,7 @@ cdef class RockstarInterface:
         SCALE_NOW = 1.0/(tds.current_redshift+1.0)
         if callbacks is None: callbacks = []
         self.callbacks = callbacks
-        if not outbase =='None':
+        if not outbase == 'None':
             #output directory. since we can't change the output filenames
             #workaround is to make a new directory
             OUTBASE = outbase
