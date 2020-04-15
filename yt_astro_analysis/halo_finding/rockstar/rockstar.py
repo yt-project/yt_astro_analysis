@@ -149,12 +149,12 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
         recognized as star particles.
     force_res : float
         This parameter specifies the force resolution that Rockstar uses
-        in units of Mpc/h.
+        in units of Mpccm/h (comoving Mpc/h).
         If no value is provided, this parameter is automatically set to
         the width of the smallest grid element in the simulation from the
         last data snapshot (i.e. the one where time has evolved the
         longest) in the time series:
-        ``ds_last.index.get_smallest_dx().in_units("Mpc/h")``.
+        ``ds_last.index.get_smallest_dx().to("Mpccm/h")``.
     initial_metric_scaling : float
         The position element of the fof distance metric is divided by this
         parameter, set to 1 by default. If the initial_metric_scaling=0.1 the
@@ -183,14 +183,14 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
         internally.  This is useful for multi-dm-mass simulations. Note that
         this will only give sensible results for halos that are not "polluted"
         by lower resolution particles. Default: ``None``.
-        
+
     Returns
     -------
     None
 
     Examples
     --------
-    
+
     To use the script below you must run it using MPI:
     mpirun -np 4 python run_rockstar.py
 
@@ -248,7 +248,7 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
         self.min_halo_size = min_halo_size
         if force_res is None:
             tds = ts[-1] # Cache a reference
-            self.force_res = tds.arr(tds.index.get_smallest_dx(), 'code_length').in_units("Mpc/h")
+            self.force_res = tds.index.get_smallest_dx().to("Mpccm/h")
             # We have to delete now to wipe the index
             del tds
         else:
