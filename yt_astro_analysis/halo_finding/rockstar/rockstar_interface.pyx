@@ -57,7 +57,6 @@ cdef import from "halo.h":
         float m, r, child_r, mgrav, vmax, rvmax, rs, vrms, energy, spin
         np.int64_t num_p, num_child_particles, p_start, desc, flags, n_core
         float min_pos_err, min_vel_err, min_bulkvel_err
-
         np.int32_t type
 
 cdef import from "io_generic.h":
@@ -184,7 +183,6 @@ cdef void rh_analyze_halo(halo *h, particle *hp):
     cdef particleflat[:] pslice
     pslice = <particleflat[:h.num_p]> (<particleflat *>hp)
     parray = np.asarray(pslice)
-
     for cb in rh.callbacks:
         cb(rh.ds, parray)
     # This is where we call our functions
