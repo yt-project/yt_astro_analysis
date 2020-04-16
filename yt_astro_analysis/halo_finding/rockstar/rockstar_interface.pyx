@@ -27,9 +27,10 @@ cdef import from "particle.h":
     struct particle:
         np.int64_t id
         float pos[6]
-        float mass, energy
-        float softening
-        float metallicity
+        float mass
+        # float energy
+        # float softening
+        # float metallicity
         np.int32_t type
 
 ctypedef struct particleflat:
@@ -40,9 +41,10 @@ ctypedef struct particleflat:
     float vel_x
     float vel_y
     float vel_z
-    float mass, energy
-    float softening
-    float metallicity
+    float mass
+    # float energy
+    # float softening
+    # float metallicity
     np.int32_t type
 
 cdef import from "halo.h":
