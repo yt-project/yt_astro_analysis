@@ -57,7 +57,6 @@ cdef import from "halo.h":
         float min_pos_err, min_vel_err, min_bulkvel_err
 
         np.int32_t type
-        float sm, gas, bh, peak_density, av_density
 
 cdef import from "io_generic.h":
     ctypedef void (*LPG) (char *filename, particle **p, np.int64_t *num_p)
@@ -191,17 +190,16 @@ cdef void rh_analyze_halo(halo *h, particle *hp):
 cdef void rh_read_particles(char *filename, particle **p, np.int64_t *num_p):
     global SCALE_NOW
     cdef np.float64_t left_edge[6]
-    cdef np.ndarray[np.int64_t, ndim=1] arri #index
+    cdef np.ndarray[np.int64_t, ndim=1] arri # index
     cdef np.ndarray[np.float64_t, ndim=1] arr # pos/vel
     cdef np.ndarray[np.float64_t, ndim=1] marr # mass
-    #cdef np.ndarray[np.float64_t, ndim=1] earr # energy
-    #cdef np.ndarray[np.float64_t, ndim=1] sarr # softening
-    #cdef np.ndarray[np.float64_t, ndim=1] mtarr # metalicity
+    # cdef np.ndarray[np.float64_t, ndim=1] earr # energy
+    # cdef np.ndarray[np.float64_t, ndim=1] sarr # softening
+    # cdef np.ndarray[np.float64_t, ndim=1] mtarr # metalicity
     cdef np.ndarray[np.int32_t, ndim=1] tarr # type
     cdef unsigned long long pi,fi,i
     cdef np.int64_t local_parts = 0
     ds = rh.ds = next(rh.tsl)
-    n = rh.block_ratio
 
     SCALE_NOW = 1.0/(ds.current_redshift+1.0)
     # Now we want to grab data from only a subset of the grids for each reader.
@@ -225,26 +223,26 @@ cdef void rh_read_particles(char *filename, particle **p, np.int64_t *num_p):
 
     p[0] = <particle *> malloc(sizeof(particle) * local_parts)
 
-    left_edge[0] = ds.domain_left_edge.in_units('Mpccm/h')[0]
-    left_edge[1] = ds.domain_left_edge.in_units('Mpccm/h')[1]
-    left_edge[2] = ds.domain_left_edge.in_units('Mpccm/h')[2]
+    dle = ds.domain_left_edge.to('Mpccm/h')
+    left_edge[0] = dle[0]
+    left_edge[1] = dle[1]
+    left_edge[2] = dle[2]
     left_edge[3] = left_edge[4] = left_edge[5] = 0.0
     pi = 0
     for chunk in parallel_objects(dd.chunks([], "io")):
-        arri = np.asarray(chunk[rh.particle_type, "particle_index"],
-                          dtype="int64")
-        marr = chunk[rh.particle_type, "particle_mass"].in_units("Msun/h").astype("float64")
-        #earr = chunk[rh.particle_type, "particle_"].in_units("").astype("float64")
-        #sarr = chunk[rh.particle_type, "particle_"].in_units("").astype("float64")
-        #mtarr= chunk[rh.particle_type, "particle_"].in_units("").astype("float64")
+        arri = np.asarray(chunk[rh.particle_type, "particle_index"], dtype="int64")
+        marr = chunk[rh.particle_type, "particle_mass"].to("Msun/h").astype("float64")
+        # earr = chunk[rh.particle_type, "particle_"].to("").astype("float64")
+        # sarr = chunk[rh.particle_type, "particle_"].to("").astype("float64")
+        # mtarr= chunk[rh.particle_type, "particle_"].to("").astype("float64")
         tarr = np.asarray(chunk[rh.particle_type, "particle_type"], dtype="int32")
         npart = arri.size
         for i in range(npart):
             p[0][i+pi].id = <np.int64_t> arri[i]
             p[0][i+pi].mass = <np.float64_t> marr[i]
-            #p[0][i+pi].energy = <np.float64_t> earr[i]
-            #p[0][i+pi].softening = <np.float64_t> sarr[i]
-            #p[0][i+pi].metallicity = <np.float64_t> mtarr[i]
+            # p[0][i+pi].energy = <np.float64_t> earr[i]
+            # p[0][i+pi].softening = <np.float64_t> sarr[i]
+            # p[0][i+pi].metallicity = <np.float64_t> mtarr[i]
             if tarr[i] in rh.star_types:
                 type = 2
             else:
@@ -260,7 +258,7 @@ cdef void rh_read_particles(char *filename, particle **p, np.int64_t *num_p):
                 unit = "Mpccm/h"
             else:
                 unit = "km/s"
-            arr = chunk[rh.particle_type, field].in_units(unit).astype("float64")
+            arr = chunk[rh.particle_type, field].to(unit).astype("float64")
             for i in range(npart):
                 p[0][i+pi].pos[fi] = (arr[i]-left_edge[fi])
             fi += 1
@@ -352,7 +350,7 @@ cdef class RockstarInterface:
 
         PARTICLE_MASS = particle_mass
         PERIODIC = periodic
-        BOX_SIZE = tds.domain_width[0].in_units("Mpccm/h")
+        BOX_SIZE = tds.domain_width[0].to("Mpccm/h")
         setup_config()
         rh = self
         cdef LPG func = rh_read_particles
