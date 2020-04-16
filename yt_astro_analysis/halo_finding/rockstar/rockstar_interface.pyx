@@ -202,17 +202,14 @@ cdef void rh_read_particles(char *filename, particle **p, np.int64_t *num_p):
     ds = rh.ds = next(rh.tsl)
 
     SCALE_NOW = 1.0/(ds.current_redshift+1.0)
-    # Now we want to grab data from only a subset of the grids for each reader.
-    all_fields = set(ds.derived_field_list + ds.field_list)
-
-    # First we need to find out how many this reader is going to read in
-    # if the number of readers > 1.
-    dd = ds.all_data()
 
     # Add particle type filter if not defined
     if rh.particle_type not in ds.particle_types and rh.particle_type != 'all':
         ds.add_particle_filter(rh.particle_type)
 
+    # First we need to find out how many this reader is going to read in
+    # if the number of readers > 1.
+    dd = ds.all_data()
     if NUM_BLOCKS > 1:
         local_parts = 0
         for chunk in parallel_objects(
@@ -229,6 +226,7 @@ cdef void rh_read_particles(char *filename, particle **p, np.int64_t *num_p):
     left_edge[2] = dle[2]
     left_edge[3] = left_edge[4] = left_edge[5] = 0.0
     pi = 0
+    # Now we want to grab data from only a subset of the grids for each reader.
     for chunk in parallel_objects(dd.chunks([], "io")):
         arri = np.asarray(chunk[rh.particle_type, "particle_index"], dtype="int64")
         marr = chunk[rh.particle_type, "particle_mass"].to("Msun/h").astype("float64")
