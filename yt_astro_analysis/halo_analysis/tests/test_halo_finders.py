@@ -38,6 +38,8 @@ def test_halo_analysis_finders():
         fn = os.path.join(tmpdir, "halo_catalogs", method,
                           "%s.0.h5" % method)
         ds = load(fn)
+        if method == "rockstar":
+            ds.parameters['format_revision'] = 2
         assert isinstance(ds, HaloCatalogDataset)
         for field in _fields:
             yield FieldValuesTest(ds, field, particle_type=True,
