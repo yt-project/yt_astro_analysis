@@ -159,13 +159,13 @@ jobs:
 
       - restore_cache:
           name: "Restore test answers."
-          key: python-<< parameters.tag >>-test-answers-v2
+          key: python-<< parameters.tag >>-test-answers-v4
 
       - build-and-test
 
       - save_cache:
           name: "Save test answers cache."
-          key: python-<< parameters.tag >>-test-answers-v2
+          key: python-<< parameters.tag >>-test-answers-v4
           paths:
             - ~/test_results
 
