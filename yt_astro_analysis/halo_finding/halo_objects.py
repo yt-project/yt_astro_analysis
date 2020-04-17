@@ -48,7 +48,6 @@ class Halo(object):
     _processing = False
     _owner = 0
     indices = None
-    dont_wrap = ["get_sphere", "write_particle_list"]
     extra_wrap = ["__getitem__"]
 
     def __init__(self, halo_list, id, indices=None, size=None, CoM=None,
@@ -313,21 +312,6 @@ class Halo(object):
         if self.size is not None:
             return self.size
         return self.indices.size
-
-    def write_particle_list(self, handle):
-        self._processing = True
-        gn = "Halo%08i" % (self.id)
-        handle.create_group("/%s" % gn)
-        for field in ["particle_position_%s" % ax for ax in 'xyz'] \
-                   + ["particle_velocity_%s" % ax for ax in 'xyz'] \
-                   + ["particle_index"]:
-            handle.create_dataset("/%s/%s" % (gn, field), data=self[field])
-        handle.create_dataset("/%s/particle_mass" % gn,
-                              data=self["particle_mass"].in_units('Msun'))
-        if ('io','creation_time') in self.data.ds.field_list:
-            handle.create_dataset("/%s/creation_time" % gn,
-                data=self['creation_time'])
-        self._processing = False
 
     def virial_mass(self, virial_overdensity=200., bins=300):
         r"""Return the virial mass of the halo in Msun,
@@ -656,94 +640,6 @@ class HaloList(object):
     def __getitem__(self, key):
         return self._groups[key]
 
-    def write_out(self, filename, ellipsoid_data=False):
-        r"""Write out standard halo information to a text file.
-
-        Parameters
-        ----------
-        filename : String
-            The name of the file to write to.
-
-        ellipsoid_data : bool.
-            Whether to print the ellipsoidal information to the file.
-            Default = False.
-
-        Examples
-        --------
-        >>> halos.write_out("HopAnalysis.out")
-        """
-        if hasattr(filename, 'write'):
-            f = filename
-        else:
-            f = open(filename, "w")
-        f.write("# HALOS FOUND WITH %s\n" % (self._name))
-        f.write("# REDSHIFT OF OUTPUT = %f\n" % (self.redshift))
-
-        if not ellipsoid_data:
-            f.write("\t".join(["# Group","Mass","# part","max dens"
-                               "x","y","z", "center-of-mass",
-                               "x","y","z",
-                               "vx","vy","vz","max_r","rms_v","\n"]))
-        else:
-            f.write("\t".join(["# Group","Mass","# part","max dens"
-                               "x","y","z", "center-of-mass",
-                               "x","y","z",
-                               "vx","vy","vz","max_r","rms_v",
-                               "mag_A", "mag_B", "mag_C", "e0_vec0",
-                               "e0_vec1", "e0_vec2", "tilt", "\n"]))
-
-        for group in self:
-            f.write("%10i\t" % group.id)
-            f.write("%0.9e\t" % group.total_mass())
-            f.write("%10i\t" % group.get_size())
-            f.write("%0.9e\t" % group.maximum_density())
-            f.write("\t".join(["%0.9e" % v for v in \
-                group.maximum_density_location()]))
-            f.write("\t")
-            f.write("\t".join(["%0.9e" % v for v in group.center_of_mass()]))
-            f.write("\t")
-            f.write("\t".join(["%0.9e" % v for v in group.bulk_velocity()]))
-            f.write("\t")
-            f.write("%0.9e\t" % group.maximum_radius())
-            f.write("%0.9e\t" % group.rms_velocity())
-            if ellipsoid_data:
-                f.write("\t".join(["%0.9e" % v for v in group._get_ellipsoid_parameters_basic()]))
-            f.write("\n")
-            f.flush()
-        f.close()
-
-    def write_particle_lists_txt(self, prefix, fp=None):
-        r"""Write out the names of the HDF5 files containing halo particle data
-        to a text file. Needed in particular for parallel analysis output.
-
-        Parameters
-        ----------
-        prefix : String
-            The prefix for the name of the file.
-
-        Examples
-        --------
-        >>> halos.write_particle_lists_txt("halo-parts")
-        """
-        if hasattr(fp, 'write'):
-            f = fp
-        else:
-            f = open("%s.txt" % prefix, "w")
-        for group in self:
-            if group.tasks is not None:
-                fn = ""
-                for task in group.tasks:
-                    fn += "%s.h5 " % self.comm.get_filename(prefix, rank=task)
-            elif self._distributed:
-                fn = "%s.h5" % self.comm.get_filename(prefix,
-                    rank=group._owner)
-            else:
-                fn = "%s.h5" % self.comm.get_filename(prefix)
-            gn = "Halo%08i" % (group.id)
-            f.write("%s %s\n" % (gn, fn))
-            f.flush()
-        f.close()
-
 class HOPHaloList(HaloList):
     """
     Run hop on *data_source* with a given density *threshold*.  If
@@ -771,25 +667,6 @@ class HOPHaloList(HaloList):
         self.particle_fields["densities"] = self.densities
         self.particle_fields["tags"] = self.tags
 
-    def write_out(self, filename="HopAnalysis.out", ellipsoid_data=False):
-        r"""Write out standard halo information to a text file.
-
-        Parameters
-        ----------
-        filename : String
-            The name of the file to write to. Default = "HopAnalysis.out".
-
-        ellipsoid_data : bool.
-            Whether to print the ellipsoidal information to the file.
-            Default = False.
-
-        Examples
-        --------
-        >>> halos.write_out("HopAnalysis.out")
-        """
-        HaloList.write_out(self, filename, ellipsoid_data)
-
-
 class FOFHaloList(HaloList):
     _name = "FOF"
     _halo_class = FOFHalo
@@ -810,24 +687,6 @@ class FOFHaloList(HaloList):
         self.densities = np.ones(self.tags.size, dtype='float64') * -1
         self.particle_fields["densities"] = self.densities
         self.particle_fields["tags"] = self.tags
-
-    def write_out(self, filename="FOFAnalysis.out", ellipsoid_data=False):
-        r"""Write out standard halo information to a text file.
-
-        Parameters
-        ----------
-        filename : String
-            The name of the file to write to. Default = "FOFAnalysis.out".
-
-        ellipsoid_data : bool.
-            Whether to print the ellipsoidal information to the file.
-            Default = False.
-
-        Examples
-        --------
-        >>> halos.write_out("FOFAnalysis.out")
-        """
-        HaloList.write_out(self, filename, ellipsoid_data)
 
 class GenericHaloFinder(HaloList, ParallelAnalysisInterface):
     def __init__(self, ds, data_source, padding=0.0, ptype=None):
@@ -885,107 +744,6 @@ class GenericHaloFinder(HaloList, ParallelAnalysisInterface):
             arr = self._data_source[self.ptype, "particle_position_%s" % ax]
             arr[arr < LE[i] - self.padding] += dw[i]
             arr[arr > RE[i] + self.padding] -= dw[i]
-
-    def write_out(self, filename, ellipsoid_data=False):
-        r"""Write out standard halo information to a text file.
-
-        Parameters
-        ----------
-        filename : String
-            The name of the file to write to.
-
-        ellipsoid_data : bool.
-            Whether to print the ellipsoidal information to the file.
-            Default = False.
-
-        Examples
-        --------
-        >>> halos.write_out("HopAnalysis.out")
-        """
-        ensure_dir_exists(filename)
-        f = self.comm.write_on_root(filename)
-        HaloList.write_out(self, f, ellipsoid_data)
-
-
-    def write_particle_lists_txt(self, prefix):
-        r"""Write out the names of the HDF5 files containing halo particle data
-        to a text file.
-
-        This function wirtes out the names of all the HDF5 files that would
-        contain halo particle data.  Only the root processor writes out.
-
-        Parameters
-        ----------
-        prefix : String
-            The prefix for the name of the file.
-
-        Examples
-        --------
-        >>> halos.write_particle_lists_txt("halo-parts")
-        """
-        ensure_dir_exists(prefix)
-        f = self.comm.write_on_root("%s.txt" % prefix)
-        HaloList.write_particle_lists_txt(self, prefix, fp=f)
-
-
-    @parallel_blocking_call
-    def write_particle_lists(self, prefix):
-        r"""Write out the particle data for halos to HDF5 files.
-
-        This function will accept a filename prefix, and for every halo it will
-        write out an HDF5 file containing the positions, velocities, indices
-        and masses of the constituent particles.  However, if the halo finder
-        is run in parallel, halos will only be written out on the processors to
-        which they belong.  See `Halo.write_particle_lists_txt` for how to
-        track these halos globally across files.
-
-        Parameters
-        ----------
-        prefix : String
-            The prefix for the name(s) of the HDF5 files.
-
-        Examples
-        --------
-        >>> halos.write_particle_lists("halo-parts")
-        """
-        ensure_dir_exists(prefix)
-        fn = "%s.h5" % self.comm.get_filename(prefix)
-        f = h5py.File(fn, "w")
-        for halo in self._groups:
-            if not self.comm.is_mine(halo): continue
-            halo.write_particle_list(f)
-        f.close()
-
-    def dump(self, basename="HopAnalysis", ellipsoid_data=False):
-        r"""Save the full halo data to disk.
-
-        This function will save the halo data in such a manner that it can be
-        easily re-loaded later using `GenericHaloFinder.load`.
-        This is similar in concept to
-        pickling the data, but outputs the data in the already-established
-        data formats. The simple halo data is written to a text file
-        (e.g. "HopAnalysis.out") using write_out(), and the particle data
-        to hdf5 files (e.g. "HopAnalysis.h5")
-        using write_particle_lists().
-
-        Parameters
-        ----------
-        basename : String
-            The base name for the files the data will be written to. Default =
-            "HopAnalysis".
-
-        ellipsoid_data : bool.
-            Whether to save the ellipsoidal information to the files.
-            Default = False.
-
-        Examples
-        --------
-        >>> halos.dump("MyHalos")
-        """
-        ensure_dir_exists(basename)
-        self.write_out("%s.out" % basename, ellipsoid_data)
-        self.write_particle_lists(basename)
-        self.write_particle_lists_txt(basename)
 
 class HOPHaloFinder(GenericHaloFinder, HOPHaloList):
     r"""HOP halo finder.
