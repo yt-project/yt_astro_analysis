@@ -1,12 +1,12 @@
 """
-HOP-output data handling
+halo finding
 
 
 
 """
 
 #-----------------------------------------------------------------------------
-# Copyright (c) 2013, yt Development Team.
+# Copyright (c) yt Development Team. All rights reserved.
 #
 # Distributed under the terms of the Modified BSD License.
 #
@@ -15,9 +15,9 @@ HOP-output data handling
 
 import gc
 from yt.utilities.on_demand_imports import _h5py as h5py
-import math
 import numpy as np
-import os.path as path
+import os
+
 from yt.extern.six.moves import zip as izip
 
 from yt.config import ytcfg
@@ -438,15 +438,15 @@ class Halo(object):
         mark = 0
         # Find the distances to the particles. I don't like this much, but I
         # can't see a way to eliminate a loop like this, either here or in
-        # yt.math.
+        # yt.
         for pos in izip(self["particle_position_x"],
                 self["particle_position_y"], self["particle_position_z"]):
             dist[mark] = periodic_dist(cen, pos, period)
             mark += 1
         # Set up the radial bins.
         # Multiply min and max to prevent issues with digitize below.
-        self.radial_bins = np.logspace(math.log10(min(dist) * .99 + TINY),
-            math.log10(max(dist) * 1.01 + 2 * TINY), num=self.bin_count + 1)
+        self.radial_bins = np.logspace(np.log10(min(dist) * .99 + TINY),
+            np.log10(max(dist) * 1.01 + 2 * TINY), num=self.bin_count + 1)
         self.radial_bins = self.ds.arr(self.radial_bins,'code_length')
         # Find out which bin each particle goes into, and add the particle
         # mass to that bin.
@@ -460,7 +460,7 @@ class Halo(object):
             self.mass_bins[i + 1] += self.mass_bins[i]
         # Calculate the over densities in the bins.
         self.overdensity = self.mass_bins * Msun2g / \
-            (4./3. * math.pi * rho_crit * \
+            (4./3. * np.pi * rho_crit * \
             (self.radial_bins )**3.0)
 
     def _get_ellipsoid_parameters_basic(self):
@@ -1153,7 +1153,7 @@ class LoadedHaloList(HaloList):
         with open("%s.txt" % self.basename, 'r') as fh:
             lines = fh.readlines()
         locations = []
-        realpath = path.realpath("%s.txt" % self.basename)
+        realpath = os.path.realpath("%s.txt" % self.basename)
         for line in lines:
             line = line.split()
             # Prepend the hdf5 file names with the full path.
@@ -1162,7 +1162,7 @@ class LoadedHaloList(HaloList):
                 # This assumes that the .txt is in the same place as
                 # the h5 files, which is a good one I think.
                 item = item.split("/")
-                temp.append(path.join(path.dirname(realpath), item[-1]))
+                temp.append(os.path.join(os.path.dirname(realpath), item[-1]))
             locations.append(temp)
         return locations
 
