@@ -14,14 +14,12 @@ halo finding
 #-----------------------------------------------------------------------------
 
 import gc
-from yt.utilities.on_demand_imports import _h5py as h5py
 import numpy as np
-import os
 
 from yt.extern.six.moves import zip as izip
 
 from yt.config import ytcfg
-from yt.funcs import mylog, ensure_dir_exists
+from yt.funcs import mylog
 from yt.utilities.math_utils import \
     get_rotation_matrix, \
     periodic_dist
@@ -30,14 +28,11 @@ from yt.utilities.physical_constants import \
 from yt.utilities.physical_ratios import \
     rho_crit_g_cm3_h2, \
     TINY
+from yt.utilities.parallel_tools.parallel_analysis_interface import \
+    ParallelAnalysisInterface
 
 from yt_astro_analysis.halo_finding.hop.EnzoHop import RunHOP
 from yt_astro_analysis.halo_finding.fof.EnzoFOF import RunFOF
-
-from yt.utilities.parallel_tools.parallel_analysis_interface import \
-    ParallelAnalysisInterface, \
-    parallel_blocking_call
-
 
 class Halo(object):
     """
