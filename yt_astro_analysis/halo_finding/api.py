@@ -6,7 +6,7 @@ API for halo_finding
 """
 
 #-----------------------------------------------------------------------------
-# Copyright (c) 2013, yt Development Team.
+# Copyright (c) yt Development Team. All rights reserved.
 #
 # Distributed under the terms of the Modified BSD License.
 #
@@ -14,18 +14,5 @@ API for halo_finding
 #-----------------------------------------------------------------------------
 
 from yt_astro_analysis.halo_finding.halo_objects import \
-    Halo, \
-    HOPHalo, \
-    LoadedHalo, \
-    FOFHalo, \
-    HaloList, \
-    HOPHaloList, \
-    FOFHaloList, \
-    LoadedHaloList, \
-    GenericHaloFinder, \
     HOPHaloFinder, \
-    FOFHaloFinder, \
-    HaloFinder, \
-    LoadHaloes, \
-    LoadTextHalos, \
-    LoadTextHaloes
+    FOFHaloFinder
