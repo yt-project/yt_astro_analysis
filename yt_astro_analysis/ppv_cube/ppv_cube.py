@@ -25,13 +25,12 @@ from yt.utilities.parallel_tools.parallel_analysis_interface import \
 import re
 from . import ppv_utils
 from yt.funcs import is_root
-from yt.extern.six import string_types
 
 def create_vlos(normal, no_shifting):
     if no_shifting:
         def _v_los(field, data):
             return data.ds.arr(data["index", "zeros"], "cm/s")
-    elif isinstance(normal, string_types):
+    elif isinstance(normal, str):
         def _v_los(field, data):
             return -data["gas", "velocity_%s" % normal]
     else:
@@ -138,7 +137,7 @@ class PPVCube(object):
         self.thermal_broad = thermal_broad
         self.no_shifting = no_shifting
 
-        if not isinstance(normal, string_types):
+        if not isinstance(normal, str):
             width = ds.coordinates.sanitize_width(normal, width, depth)
             width = tuple(el.in_units('code_length').v for el in width)
 
@@ -192,7 +191,7 @@ class PPVCube(object):
         pbar = get_pbar("Generating cube.", self.nv)
         for sto, i in parallel_objects(range(self.nv), storage=storage):
             self.current_v = self.vmid_cgs[i]
-            if isinstance(normal, string_types):
+            if isinstance(normal, str):
                 prj = ds.proj("intensity", ds.coordinates.axis_id[normal], method=method,
                               weight_field=weight_field, data_source=data_source)
                 buf = prj.to_frb(width, self.nx, center=self.center)["intensity"]

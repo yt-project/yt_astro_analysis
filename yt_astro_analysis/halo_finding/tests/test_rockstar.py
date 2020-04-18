@@ -31,10 +31,12 @@ def test_rockstar():
 
     h1 = "rockstar_halos/halos_0.0.bin"
     d1 = load(h1)
+    d1.parameters['format_revision'] = 2
     for field in _fields:
         yield FieldValuesTest(d1, field, particle_type=True, decimals=1)
     h2 = "rockstar_halos/halos_1.0.bin"
     d2 = load(h2)
+    d2.parameters['format_revision'] = 2
     for field in _fields:
         yield FieldValuesTest(d2, field, particle_type=True, decimals=1)
 
