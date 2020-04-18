@@ -16,8 +16,6 @@ halo finding
 import gc
 import numpy as np
 
-from yt.extern.six.moves import zip as izip
-
 from yt.config import ytcfg
 from yt.funcs import mylog
 from yt.utilities.math_utils import \
@@ -418,7 +416,7 @@ class Halo(object):
         # Find the distances to the particles. I don't like this much, but I
         # can't see a way to eliminate a loop like this, either here or in
         # yt.
-        for pos in izip(self["particle_position_x"],
+        for pos in zip(self["particle_position_x"],
                 self["particle_position_y"], self["particle_position_z"]):
             dist[mark] = periodic_dist(cen, pos, period)
             mark += 1

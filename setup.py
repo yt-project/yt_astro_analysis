@@ -61,8 +61,8 @@ extensions = [
 
 dev_requirements = [
     'astropy', 'codecov', 'flake8', 'girder-client', 'gitpython', 'nose',
-    'nose-timer', 'scipy', 'sphinx', 'sphinx_bootstrap_theme', 'twine',
-    'wheel']
+    'nose-timer', 'pytest', 'scipy', 'sphinx', 'sphinx_bootstrap_theme',
+    'twine', 'wheel']
 
 # ROCKSTAR
 if os.path.exists("rockstar.cfg"):
@@ -71,8 +71,8 @@ if os.path.exists("rockstar.cfg"):
     except IOError:
         print("Reading Rockstar location from rockstar.cfg failed.")
         print("Please place the base directory of your")
-        print("Rockstar install in rockstar.cfg and restart.")
-        print("(ex: \"echo '/path/to/Rockstar-0.99' > rockstar.cfg\" )")
+        print("rockstar-galaxies install in rockstar.cfg and restart.")
+        print("(ex: \"echo '/path/to/rockstar-galaxies' > rockstar.cfg\" )")
         sys.exit(1)
 
     rockstar_extdir = "yt_astro_analysis/halo_finding/rockstar"
@@ -84,7 +84,7 @@ if os.path.exists("rockstar.cfg"):
     ]
     for ext in rockstar_extensions:
         ext.library_dirs.append(rd)
-        ext.libraries.append("rockstar")
+        ext.libraries.append("rockstar-galaxies")
         ext.define_macros.append(("THREADSAFE", ""))
         ext.include_dirs += [rd,
                              os.path.join(rd, "io"), os.path.join(rd, "util")]
@@ -150,10 +150,9 @@ setup(
         'h5py',
         'setuptools>=19.6',
         'sympy',
-        'matplotlib<3.2.0',
         'numpy',
         'cython',
-        'yt>=3.5.0',
+        'yt>=3.6.0',
     ],
     extras_require = {
         'dev':  dev_requirements,
