@@ -61,8 +61,8 @@ extensions = [
 
 dev_requirements = [
     'astropy', 'codecov', 'flake8', 'girder-client', 'gitpython', 'nose',
-    'nose-timer', 'scipy', 'sphinx', 'sphinx_bootstrap_theme', 'twine',
-    'wheel']
+    'nose-timer', 'pytest', 'scipy', 'sphinx', 'sphinx_bootstrap_theme',
+    'twine', 'wheel']
 
 # ROCKSTAR
 if os.path.exists("rockstar.cfg"):
