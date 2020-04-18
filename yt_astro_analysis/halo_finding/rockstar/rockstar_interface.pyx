@@ -27,6 +27,11 @@ cdef import from "particle.h":
     struct particle:
         np.int64_t id
         float pos[6]
+        float mass
+        # float energy
+        # float softening
+        # float metallicity
+        np.int32_t type
 
 ctypedef struct particleflat:
     np.int64_t id
@@ -36,6 +41,11 @@ ctypedef struct particleflat:
     float vel_x
     float vel_y
     float vel_z
+    float mass
+    # float energy
+    # float softening
+    # float metallicity
+    np.int32_t type
 
 cdef import from "halo.h":
     struct halo:
@@ -47,6 +57,7 @@ cdef import from "halo.h":
         float m, r, child_r, mgrav, vmax, rvmax, rs, vrms, energy, spin
         np.int64_t num_p, num_child_particles, p_start, desc, flags, n_core
         float min_pos_err, min_vel_err, min_bulkvel_err
+        np.int32_t type
 
 cdef import from "io_generic.h":
     ctypedef void (*LPG) (char *filename, particle **p, np.int64_t *num_p)
@@ -81,6 +92,9 @@ cdef import from "config_vars.h":
     char *MASS_DEFINITION
     np.int64_t MIN_HALO_OUTPUT_SIZE
     np.float64_t FORCE_RES
+    np.float64_t INITIAL_METRIC_SCALING
+    np.float64_t NON_DM_METRIC_SCALING
+    np.int64_t SUPPRESS_GALAXIES
 
     np.float64_t SCALE_NOW
     np.float64_t h0
@@ -176,21 +190,26 @@ cdef void rh_analyze_halo(halo *h, particle *hp):
 cdef void rh_read_particles(char *filename, particle **p, np.int64_t *num_p):
     global SCALE_NOW
     cdef np.float64_t left_edge[6]
-    cdef np.ndarray[np.int64_t, ndim=1] arri
-    cdef np.ndarray[np.float64_t, ndim=1] arr
+    cdef np.ndarray[np.int64_t, ndim=1] arri # index
+    cdef np.ndarray[np.float64_t, ndim=1] arr # pos/vel
+    cdef np.ndarray[np.float64_t, ndim=1] marr # mass
+    # cdef np.ndarray[np.float64_t, ndim=1] earr # energy
+    # cdef np.ndarray[np.float64_t, ndim=1] sarr # softening
+    # cdef np.ndarray[np.float64_t, ndim=1] mtarr # metalicity
+    cdef np.ndarray[np.int32_t, ndim=1] tarr # type
     cdef unsigned long long pi,fi,i
     cdef np.int64_t local_parts = 0
     ds = rh.ds = next(rh.tsl)
 
     SCALE_NOW = 1.0/(ds.current_redshift+1.0)
-    # First we need to find out how many this reader is going to read in
-    # if the number of readers > 1.
-    dd = ds.all_data()
 
     # Add particle type filter if not defined
     if rh.particle_type not in ds.particle_types and rh.particle_type != 'all':
         ds.add_particle_filter(rh.particle_type)
 
+    # First we need to find out how many this reader is going to read in
+    # if the number of readers > 1.
+    dd = ds.all_data()
     if NUM_BLOCKS > 1:
         local_parts = 0
         for chunk in parallel_objects(
@@ -201,17 +220,33 @@ cdef void rh_read_particles(char *filename, particle **p, np.int64_t *num_p):
 
     p[0] = <particle *> malloc(sizeof(particle) * local_parts)
 
-    left_edge[0] = ds.domain_left_edge.in_units('Mpccm/h')[0]
-    left_edge[1] = ds.domain_left_edge.in_units('Mpccm/h')[1]
-    left_edge[2] = ds.domain_left_edge.in_units('Mpccm/h')[2]
+    dle = ds.domain_left_edge.to('Mpccm/h')
+    left_edge[0] = dle[0]
+    left_edge[1] = dle[1]
+    left_edge[2] = dle[2]
     left_edge[3] = left_edge[4] = left_edge[5] = 0.0
     pi = 0
+    # Now we want to grab data from only a subset of the grids for each reader.
     for chunk in parallel_objects(dd.chunks([], "io")):
-        arri = np.asarray(chunk[rh.particle_type, "particle_index"],
-                          dtype="int64")
+        arri = np.asarray(chunk[rh.particle_type, "particle_index"], dtype="int64")
+        marr = chunk[rh.particle_type, "particle_mass"].to("Msun/h").astype("float64")
+        # earr = chunk[rh.particle_type, "particle_"].to("").astype("float64")
+        # sarr = chunk[rh.particle_type, "particle_"].to("").astype("float64")
+        # mtarr= chunk[rh.particle_type, "particle_"].to("").astype("float64")
+        tarr = np.asarray(chunk[rh.particle_type, "particle_type"], dtype="int32")
         npart = arri.size
         for i in range(npart):
             p[0][i+pi].id = <np.int64_t> arri[i]
+            p[0][i+pi].mass = <np.float64_t> marr[i]
+            # p[0][i+pi].energy = <np.float64_t> earr[i]
+            # p[0][i+pi].softening = <np.float64_t> sarr[i]
+            # p[0][i+pi].metallicity = <np.float64_t> mtarr[i]
+            if tarr[i] in rh.star_types:
+                type = 2
+            else:
+                type = 0
+            p[0][i+pi].type = <np.int32_t> type
+
         fi = 0
         for field in ["particle_position_x", "particle_position_y",
                       "particle_position_z",
@@ -221,7 +256,7 @@ cdef void rh_read_particles(char *filename, particle **p, np.int64_t *num_p):
                 unit = "Mpccm/h"
             else:
                 unit = "km/s"
-            arr = chunk[rh.particle_type, field].in_units(unit).astype("float64")
+            arr = chunk[rh.particle_type, field].to(unit).astype("float64")
             for i in range(npart):
                 p[0][i+pi].pos[fi] = (arr[i]-left_edge[fi])
             fi += 1
@@ -239,6 +274,7 @@ cdef class RockstarInterface:
     cdef int size
     cdef public int block_ratio
     cdef public object particle_type
+    cdef public object star_types
     cdef public int total_particles
     cdef public object callbacks
 
@@ -247,24 +283,32 @@ cdef class RockstarInterface:
         self.tsl = ts.__iter__() #timeseries generator used by read
 
     def setup_rockstar(self, char *server_address, char *server_port,
-                       int num_snaps, np.int64_t total_particles,
-                       particle_type,
+                       int num_snaps, int total_particles,
+                       particle_type, star_types,
                        np.float64_t particle_mass,
                        int parallel = False, int num_readers = 1,
                        int num_writers = 1,
                        int writing_port = -1, int block_ratio = 1,
-                       int periodic = 1, force_res=None,
-                       int min_halo_size = 25, outbase = "None",
-                       callbacks = None, int restart_num = 0):
+                       outbase = "None",
+                       force_res = None,
+                       initial_metric_scaling = 1,
+                       non_dm_metric_scaling = 10,
+                       int suppress_galaxies = 1,
+                       callbacks = None, int restart_num = 0,
+                       int periodic = 1, int min_halo_size = 25,):
         global PARALLEL_IO, PARALLEL_IO_SERVER_ADDRESS, PARALLEL_IO_SERVER_PORT
         global FILENAME, FILE_FORMAT, NUM_SNAPS, STARTING_SNAP, h0, Ol, Om
         global BOX_SIZE, PERIODIC, PARTICLE_MASS, NUM_BLOCKS, NUM_READERS
         global FORK_READERS_FROM_WRITERS, PARALLEL_IO_WRITER_PORT, NUM_WRITERS
-        global rh, SCALE_NOW, OUTBASE, MIN_HALO_OUTPUT_SIZE, OUTPUT_FORMAT
+        global rh, SCALE_NOW, OUTBASE, MIN_HALO_OUTPUT_SIZE,
         global OVERLAP_LENGTH, TOTAL_PARTICLES, FORCE_RES, RESTART_SNAP
+        global INITIAL_METRIC_SCALING, NON_DM_METRIC_SCALING, SUPPRESS_GALAXIES
+
         if force_res is not None:
             FORCE_RES=np.float64(force_res)
-            #print "set force res to ",FORCE_RES
+        INITIAL_METRIC_SCALING=np.float64(initial_metric_scaling)
+        NON_DM_METRIC_SCALING=np.float64(non_dm_metric_scaling)
+        SUPPRESS_GALAXIES=np.int64(suppress_galaxies)
         OVERLAP_LENGTH = 0.0
         if parallel:
             PARALLEL_IO = 1
@@ -288,6 +332,7 @@ cdef class RockstarInterface:
         TOTAL_PARTICLES = total_particles
         self.block_ratio = block_ratio
         self.particle_type = particle_type
+        self.star_types = star_types
 
         tds = self.ts[0]
         h0 = tds.hubble_constant
@@ -296,15 +341,14 @@ cdef class RockstarInterface:
         SCALE_NOW = 1.0/(tds.current_redshift+1.0)
         if callbacks is None: callbacks = []
         self.callbacks = callbacks
-        if not outbase == 'None'.encode('UTF-8'):
+        if not outbase == 'None':
             #output directory. since we can't change the output filenames
             #workaround is to make a new directory
             OUTBASE = outbase
 
         PARTICLE_MASS = particle_mass
         PERIODIC = periodic
-        BOX_SIZE = (tds.domain_right_edge[0] -
-                    tds.domain_left_edge[0]).in_units("Mpccm/h")
+        BOX_SIZE = tds.domain_width[0].to("Mpccm/h")
         setup_config()
         rh = self
         cdef LPG func = rh_read_particles
