@@ -132,13 +132,13 @@ jobs:
 
       - restore_cache:
           name: "Restore dependencies cache."
-          key: python-<< parameters.tag >>-dependencies-v5
+          key: python-<< parameters.tag >>-dependencies-v6
 
       - install-with-yt-dev
 
       - save_cache:
           name: "Save dependencies cache"
-          key: python-<< parameters.tag >>-dependencies-v5
+          key: python-<< parameters.tag >>-dependencies-v6
           paths:
             - ~/.cache/pip
             - ~/venv
@@ -159,13 +159,13 @@ jobs:
 
       - restore_cache:
           name: "Restore test answers."
-          key: python-<< parameters.tag >>-test-answers-v3
+          key: python-<< parameters.tag >>-test-answers-v5
 
       - build-and-test
 
       - save_cache:
           name: "Save test answers cache."
-          key: python-<< parameters.tag >>-test-answers-v3
+          key: python-<< parameters.tag >>-test-answers-v5
           paths:
             - ~/test_results
 
