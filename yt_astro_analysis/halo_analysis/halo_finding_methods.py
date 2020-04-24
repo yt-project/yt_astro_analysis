@@ -69,25 +69,12 @@ def _rockstar_method(hc, **finder_kwargs):
     Run the Rockstar halo finding method.
     """
 
-    from yt.frontends.rockstar.data_structures import \
-     RockstarDataset
     from yt_astro_analysis.halo_finding.rockstar.api import \
      RockstarHaloFinder
 
     ds = hc.data_ds
     rh = RockstarHaloFinder(ds, **finder_kwargs)
     rh.run()
-    
-    if 'outbase' in finder_kwargs:
-        outbase = finder_kwargs['outbase']
-    else:
-        outbase = "rockstar_halos"
-
-    halos_ds = RockstarDataset(outbase + "/halos_0.0.bin")
-    try:
-        halos_ds.create_field_info()
-    except ValueError:
-        return None
 add_finding_method("rockstar", _rockstar_method)
 
 def _parse_old_halo_list(hc, halo_list):
