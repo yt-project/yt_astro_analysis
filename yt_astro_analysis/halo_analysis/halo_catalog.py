@@ -301,7 +301,8 @@ class HaloCatalog(ParallelAnalysisInterface):
         halo_recipe = recipe_registry.find(recipe, *args, **kwargs)
         halo_recipe(self)
 
-    def create(self, save_halos=False, save_catalog=True, njobs=-1, dynamic=False):
+    def create(self, save_halos=False, save_catalog=True,
+               njobs=-1, dynamic=False):
         r"""
         Create the halo catalog given the callbacks, quantities, and filters that
         have been provided.
@@ -336,7 +337,8 @@ class HaloCatalog(ParallelAnalysisInterface):
         """
         self._run(save_halos, save_catalog, njobs=njobs, dynamic=dynamic)
 
-    def load(self, save_halos=True, save_catalog=False, njobs=-1, dynamic=False):
+    def load(self, save_halos=True, save_catalog=False,
+             njobs=-1, dynamic=False):
         r"""
         Load a previously created halo catalog.
 
@@ -372,7 +374,8 @@ class HaloCatalog(ParallelAnalysisInterface):
         self._run(save_halos, save_catalog, njobs=njobs, dynamic=dynamic)
 
     @parallel_blocking_call
-    def _run(self, save_halos, save_catalog, njobs=-1, dynamic=False):
+    def _run(self, save_halos, save_catalog,
+             njobs=-1, dynamic=False):
         r"""
         Run the requested halo analysis.
 
@@ -398,8 +401,10 @@ class HaloCatalog(ParallelAnalysisInterface):
         create, load
 
         """
+
         self.catalog = []
-        if save_halos: self.halo_list = []
+        if save_halos:
+            self.halo_list = []
 
         if self.halos_ds is None:
             # Find the halos and make a dataset of them
@@ -419,6 +424,14 @@ class HaloCatalog(ParallelAnalysisInterface):
 
             # Add all of the default quantities that all halos must have
             self.add_default_quantities('all')
+
+        self._analyze_halos(save_halos, njobs, dynamic)
+
+        if save_catalog:
+            self.save_catalog()
+
+    def _analyze_halos(self, save_halos, njobs, dynamic):
+        "Run all halos through the analysis pipeline."
 
         halo_index = np.argsort(self.data_source["all", "particle_identifier"])
         # If we have just run hop or fof, halos are already divided amongst processors.
@@ -468,9 +481,6 @@ class HaloCatalog(ParallelAnalysisInterface):
             pbar.update(my_i)
 
         pbar.finish()
-        self.catalog.sort(key=lambda a:a['particle_identifier'].to_ndarray())
-        if save_catalog:
-            self.save_catalog()
 
     def save_catalog(self):
         "Write out hdf5 file with all halo quantities."
