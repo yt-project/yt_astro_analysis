@@ -65,7 +65,7 @@ class HaloCatalog(ParallelAnalysisInterface):
         Halo finder to be used if no halos_ds is given.
     output_dir : str
         The top level directory into which analysis output will be written.
-        Default: "."
+        Default: "halo_catalogs"
     finder_kwargs : dict
         Arguments to pass to the halo finder if finder_method is given.
 
@@ -107,7 +107,7 @@ class HaloCatalog(ParallelAnalysisInterface):
     def __init__(self, halos_ds=None, data_ds=None,
                  data_source=None, finder_method=None,
                  finder_kwargs=None,
-                 output_dir="halo_catalogs/catalog"):
+                 output_dir="halo_catalogs"):
         ParallelAnalysisInterface.__init__(self)
         self.halos_ds = halos_ds
         self.data_ds = data_ds
