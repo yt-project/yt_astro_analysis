@@ -386,8 +386,8 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
             # output files because it will be easy to lose this connection.
             fp = open(os.path.join(self.outbase, 'datasets.txt'), 'w')
             fp.write("# dsname\tindex\n")
-            for i, ds in enumerate(self.ts):
-                dsloc = os.path.join(os.path.relpath(ds.fullpath), ds.basename)
+            for i, ds in enumerate(self.ts.outputs):
+                dsloc = os.path.join(os.path.relpath(ds))
                 line = "%s\t%d\n" % (dsloc, i)
                 fp.write(line)
             fp.close()
