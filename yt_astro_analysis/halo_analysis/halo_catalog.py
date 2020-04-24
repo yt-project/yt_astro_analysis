@@ -6,7 +6,7 @@ HaloCatalog object
 """
 
 #-----------------------------------------------------------------------------
-# Copyright (c) 2013-2017, yt Development Team.
+# Copyright (c) yt Development Team. All rights reserved.
 #
 # Distributed under the terms of the Modified BSD License.
 #
@@ -406,29 +406,16 @@ class HaloCatalog(ParallelAnalysisInterface):
         if save_halos:
             self.halo_list = []
 
+        # Find halos.
         if self.halos_ds is None:
-            # Find the halos and make a dataset of them
-            self.halos_ds = self.finder_method(self.data_ds)
-            if self.halos_ds is None:
-                mylog.warning('No halos were found for {0}'.format(\
-                        self.data_ds.basename))
-                if save_catalog:
-                    self.halos_ds = self.data_ds
-                    self.save_catalog()
-                    self.halos_ds = None
-                return
-            self.halos_ds.index
+            self.finder_method(self)
 
-            # Assign ds and data sources appropriately
-            self.data_source = self.halos_ds.all_data()
+        # Analyze halos.
+        else:
+            self._analyze_halos(save_halos, njobs, dynamic)
 
-            # Add all of the default quantities that all halos must have
-            self.add_default_quantities('all')
-
-        self._analyze_halos(save_halos, njobs, dynamic)
-
-        if save_catalog:
-            self.save_catalog()
+            if save_catalog:
+                self.save_catalog()
 
     def _analyze_halos(self, save_halos, njobs, dynamic):
         "Run all halos through the analysis pipeline."
@@ -482,39 +469,38 @@ class HaloCatalog(ParallelAnalysisInterface):
 
         pbar.finish()
 
-    def save_catalog(self):
+    def save_catalog(self, data=None, ftypes=None):
         "Write out hdf5 file with all halo quantities."
 
         filename = os.path.join(self.output_dir, "%s.%d.h5" %
                                 (self.output_prefix, self.comm.rank))
-        n_halos = len(self.catalog)
+
+        if data is None:
+            n_halos = len(self.catalog)
+            data = {}
+            if n_halos > 0:
+                for key in self.quantities:
+                    data[key] = self.halos_ds.arr(
+                        [halo[key] for halo in self.catalog])
+        else:
+            n_halos = data['particle_identifier'].size
+
+        # Sets each field to be saved in the root hdf5 group
+        # as per the HaloCatalog format.
+        if ftypes is None:
+            ftypes = dict((key, ".") for key in self.quantities)
+
         mylog.info("Saving halo catalog (%d halos) to %s." %
-                   (n_halos, os.path.join(self.output_dir,
-                                         self.output_prefix)))
+                   (n_halos, os.path.join(self.output_dir, self.output_prefix)))
         extra_attrs = {"data_type": "halo_catalog",
                        "num_halos": n_halos}
-        data = {}
-        ftypes = {}
-        if n_halos > 0:
-            for key in self.quantities:
-                # This sets each field to be saved in the root hdf5 group,
-                # as per the HaloCatalog format.
-                ftypes[key] = "."
-                data[key] = self.halos_ds.arr(
-                    [halo[key] for halo in self.catalog])
 
-            particles = getattr(self.halos_ds, 'particles', None)
-            if particles is not None:
-                for key in ['particle_number',
-                            'particle_index_start']:
-                    ftypes[key] = "."
-                    data[key] = particles.pop(key)
+        if self.halos_ds is None:
+            ds = self.data_ds
+        else:
+            ds = self.halos_ds
 
-                for pfield in particles:
-                    data[pfield] = particles[pfield]
-                    ftypes[pfield] = 'particles'
-
-        save_as_dataset(self.halos_ds, filename, data,
+        save_as_dataset(ds, filename, data,
                         field_types=ftypes, extra_attrs=extra_attrs)
 
     def add_default_quantities(self, field_type='halos'):
