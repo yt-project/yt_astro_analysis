@@ -60,7 +60,9 @@ class HaloCatalog(ParallelAnalysisInterface):
     data_ds : str
         Dataset created by a simulation.
     data_source : data container
-        Data container associated with either the halos_ds or the data_ds.
+        Data container associated with either the halos_ds to use for analysis.
+        This can be used to restrict analysis to a subset of the full catalog.
+        By default, the entire catalog will be analyzed.
     finder_method : str
         Halo finder to be used if no halos_ds is given.
     output_dir : str
@@ -123,13 +125,8 @@ class HaloCatalog(ParallelAnalysisInterface):
             if finder_method is None:
                 raise RuntimeError("Must specify a halos_ds or a finder_method.")
 
-        if data_source is None:
-            if halos_ds is not None:
-                halos_ds.index
-                data_source = halos_ds.all_data()
-            else:
-                data_source = data_ds.all_data()
-        self.data_source = data_source
+        if data_source is None and halos_ds is not None:
+            self.data_source = halos_ds.all_data()
 
         self.finder_method_name = finder_method
         if finder_kwargs is None:
