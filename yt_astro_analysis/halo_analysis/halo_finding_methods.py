@@ -15,14 +15,17 @@ Halo Finding methods
 
 import numpy as np
 
-from yt_astro_analysis.halo_finding.halo_objects import \
-    FOFHaloFinder, \
-    HOPHaloFinder
+from yt.data_objects.time_series import \
+    DatasetSeries
 from yt.frontends.stream.data_structures import \
     load_particles
 from yt.units.dimensions import length
 from yt.utilities.operator_registry import \
-     OperatorRegistry
+    OperatorRegistry
+
+from yt_astro_analysis.halo_finding.halo_objects import \
+    FOFHaloFinder, \
+    HOPHaloFinder
 
 finding_method_registry = OperatorRegistry()
 
@@ -37,9 +40,11 @@ class HaloFindingMethod(object):
     def __init__(self, function, args=None, kwargs=None):
         self.function = function
         self.args = args
-        if self.args is None: self.args = []
+        if self.args is None:
+            self.args = []
         self.kwargs = kwargs
-        if self.kwargs is None: self.kwargs = {}
+        if self.kwargs is None:
+            self.kwargs = {}
 
     def __call__(self, hc):
         return self.function(hc, *self.args, **self.kwargs)
@@ -50,8 +55,15 @@ def _hop_method(hc, **finder_kwargs):
     """
 
     ds = hc.data_ds
-    halo_list = HOPHaloFinder(ds, **finder_kwargs)
-    _parse_old_halo_list(hc, halo_list)
+    if isinstance(ds, DatasetSeries):
+        ts = ds
+    else:
+        ts = DatasetSeries([ds])
+
+    for my_ds in ts:
+        halo_list = HOPHaloFinder(my_ds, **finder_kwargs)
+        _parse_old_halo_list(hc, halo_list)
+
 add_finding_method("hop", _hop_method)
 
 def _fof_method(hc, **finder_kwargs):
@@ -60,8 +72,15 @@ def _fof_method(hc, **finder_kwargs):
     """
 
     ds = hc.data_ds
-    halo_list = FOFHaloFinder(ds, **finder_kwargs)
-    _parse_old_halo_list(hc, halo_list)
+    if isinstance(ds, DatasetSeries):
+        ts = ds
+    else:
+        ts = DatasetSeries([ds])
+
+    for my_ds in ts:
+        halo_list = FOFHaloFinder(my_ds, **finder_kwargs)
+        _parse_old_halo_list(hc, halo_list)
+
 add_finding_method("fof", _fof_method)
 
 def _rockstar_method(hc, **finder_kwargs):
@@ -85,7 +104,7 @@ def _parse_old_halo_list(hc, halo_list):
     Save the halo list as a HaloCatalog.
     """
 
-    data_ds = hc.data_ds
+    ds = halo_list.ds
 
     # Set up fields that we want to pull from identified halos and their units
     fields = \
@@ -99,7 +118,7 @@ def _parse_old_halo_list(hc, halo_list):
     # Set up a dictionary based on those fields 
     # with empty arrays where we will fill in their values
     num_halos = len(halo_list)
-    halo_properties = { f : data_ds.arr(np.empty(num_halos), unit)
+    halo_properties = { f : ds.arr(np.empty(num_halos), unit)
                        for f, unit in zip(fields, units)}
 
     save_particles = getattr(halo_list, "save_particles", False)
@@ -135,8 +154,9 @@ def _parse_old_halo_list(hc, halo_list):
 
     if save_particles:
         member_ids = np.empty(n_particles.sum(), dtype=np.int64)
-        np.concatenate([halo['particle_index'].astype(np.int64)
-                        for halo in halo_list], out=member_ids)
+        if member_ids.size > 0:
+            np.concatenate([halo['particle_index'].astype(np.int64)
+                            for halo in halo_list], out=member_ids)
 
         start = n_particles.cumsum() - n_particles
         halo_properties.update({
@@ -149,4 +169,4 @@ def _parse_old_halo_list(hc, halo_list):
     if save_particles:
         ftypes['ids'] = 'particles'
 
-    hc.save_catalog(data=halo_properties, ftypes=ftypes)
+    hc.save_catalog(ds, data=halo_properties, ftypes=ftypes)

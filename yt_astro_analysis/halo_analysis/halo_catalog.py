@@ -1,5 +1,5 @@
 """
-HaloCatalog object
+HaloCatalog class and member functions
 
 
 
@@ -39,6 +39,8 @@ from yt_astro_analysis.halo_analysis.halo_quantities import \
     quantity_registry
 from yt_astro_analysis.halo_analysis.halo_recipes import \
     recipe_registry
+from yt_astro_analysis.halo_analysis.utilities import \
+    quiet
 
 class HaloCatalog(ParallelAnalysisInterface):
     r"""Create a HaloCatalog: an object that allows for the creation and association
@@ -114,10 +116,6 @@ class HaloCatalog(ParallelAnalysisInterface):
         self.halos_ds = halos_ds
         self.data_ds = data_ds
         self.output_dir = ensure_dir(output_dir)
-        if os.path.basename(self.output_dir) != ".":
-            self.output_prefix = os.path.basename(self.output_dir)
-        else:
-            self.output_prefix = "catalog"
 
         if halos_ds is None:
             if data_ds is None:
@@ -132,11 +130,12 @@ class HaloCatalog(ParallelAnalysisInterface):
         if finder_kwargs is None:
             finder_kwargs = {}
         if finder_method is not None:
-            finder_method = finding_method_registry.find(finder_method,
-                        **finder_kwargs)
+            finder_method = finding_method_registry.find(
+                finder_method, **finder_kwargs)
         self.finder_method = finder_method
 
-        # all of the analysis actions to be performed: callbacks, filters, and quantities
+        # all of the analysis actions to be performed:
+        # callbacks, filters, and quantities
         self.actions = []
         # fields to be written to the halo catalog
         self.quantities = []
@@ -219,7 +218,9 @@ class HaloCatalog(ParallelAnalysisInterface):
         elif (field_type, key) in self.halos_ds.field_info:
             quantity = (field_type, key)
         else:
-            raise RuntimeError("HaloCatalog quantity must be a registered function or a field of a known type.")
+            raise RuntimeError(
+                "HaloCatalog quantity must be a registered function " +
+                "or a field of a known type.")
         self.quantities.append(key)
         if prepend:
             self.actions.insert(0, ("quantity", (key, quantity)))
@@ -332,7 +333,8 @@ class HaloCatalog(ParallelAnalysisInterface):
         load
 
         """
-        self._run(save_halos, save_catalog, njobs=njobs, dynamic=dynamic)
+        self._run(save_halos, save_catalog,
+                  njobs=njobs, dynamic=dynamic)
 
     def load(self, save_halos=True, save_catalog=False,
              njobs=-1, dynamic=False):
@@ -368,7 +370,8 @@ class HaloCatalog(ParallelAnalysisInterface):
         create
 
         """
-        self._run(save_halos, save_catalog, njobs=njobs, dynamic=dynamic)
+        self._run(save_halos, save_catalog,
+                  njobs=njobs, dynamic=dynamic)
 
     @parallel_blocking_call
     def _run(self, save_halos, save_catalog,
@@ -412,7 +415,7 @@ class HaloCatalog(ParallelAnalysisInterface):
             self._analyze_halos(save_halos, njobs, dynamic)
 
             if save_catalog:
-                self.save_catalog()
+                self.save_catalog(self.halos_ds)
 
     def _analyze_halos(self, save_halos, njobs, dynamic):
         "Run all halos through the analysis pipeline."
@@ -466,11 +469,12 @@ class HaloCatalog(ParallelAnalysisInterface):
 
         pbar.finish()
 
-    def save_catalog(self, data=None, ftypes=None):
+    def save_catalog(self, ds, data=None, ftypes=None):
         "Write out hdf5 file with all halo quantities."
 
-        filename = os.path.join(self.output_dir, "%s.%d.h5" %
-                                (self.output_prefix, self.comm.rank))
+        data_dir = ensure_dir(os.path.join(self.output_dir, ds.basename))
+        filename = os.path.join(
+            data_dir, "%s.%d.h5" % (ds.basename, self.comm.rank))
 
         if data is None:
             n_halos = len(self.catalog)
@@ -482,23 +486,22 @@ class HaloCatalog(ParallelAnalysisInterface):
         else:
             n_halos = data['particle_identifier'].size
 
+        mylog.info("Saving halo catalog (%d halos): %s." %
+                   (n_halos, filename))
+
         # Sets each field to be saved in the root hdf5 group
         # as per the HaloCatalog format.
         if ftypes is None:
             ftypes = dict((key, ".") for key in self.quantities)
 
-        mylog.info("Saving halo catalog (%d halos) to %s." %
-                   (n_halos, os.path.join(self.output_dir, self.output_prefix)))
         extra_attrs = {"data_type": "halo_catalog",
                        "num_halos": n_halos}
 
-        if self.halos_ds is None:
-            ds = self.data_ds
-        else:
-            ds = self.halos_ds
-
-        save_as_dataset(ds, filename, data,
-                        field_types=ftypes, extra_attrs=extra_attrs)
+        with quiet():
+            save_as_dataset(
+                ds, filename, data,
+                field_types=ftypes,
+                extra_attrs=extra_attrs)
 
     def add_default_quantities(self, field_type='halos'):
         for field in ["particle_identifier", "particle_mass",
@@ -506,7 +509,7 @@ class HaloCatalog(ParallelAnalysisInterface):
                       "particle_position_z", "virial_radius"]:
             field_name = (field_type, field)
             if field_name not in self.halos_ds.derived_field_list:
-                mylog.warn("Halo dataset %s has no field %s." %
-                           (self.halos_ds, str(field_name)))
+                mylog.warning("Halo dataset %s has no field %s." %
+                              (self.halos_ds, str(field_name)))
                 continue
             self.add_quantity(field, field_type=field_type, prepend=True)
