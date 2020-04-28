@@ -421,13 +421,8 @@ class HaloCatalog(ParallelAnalysisInterface):
         "Run all halos through the analysis pipeline."
 
         halo_index = np.argsort(self.data_source["all", "particle_identifier"])
-        # If we have just run hop or fof, halos are already divided amongst processors.
-        if self.finder_method_name in ["hop", "fof"]:
-            my_index = halo_index
-            nhalos = self.comm.mpi_allreduce(halo_index.size, op="sum")
-        else:
-            my_index = parallel_objects(halo_index, njobs=njobs, dynamic=dynamic)
-            nhalos = halo_index.size
+        my_index = parallel_objects(halo_index, njobs=njobs, dynamic=dynamic)
+        nhalos = halo_index.size
 
         my_i = 0
         my_n = self.comm.size
