@@ -467,9 +467,13 @@ class HaloCatalog(ParallelAnalysisInterface):
     def save_catalog(self, ds, data=None, ftypes=None):
         "Write out hdf5 file with all halo quantities."
 
-        data_dir = ensure_dir(os.path.join(self.output_dir, ds.basename))
+        if '.' in ds.basename:
+            basename = ds.basename[:ds.basename.find('.')]
+        else:
+            basename = ds.basename
+        data_dir = ensure_dir(os.path.join(self.output_dir, basename))
         filename = os.path.join(
-            data_dir, "%s.%d.h5" % (ds.basename, self.comm.rank))
+            data_dir, "%s.%d.h5" % (basename, self.comm.rank))
 
         if data is None:
             n_halos = len(self.catalog)
