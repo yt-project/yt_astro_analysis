@@ -32,6 +32,11 @@ from yt_astro_analysis.halo_analysis.analysis_pipeline import \
 from yt_astro_analysis.halo_analysis.utilities import \
     quiet
 
+_default_fields = \
+  ["particle_identifier", "particle_mass", "virial_radius"] + \
+  ["particle_position_" + ax for ax in "xyz"] + \
+  ["particle_velocity_" + ax for ax in "xyz"]
+
 class HaloCatalog(AnalysisPipeline):
     r"""Create a HaloCatalog: an object that allows for the creation and association
     of data with a set of halo objects.
@@ -293,9 +298,7 @@ class HaloCatalog(AnalysisPipeline):
 
     def _add_default_quantities(self):
         field_type = self.halo_field_type
-        for field in ["particle_identifier", "particle_mass",
-                      "particle_position_x", "particle_position_y",
-                      "particle_position_z", "virial_radius"]:
+        for field in _default_fields:
             field_name = (field_type, field)
             if field_name not in self.halos_ds.derived_field_list:
                 mylog.warning("Halo dataset %s has no field %s." %
