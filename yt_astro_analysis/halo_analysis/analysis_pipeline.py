@@ -42,6 +42,12 @@ from yt_astro_analysis.halo_analysis.halo_recipes import \
 from yt_astro_analysis.halo_analysis.utilities import \
     quiet
 
+class AnalysisTarget(object):
+    _container_name = "pipeline"
+    def __init__(self, pipeline):
+        setattr(self, self._container_name, pipeline)
+        self.quantities = {}
+
 class AnalysisPipeline(ParallelAnalysisInterface):
     r"""Create a AnalysisPipeline: an object that allows for the creation and association
     of data with a set of halo objects.
@@ -107,6 +113,9 @@ class AnalysisPipeline(ParallelAnalysisInterface):
     add_callback, add_filter, add_quantity, add_recipe
 
     """
+
+    _target_cls = AnalysisTarget
+    _target_id_field = 'particle_identifier'
 
     def __init__(self, output_dir="analysis"):
         ParallelAnalysisInterface.__init__(self)
@@ -273,9 +282,7 @@ class AnalysisPipeline(ParallelAnalysisInterface):
         halo_recipe(self)
 
     @parallel_blocking_call
-    def run_pipeline(self, targets, data_source=None,
-                     save_halos=False, save_catalog=True,
-                     njobs=-1, dynamic=False):
+    def _run(self, save_targets, save_catalog):
         r"""
         Run the requested halo analysis.
 
@@ -306,18 +313,26 @@ class AnalysisPipeline(ParallelAnalysisInterface):
         if save_targets:
             self.target_list = []
 
-        target_index = range(len(targets))
-        my_index = parallel_objects(target_index, njobs=njobs, dynamic=dynamic)
-
-        for i in my_index:
-            self._process_target(targets[i], i, data_source=data_source)
+        for chunk in self.data_source.chunks([], 'io'):
+            if self.comm.rank == 0:
+                chunk.get_data(self.field_quantities)
+            if self.comm.size > 1:
+                fdata = self.comm.comm.bcast(chunk.field_data, root=0)
+                chunk.field_data.update(fdata)
+            halo_indices = \
+              range(chunk[self.halo_field_type, self._target_id_field].size)
+            my_indices = parallel_objects(halo_indices, njobs=-1, dynamic=False)
+            for my_index in my_indices:
+                self._process_target(my_index, my_index, save_targets,
+                                     data_source=chunk)
 
         if save_catalog:
-            self.save_catalog({})
+            self._save(self.halos_ds)
 
     def _process_target(self, target, index, save_targets,
                         data_source=None):
-        new_target = AnalysisTarget(self)
+
+        new_target = self._target_cls(self)
         new_target.index = index
         new_target.object = target
         target_filter = True
@@ -350,13 +365,19 @@ class AnalysisPipeline(ParallelAnalysisInterface):
         else:
             del new_target
 
-    def save_catalog(self, ds, data=None, ftypes=None):
-        "Write out hdf5 file with all halo quantities."
+    def _save(self, ds, data=None, ftypes=None):
+        "Save pipeline results."
 
-        if '.' in ds.basename:
-            basename = ds.basename[:ds.basename.find('.')]
+        if isinstance(ds, dict):
+            basename = ds.get('basename')
         else:
-            basename = ds.basename
+            basename = getattr(ds, 'basename')
+
+        if basename is None:
+            basename = 'analysis'
+        if '.' in basename:
+            basename = basename[:basename.rfind('.')]
+
         data_dir = ensure_dir(os.path.join(self.output_dir, basename))
         filename = os.path.join(
             data_dir, "%s.%d.h5" % (basename, self.comm.rank))
@@ -369,7 +390,7 @@ class AnalysisPipeline(ParallelAnalysisInterface):
                     data[key] = self.halos_ds.arr(
                         [halo[key] for halo in self.catalog])
         else:
-            n_halos = data['particle_identifier'].size
+            n_halos = data[self._target_id_field].size
 
         mylog.info("Saving analysis (%d targets): %s." %
                    (n_halos, filename))
@@ -385,8 +406,3 @@ class AnalysisPipeline(ParallelAnalysisInterface):
                 ds, filename, data,
                 field_types=ftypes,
                 extra_attrs=extra_attrs)
-
-class AnalysisTarget(object):
-    def __init__(self, pipeline):
-        self.halo_catalog = pipeline
-        self.quantities = {}

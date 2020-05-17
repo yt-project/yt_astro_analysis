@@ -28,7 +28,8 @@ from yt.utilities.parallel_tools.parallel_analysis_interface import \
     parallel_objects
 
 from yt_astro_analysis.halo_analysis.analysis_pipeline import \
-    AnalysisPipeline
+    AnalysisPipeline, \
+    AnalysisTarget
 from yt_astro_analysis.halo_analysis.utilities import \
     quiet
 
@@ -36,6 +37,9 @@ _default_fields = \
   ["particle_identifier", "particle_mass", "virial_radius"] + \
   ["particle_position_" + ax for ax in "xyz"] + \
   ["particle_velocity_" + ax for ax in "xyz"]
+
+class Halo(AnalysisTarget):
+    _container_name = "halo_catalog"
 
 class HaloCatalog(AnalysisPipeline):
     r"""Create a HaloCatalog: an object that allows for the creation and association
@@ -102,6 +106,8 @@ class HaloCatalog(AnalysisPipeline):
     add_callback, add_filter, add_quantity, add_recipe
 
     """
+
+    _target_cls = Halo
 
     def __init__(self, halos_ds=None, data_ds=None,
                  data_source=None, halo_field_type='all',
@@ -238,63 +244,7 @@ class HaloCatalog(AnalysisPipeline):
             self.finder_method(self)
             return
 
-        self.catalog = []
-        if save_targets:
-            self.target_list = []
-
-        for chunk in self.data_source.chunks([], 'io'):
-            if self.comm.rank == 0:
-                chunk.get_data(self.field_quantities)
-            if self.comm.size > 1:
-                fdata = self.comm.comm.bcast(chunk.field_data, root=0)
-                chunk.field_data.update(fdata)
-            halo_indices = \
-              range(chunk[self.halo_field_type, 'particle_identifier'].size)
-            my_indices = parallel_objects(halo_indices, njobs=-1, dynamic=False)
-            for my_index in my_indices:
-                self._process_target(my_index, my_index, save_targets,
-                                     data_source=chunk)
-
-        if save_catalog:
-            self.save_catalog(self.halos_ds)
-
-    def save_catalog(self, ds, data=None, ftypes=None):
-        "Write out hdf5 file with all halo quantities."
-
-        if '.' in ds.basename:
-            basename = ds.basename[:ds.basename.find('.')]
-        else:
-            basename = ds.basename
-        data_dir = ensure_dir(os.path.join(self.output_dir, basename))
-        filename = os.path.join(
-            data_dir, "%s.%d.h5" % (basename, self.comm.rank))
-
-        if data is None:
-            n_halos = len(self.catalog)
-            data = {}
-            if n_halos > 0:
-                for key in self.quantities:
-                    data[key] = self.halos_ds.arr(
-                        [halo[key] for halo in self.catalog])
-        else:
-            n_halos = data['particle_identifier'].size
-
-        mylog.info("Saving halo catalog (%d halos): %s." %
-                   (n_halos, filename))
-
-        # Sets each field to be saved in the root hdf5 group
-        # as per the HaloCatalog format.
-        if ftypes is None:
-            ftypes = dict((key, ".") for key in self.quantities)
-
-        extra_attrs = {"data_type": "halo_catalog",
-                       "num_halos": n_halos}
-
-        with quiet():
-            save_as_dataset(
-                ds, filename, data,
-                field_types=ftypes,
-                extra_attrs=extra_attrs)
+        super(HaloCatalog, self)._run(save_targets, save_catalog)
 
     def _add_default_quantities(self):
         field_type = self.halo_field_type

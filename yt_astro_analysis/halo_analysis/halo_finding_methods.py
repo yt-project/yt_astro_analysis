@@ -169,4 +169,4 @@ def _parse_old_halo_list(hc, halo_list):
     if save_particles:
         ftypes['ids'] = 'particles'
 
-    hc.save_catalog(ds, data=halo_properties, ftypes=ftypes)
+    hc._save(ds, data=halo_properties, ftypes=ftypes)
