@@ -313,21 +313,42 @@ class AnalysisPipeline(ParallelAnalysisInterface):
         if save_targets:
             self.target_list = []
 
-        for chunk in self.data_source.chunks([], 'io'):
-            if self.comm.rank == 0:
-                chunk.get_data(self.field_quantities)
-            if self.comm.size > 1:
-                fdata = self.comm.comm.bcast(chunk.field_data, root=0)
-                chunk.field_data.update(fdata)
-            halo_indices = \
-              range(chunk[self.halo_field_type, self._target_id_field].size)
-            my_indices = parallel_objects(halo_indices, njobs=-1, dynamic=False)
-            for my_index in my_indices:
-                self._process_target(my_index, my_index, save_targets,
-                                     data_source=chunk)
+        for my_index, chunk in self._yield_targets():
+            self._process_target(
+                my_index, my_index,
+                save_targets, data_source=chunk)
 
         if save_catalog:
             self._save(self.halos_ds)
+
+    def _yield_targets(self, njobs='auto', dynamic=False):
+
+        my_size = self.comm.size
+
+        if njobs == 'auto':
+            # use task queue if odd number of cores more than 2
+            my_dynamic = my_size > 2 and my_size % 2
+            my_njobs = -1
+        else:
+            my_dynamic = dynamic
+            my_njobs = njobs
+
+        for chunk in self.data_source.chunks([], 'io'):
+
+            if self.comm.rank == 0:
+                chunk.get_data(self.field_quantities)
+
+            if my_size > 1:
+                fdata = self.comm.comm.bcast(chunk.field_data, root=0)
+                chunk.field_data.update(fdata)
+
+            target_indices = \
+              range(chunk[self.halo_field_type, self._target_id_field].size)
+            my_indices = parallel_objects(
+                target_indices, njobs=my_njobs, dynamic=my_dynamic)
+
+            for my_index in my_indices:
+                yield my_index, chunk
 
     def _process_target(self, target, index, save_targets,
                         data_source=None):
@@ -376,7 +397,7 @@ class AnalysisPipeline(ParallelAnalysisInterface):
         if basename is None:
             basename = 'analysis'
         if '.' in basename:
-            basename = basename[:basename.rfind('.')]
+            basename = basename[:basename.find('.')]
 
         data_dir = ensure_dir(os.path.join(self.output_dir, basename))
         filename = os.path.join(
