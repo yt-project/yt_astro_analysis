@@ -130,7 +130,7 @@ class AnalysisPipeline(ParallelAnalysisInterface):
     def __init__(self, output_dir="analysis", data_source=None):
         ParallelAnalysisInterface.__init__(self)
 
-        self.output_dir = ensure_dir(output_dir)
+        self.output_basedir = ensure_dir(output_dir)
         self.data_source = data_source
 
         # all of the analysis actions to be performed:
@@ -145,12 +145,27 @@ class AnalysisPipeline(ParallelAnalysisInterface):
     def _add_default_quantities(self):
         pass
 
-    _source_ds = None
     @property
     def source_ds(self):
-        if self._source_ds is None:
-            self._source_ds = getattr(self.data_source, 'ds', {})
-        return self._source_ds
+        return getattr(self.data_source, 'ds', {})
+
+    @property
+    def output_basename(self):
+        ds = self.source_ds
+        if isinstance(ds, dict):
+            basename = ds.get('basename')
+        else:
+            basename = getattr(ds, 'basename')
+
+        if basename is None:
+            basename = 'analysis'
+        if '.' in basename:
+            basename = basename[:basename.find('.')]
+        return basename
+
+    @property
+    def output_dir(self):
+        return os.path.join(self.output_basedir, self.output_basename)
 
     def add_callback(self, callback, *args, **kwargs):
         r"""
@@ -304,6 +319,18 @@ class AnalysisPipeline(ParallelAnalysisInterface):
         halo_recipe = recipe_registry.find(recipe, *args, **kwargs)
         halo_recipe(self)
 
+    def _preprocess(self):
+        "Create callback output directories."
+
+        for action_type, action in self.actions:
+            if action_type != 'callback':
+                continue
+            my_output_dir = action.kwargs.get('output_dir')
+            if my_output_dir is not None:
+                new_output_dir = ensure_dir(
+                    os.path.join(self.output_dir, my_output_dir))
+                action.kwargs['output_dir'] = new_output_dir
+
     @parallel_blocking_call
     def _run(self, save_targets, save_catalog):
         r"""
@@ -331,6 +358,8 @@ class AnalysisPipeline(ParallelAnalysisInterface):
         create, load
 
         """
+
+        self._preprocess()
 
         self.catalog = []
         if save_targets:
@@ -415,19 +444,9 @@ class AnalysisPipeline(ParallelAnalysisInterface):
         if ds is None:
             ds = self.source_ds
 
-        if isinstance(ds, dict):
-            basename = ds.get('basename')
-        else:
-            basename = getattr(ds, 'basename')
-
-        if basename is None:
-            basename = 'analysis'
-        if '.' in basename:
-            basename = basename[:basename.find('.')]
-
-        data_dir = ensure_dir(os.path.join(self.output_dir, basename))
+        data_dir = ensure_dir(self.output_dir)
         filename = os.path.join(
-            data_dir, "%s.%d.h5" % (basename, self.comm.rank))
+            data_dir, "%s.%d.h5" % (self.output_basename, self.comm.rank))
 
         if data is None:
             n_halos = len(self.catalog)
