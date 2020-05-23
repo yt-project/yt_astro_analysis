@@ -13,6 +13,7 @@ AnalysisPipeline class and member functions
 # The full license is in the file COPYING.txt, distributed with this software.
 #-----------------------------------------------------------------------------
 
+import functools
 import numpy as np
 import os
 
@@ -22,6 +23,8 @@ from yt.funcs import \
     ensure_dir, \
     get_pbar, \
     mylog
+from yt.units.yt_array import \
+    YTArray
 from yt.utilities.parallel_tools.parallel_analysis_interface import \
     ParallelAnalysisInterface, \
     parallel_blocking_call, \
@@ -47,6 +50,13 @@ class AnalysisTarget(object):
     def __init__(self, pipeline):
         setattr(self, self._container_name, pipeline)
         self.quantities = {}
+
+    def _set_field_value(self, fieldkey, fieldname, data_source, index):
+        self.quantities[fieldkey] = \
+          self._get_field_value(fieldname, data_source, index)
+
+    def _get_field_value(self, fieldname, data_source, index):
+        pass
 
 class AnalysisPipeline(ParallelAnalysisInterface):
     r"""Create a AnalysisPipeline: an object that allows for the creation and association
@@ -117,10 +127,11 @@ class AnalysisPipeline(ParallelAnalysisInterface):
     _target_cls = AnalysisTarget
     _target_id_field = 'particle_identifier'
 
-    def __init__(self, output_dir="analysis"):
+    def __init__(self, output_dir="analysis", data_source=None):
         ParallelAnalysisInterface.__init__(self)
 
         self.output_dir = ensure_dir(output_dir)
+        self.data_source = data_source
 
         # all of the analysis actions to be performed:
         # callbacks, filters, and quantities
@@ -128,6 +139,18 @@ class AnalysisPipeline(ParallelAnalysisInterface):
         # fields to be written to the halo catalog
         self.quantities = []
         self.field_quantities = []
+
+        self._add_default_quantities()
+
+    def _add_default_quantities(self):
+        pass
+
+    _source_ds = None
+    @property
+    def source_ds(self):
+        if self._source_ds is None:
+            self._source_ds = getattr(self.data_source, 'ds', {})
+        return self._source_ds
 
     def add_callback(self, callback, *args, **kwargs):
         r"""
@@ -319,7 +342,7 @@ class AnalysisPipeline(ParallelAnalysisInterface):
                 save_targets, data_source=chunk)
 
         if save_catalog:
-            self._save(self.halos_ds)
+            self._save()
 
     def _yield_targets(self, njobs='auto', dynamic=False):
 
@@ -369,8 +392,8 @@ class AnalysisPipeline(ParallelAnalysisInterface):
                 if callable(quantity):
                     new_target.quantities[key] = quantity(new_target)
                 else:
-                    new_target.quantities[key] = \
-                      data_source[quantity][index]
+                    new_target._set_field_value(
+                        key, quantity, data_source, index)
             else:
                 raise RuntimeError(
                     "Action must be a callback, filter, or quantity.")
@@ -386,8 +409,11 @@ class AnalysisPipeline(ParallelAnalysisInterface):
         else:
             del new_target
 
-    def _save(self, ds, data=None, ftypes=None):
+    def _save(self, ds=None, data=None, extra_attrs=None, ftypes=None):
         "Save pipeline results."
+
+        if ds is None:
+            ds = self.source_ds
 
         if isinstance(ds, dict):
             basename = ds.get('basename')
@@ -408,8 +434,14 @@ class AnalysisPipeline(ParallelAnalysisInterface):
             data = {}
             if n_halos > 0:
                 for key in self.quantities:
-                    data[key] = self.halos_ds.arr(
-                        [halo[key] for halo in self.catalog])
+
+                    if hasattr(self.catalog[0][key], 'units'):
+                        registry = self.catalog[0][key].units.registry
+                        my_arr = functools.partial(YTArray, registry=registry)
+                    else:
+                        my_arr = np.array
+
+                    data[key] = my_arr([halo[key] for halo in self.catalog])
         else:
             n_halos = data[self._target_id_field].size
 
@@ -419,11 +451,14 @@ class AnalysisPipeline(ParallelAnalysisInterface):
         if ftypes is None:
             ftypes = dict((key, ".") for key in self.quantities)
 
-        extra_attrs = {"data_type": "halo_catalog",
-                       "num_halos": n_halos}
+        if extra_attrs is None:
+            extra_attrs = {}
+        extra_attrs_d = {"data_type": "halo_catalog",
+                         "num_halos": n_halos}
+        extra_attrs_d.update(extra_attrs)
 
         with quiet():
             save_as_dataset(
                 ds, filename, data,
                 field_types=ftypes,
-                extra_attrs=extra_attrs)
+                extra_attrs=extra_attrs_d)

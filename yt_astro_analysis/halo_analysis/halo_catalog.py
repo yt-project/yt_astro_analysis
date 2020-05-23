@@ -41,6 +41,9 @@ _default_fields = \
 class Halo(AnalysisTarget):
     _container_name = "halo_catalog"
 
+    def _get_field_value(self, fieldname, data_source, index):
+        return data_source[fieldname][index]
+
 class HaloCatalog(AnalysisPipeline):
     r"""Create a HaloCatalog: an object that allows for the creation and association
     of data with a set of halo objects.
@@ -113,8 +116,6 @@ class HaloCatalog(AnalysisPipeline):
                  data_source=None, halo_field_type='all',
                  finder_method=None, finder_kwargs=None,
                  output_dir="halo_catalogs"):
-        super(HaloCatalog, self).__init__(output_dir=output_dir)
-
         self.halos_ds = halos_ds
         self.data_ds = data_ds
         self.halo_field_type = halo_field_type
@@ -126,10 +127,7 @@ class HaloCatalog(AnalysisPipeline):
                 raise RuntimeError("Must specify a halos_ds or a finder_method.")
 
         if data_source is None and halos_ds is not None:
-            self.data_source = halos_ds.all_data()
-
-        if self.halos_ds is not None:
-            self._add_default_quantities()
+            data_source = halos_ds.all_data()
 
         self.finder_method_name = finder_method
         if finder_kwargs is None:
@@ -138,6 +136,23 @@ class HaloCatalog(AnalysisPipeline):
             finder_method = finding_method_registry.find(
                 finder_method, **finder_kwargs)
         self.finder_method = finder_method
+
+        super(HaloCatalog, self).__init__(
+            output_dir=output_dir, data_source=data_source)
+
+    def _add_default_quantities(self):
+        if self.halos_ds is None:
+            return
+
+        field_type = self.halo_field_type
+        for field in _default_fields:
+            field_name = (field_type, field)
+            if field_name not in self.halos_ds.derived_field_list:
+                mylog.warning("Halo dataset %s has no field %s." %
+                              (self.halos_ds, str(field_name)))
+                continue
+            self.add_quantity(field, from_data_source=True,
+                              field_type=field_type)
 
     def create(self, save_halos=False, save_catalog=True):
         r"""
@@ -245,14 +260,3 @@ class HaloCatalog(AnalysisPipeline):
             return
 
         super(HaloCatalog, self)._run(save_targets, save_catalog)
-
-    def _add_default_quantities(self):
-        field_type = self.halo_field_type
-        for field in _default_fields:
-            field_name = (field_type, field)
-            if field_name not in self.halos_ds.derived_field_list:
-                mylog.warning("Halo dataset %s has no field %s." %
-                              (self.halos_ds, str(field_name)))
-                continue
-            self.add_quantity(field, from_data_source=True,
-                              field_type=field_type)
