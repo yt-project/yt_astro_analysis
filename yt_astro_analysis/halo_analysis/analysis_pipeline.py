@@ -331,6 +331,69 @@ class AnalysisPipeline(ParallelAnalysisInterface):
                     os.path.join(self.output_dir, my_output_dir))
                 action.kwargs['output_dir'] = new_output_dir
 
+
+    def create(self, save_halos=False, save_catalog=True):
+        r"""
+        Create the halo catalog given the callbacks, quantities, and filters that
+        have been provided.
+
+        This is a wrapper around the main _run function with default arguments tuned
+        for halo catalog creation.  By default, halo objects are not saved but the
+        halo catalog is written, opposite to the behavior of the load function.
+
+        Parameters
+        ----------
+        save_halos : bool
+            If True, a list of all Halo objects is retained under the "halo_list"
+            attribute.  If False, only the compiles quantities are saved under the
+            "catalog" attribute.
+            Default: False
+        save_catalog : bool
+            If True, save the final catalog to disk.
+            Default: True
+        njobs : int
+            The number of jobs over which to divide halo analysis.  Choose -1
+            to allocate one processor per halo.
+            Default: -1
+        dynamic : int
+            If False, halo analysis is divided evenly between all available processors.
+            If True, parallelism is performed via a task queue.
+            Default: False
+
+        See Also
+        --------
+        load
+
+        """
+        self._run(save_halos, save_catalog)
+
+    def load(self, njobs=-1, dynamic=False):
+        r"""
+        Load a previously created halo catalog.
+
+        This is a wrapper around the main _run function with default arguments tuned
+        for reloading halo catalogs and associated data.  By default, halo objects are
+        saved and the halo catalog is not written, opposite to the behavior of the
+        create function.
+
+        Parameters
+        ----------
+        njobs : int
+            The number of jobs over which to divide halo analysis.  Choose -1
+            to allocate one processor per halo.
+            Default: -1
+        dynamic : int
+            If False, halo analysis is divided evenly between all available processors.
+            If True, parallelism is performed via a task queue.
+            Default: False
+
+        See Also
+        --------
+        create
+
+        """
+        self._run(True, False, njobs=njobs, dynamic=dynamic)
+
     @parallel_blocking_call
     def _run(self, save_targets, save_catalog):
         r"""
