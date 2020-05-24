@@ -332,7 +332,8 @@ class AnalysisPipeline(ParallelAnalysisInterface):
                 action.kwargs['output_dir'] = new_output_dir
 
 
-    def create(self, save_halos=False, save_catalog=True):
+    def create(self, save_objects=False, save_output=True,
+               njobs='auto', dynamic=False):
         r"""
         Create the halo catalog given the callbacks, quantities, and filters that
         have been provided.
@@ -343,12 +344,12 @@ class AnalysisPipeline(ParallelAnalysisInterface):
 
         Parameters
         ----------
-        save_halos : bool
+        save_objects : bool
             If True, a list of all Halo objects is retained under the "halo_list"
             attribute.  If False, only the compiles quantities are saved under the
             "catalog" attribute.
             Default: False
-        save_catalog : bool
+        save_output : bool
             If True, save the final catalog to disk.
             Default: True
         njobs : int
@@ -365,9 +366,10 @@ class AnalysisPipeline(ParallelAnalysisInterface):
         load
 
         """
-        self._run(save_halos, save_catalog)
+        self._run(save_objects, save_output,
+                  njobs=njobs, dynamic=dynamic)
 
-    def load(self, njobs=-1, dynamic=False):
+    def load(self, njobs='auto', dynamic=False,):
         r"""
         Load a previously created halo catalog.
 
@@ -395,17 +397,17 @@ class AnalysisPipeline(ParallelAnalysisInterface):
         self._run(True, False, njobs=njobs, dynamic=dynamic)
 
     @parallel_blocking_call
-    def _run(self, save_targets, save_catalog):
+    def _run(self, save_objects, save_output):
         r"""
         Run the requested halo analysis.
 
         Parameters
         ----------
-        save_halos : bool
+        save_objects : bool
             If True, a list of all Halo objects is retained under the "halo_list"
             attribute.  If False, only the compiles quantities are saved under the
             "catalog" attribute.
-        save_catalog : bool
+        save_output : bool
             If True, save the final catalog to disk.
         njobs : int
             The number of jobs over which to divide halo analysis.  Choose -1
@@ -425,15 +427,15 @@ class AnalysisPipeline(ParallelAnalysisInterface):
         self._preprocess()
 
         self.catalog = []
-        if save_targets:
+        if save_objects:
             self.target_list = []
 
         for my_index, chunk in self._yield_targets():
             self._process_target(
                 my_index, my_index,
-                save_targets, data_source=chunk)
+                save_objects, data_source=chunk)
 
-        if save_catalog:
+        if save_output:
             self._save()
 
     def _yield_targets(self, njobs='auto', dynamic=False):
@@ -465,7 +467,7 @@ class AnalysisPipeline(ParallelAnalysisInterface):
             for my_index in my_indices:
                 yield my_index, chunk
 
-    def _process_target(self, target, index, save_targets,
+    def _process_target(self, target, index, save_objects,
                         data_source=None):
 
         new_target = self._target_cls(self)
@@ -496,7 +498,7 @@ class AnalysisPipeline(ParallelAnalysisInterface):
                     quantity.convert_to_base()
             self.catalog.append(new_target.quantities)
 
-        if save_targets and target_filter:
+        if save_objects and target_filter:
             self.target_list.append(new_target)
         else:
             del new_target
