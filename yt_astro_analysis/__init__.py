@@ -18,7 +18,6 @@ __version__ = '1.1.0.dev0'
 from yt_astro_analysis import \
     cosmological_observation, \
     halo_analysis, \
-    halo_finding, \
     ppv_cube, \
     radmc3d_export, \
     sunyaev_zeldovich

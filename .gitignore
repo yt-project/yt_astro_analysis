@@ -3,8 +3,8 @@ yt_astro_analysis.egg-info
 __config__.py
 freetype.cfg
 rockstar.cfg
-yt_astro_analysis/halo_finding/rockstar/rockstar_groupies.c
-yt_astro_analysis/halo_finding/rockstar/rockstar_interface.c
+yt_astro_analysis/halo_analysis/halo_finding/rockstar/rockstar_groupies.c
+yt_astro_analysis/halo_analysis/halo_finding/rockstar/rockstar_interface.c
 yt_astro_analysis/ppv_cube/ppv_utils.c
 syntax: glob
 *~
