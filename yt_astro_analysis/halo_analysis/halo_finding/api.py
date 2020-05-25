@@ -13,6 +13,16 @@ API for halo_finding
 # The full license is in the file COPYING.txt, distributed with this software.
 #-----------------------------------------------------------------------------
 
+import warnings
+
+from yt.funcs import VisibleDeprecationWarning
+
+warnings.warn(
+    "Running the HoP and FoF halo finders directly is deprecated. " +
+    "Please run using the HaloCatalog. See " +
+    "https://yt-astro-analysis.readthedocs.io for more information.",
+    VisibleDeprecationWarning, stacklevel=2)
+
 from yt_astro_analysis.halo_finding.halo_objects import \
     HOPHaloFinder, \
     FOFHaloFinder
