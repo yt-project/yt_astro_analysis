@@ -18,7 +18,7 @@ import numpy as np
 from yt.utilities.operator_registry import \
      OperatorRegistry
 
-from yt_astro_analysis.halo_analysis.halo_callbacks import \
+from yt_astro_analysis.halo_analysis.halo_catalog.halo_callbacks import \
     HaloCallback
 
 quantity_registry = OperatorRegistry()
@@ -37,25 +37,3 @@ class HaloQuantity(HaloCallback):
         
     def __call__(self, halo):
         return self.function(halo, *self.args, **self.kwargs)
-
-def center_of_mass(halo):
-    if halo.particles is None:
-        raise RuntimeError("Center of mass requires halo to have particle data.")
-    return (halo.particles['particle_mass'] * 
-            np.array([halo.particles['particle_position_x'],
-                      halo.particles['particle_position_y'],
-                      halo.particles['particle_position_z']])).sum(axis=1) / \
-                               halo.particles['particle_mass'].sum()
-
-add_quantity('center_of_mass', center_of_mass)
-
-def bulk_velocity(halo):
-    if halo.particles is None:
-        raise RuntimeError("Bulk velocity requires halo to have particle data.")
-    return (halo.particles['particle_mass'] * 
-            np.array([halo.particles['particle_velocity_x'],
-                      halo.particles['particle_velocity_y'],
-                      halo.particles['particle_velocity_z']])).sum(axis=1) / \
-                               halo.particles['particle_mass'].sum()
-
-add_quantity('bulk_velocity', bulk_velocity)

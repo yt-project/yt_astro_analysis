@@ -6,7 +6,7 @@ Halo filter object
 """
 
 #-----------------------------------------------------------------------------
-# Copyright (c) 2013-2017, yt Development Team.
+# Copyright (c) yt Development Team. All rights reserved.
 #
 # Distributed under the terms of the Modified BSD License.
 #
@@ -20,7 +20,7 @@ from yt.utilities.operator_registry import \
 from yt.utilities.on_demand_imports import \
     _scipy as scipy
 
-from yt_astro_analysis.halo_analysis.halo_callbacks import \
+from yt_astro_analysis.halo_analysis.halo_catalog.halo_callbacks import \
     HaloCallback
 
 filter_registry = OperatorRegistry()

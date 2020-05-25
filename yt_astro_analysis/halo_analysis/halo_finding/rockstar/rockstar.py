@@ -23,7 +23,7 @@ from yt.utilities.parallel_tools.parallel_analysis_interface import \
     ProcessorPool
 
 try:
-    from yt_astro_analysis.halo_finding.rockstar import \
+    from yt_astro_analysis.halo_analysis.halo_finding.rockstar import \
      rockstar_interface
 except ImportError:
     mylog.warning(

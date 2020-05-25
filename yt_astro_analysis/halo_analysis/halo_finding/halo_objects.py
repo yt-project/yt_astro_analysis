@@ -29,8 +29,8 @@ from yt.utilities.physical_ratios import \
 from yt.utilities.parallel_tools.parallel_analysis_interface import \
     ParallelAnalysisInterface
 
-from yt_astro_analysis.halo_finding.hop.EnzoHop import RunHOP
-from yt_astro_analysis.halo_finding.fof.EnzoFOF import RunFOF
+from yt_astro_analysis.halo_analysis.halo_finding.hop.EnzoHop import RunHOP
+from yt_astro_analysis.halo_analysis.halo_finding.fof.EnzoFOF import RunFOF
 
 class Halo(object):
     """

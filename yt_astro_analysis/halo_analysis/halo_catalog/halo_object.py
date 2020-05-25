@@ -13,8 +13,11 @@ Halo object.
 # The full license is in the file COPYING.txt, distributed with this software.
 #-----------------------------------------------------------------------------
 
-class Halo(object):
-    particles = None
-    def __init__(self, halo_catalog):
-        self.halo_catalog = halo_catalog
-        self.quantities = {}
+from yt_astro_analysis.halo_analysis.halo_catalog.analysis_pipeline import \
+    AnalysisTarget
+
+class Halo(AnalysisTarget):
+    _container_name = "halo_catalog"
+
+    def _get_field_value(self, fieldname, data_source, index):
+        return data_source[fieldname][index]

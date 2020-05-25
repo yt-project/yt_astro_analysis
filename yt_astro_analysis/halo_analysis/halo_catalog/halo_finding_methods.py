@@ -23,7 +23,7 @@ from yt.units.dimensions import length
 from yt.utilities.operator_registry import \
     OperatorRegistry
 
-from yt_astro_analysis.halo_finding.halo_objects import \
+from yt_astro_analysis.halo_analysis.halo_finding.halo_objects import \
     FOFHaloFinder, \
     HOPHaloFinder
 
@@ -88,7 +88,7 @@ def _rockstar_method(hc, **finder_kwargs):
     Run the Rockstar halo finding method.
     """
 
-    from yt_astro_analysis.halo_finding.rockstar.api import \
+    from yt_astro_analysis.halo_analysis.halo_finding.rockstar.api import \
      RockstarHaloFinder
 
     if 'outbase' not in finder_kwargs:

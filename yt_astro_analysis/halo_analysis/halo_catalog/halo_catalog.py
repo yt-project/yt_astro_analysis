@@ -13,36 +13,22 @@ HaloCatalog class and member functions
 # The full license is in the file COPYING.txt, distributed with this software.
 #-----------------------------------------------------------------------------
 
-import numpy as np
-import os
-
-from yt.frontends.ytdata.utilities import \
-    save_as_dataset
 from yt.funcs import \
-    ensure_dir, \
-    get_pbar, \
     mylog
 from yt.utilities.parallel_tools.parallel_analysis_interface import \
-    ParallelAnalysisInterface, \
-    parallel_blocking_call, \
-    parallel_objects
+    parallel_blocking_call
 
-from yt_astro_analysis.halo_analysis.analysis_pipeline import \
-    AnalysisPipeline, \
-    AnalysisTarget
-from yt_astro_analysis.halo_analysis.utilities import \
-    quiet
+from yt_astro_analysis.halo_analysis.halo_catalog.analysis_pipeline import \
+    AnalysisPipeline
+from yt_astro_analysis.halo_analysis.halo_catalog.halo_finding_methods import \
+    finding_method_registry
+from yt_astro_analysis.halo_analysis.halo_catalog.halo_object import \
+    Halo
 
 _default_fields = \
   ["particle_identifier", "particle_mass", "virial_radius"] + \
   ["particle_position_" + ax for ax in "xyz"] + \
   ["particle_velocity_" + ax for ax in "xyz"]
-
-class Halo(AnalysisTarget):
-    _container_name = "halo_catalog"
-
-    def _get_field_value(self, fieldname, data_source, index):
-        return data_source[fieldname][index]
 
 class HaloCatalog(AnalysisPipeline):
     r"""Create a HaloCatalog: an object that allows for the creation and association
