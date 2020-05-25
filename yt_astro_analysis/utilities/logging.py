@@ -1,5 +1,5 @@
 """
-halo analysis utilities
+logging utilities
 
 
 
