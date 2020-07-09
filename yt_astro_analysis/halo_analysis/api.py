@@ -15,7 +15,7 @@ API for halo_analysis
 
 import warnings
 
-from yt.funcs import VisibleDeprecationWarning
+from numpy import VisibleDeprecationWarning
 
 warnings.warn(
     "Importing from yt_astro_analysis.halo_analysis.api is deprecated. " +

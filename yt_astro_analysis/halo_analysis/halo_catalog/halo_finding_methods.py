@@ -17,9 +17,6 @@ import numpy as np
 
 from yt.data_objects.time_series import \
     DatasetSeries
-from yt.frontends.stream.data_structures import \
-    load_particles
-from yt.units.dimensions import length
 from yt.utilities.operator_registry import \
     OperatorRegistry
 

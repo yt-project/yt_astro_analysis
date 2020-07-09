@@ -342,11 +342,11 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
             if not os.path.exists(restart_file):
                 raise RuntimeError("Restart file %s not found" % (restart_file))
             with open(restart_file) as restart_fh:
-                for l in restart_fh:
-                    if l.startswith("RESTART_SNAP"):
-                        restart_num = int(l.split("=")[1])
-                    if l.startswith("NUM_WRITERS"):
-                        num_writers = int(l.split("=")[1])
+                for par in restart_fh:
+                    if par.startswith("RESTART_SNAP"):
+                        restart_num = int(par.split("=")[1])
+                    if par.startswith("NUM_WRITERS"):
+                        num_writers = int(par.split("=")[1])
             if num_writers != self.num_writers:
                 raise RuntimeError(
                     "Number of writers in restart has changed from the original "

@@ -141,7 +141,8 @@ class HaloCatalog(AnalysisPipeline):
                               field_type=field_type)
 
     @parallel_blocking_call
-    def _run(self, save_targets, save_catalog):
+    def _run(self, save_targets, save_catalog,
+             njobs='auto', dynamic=False):
         r"""
         Run the requested halo analysis.
 
@@ -173,4 +174,5 @@ class HaloCatalog(AnalysisPipeline):
             self.finder_method(self)
             return
 
-        super(HaloCatalog, self)._run(save_targets, save_catalog)
+        super(HaloCatalog, self)._run(save_targets, save_catalog,
+                                      njobs=njobs, dynamic=dynamic)

@@ -21,7 +21,6 @@ from yt.frontends.ytdata.utilities import \
     save_as_dataset
 from yt.funcs import \
     ensure_dir, \
-    get_pbar, \
     mylog
 from yt.units.yt_array import \
     YTArray
@@ -30,14 +29,10 @@ from yt.utilities.parallel_tools.parallel_analysis_interface import \
     parallel_blocking_call, \
     parallel_objects
 
-from yt_astro_analysis.halo_analysis.halo_catalog.halo_object import \
-    Halo
 from yt_astro_analysis.halo_analysis.halo_catalog.halo_callbacks import \
     callback_registry
 from yt_astro_analysis.halo_analysis.halo_catalog.halo_filters import \
     filter_registry
-from yt_astro_analysis.halo_analysis.halo_catalog.halo_finding_methods import \
-    finding_method_registry
 from yt_astro_analysis.halo_analysis.halo_catalog.halo_quantities import \
     quantity_registry
 from yt_astro_analysis.halo_analysis.halo_catalog.halo_recipes import \
@@ -369,7 +364,7 @@ class AnalysisPipeline(ParallelAnalysisInterface):
         self._run(save_objects, save_output,
                   njobs=njobs, dynamic=dynamic)
 
-    def load(self, njobs='auto', dynamic=False,):
+    def load(self, njobs='auto', dynamic=False):
         r"""
         Load a previously created halo catalog.
 
@@ -397,7 +392,8 @@ class AnalysisPipeline(ParallelAnalysisInterface):
         self._run(True, False, njobs=njobs, dynamic=dynamic)
 
     @parallel_blocking_call
-    def _run(self, save_objects, save_output):
+    def _run(self, save_objects, save_output,
+             njobs='auto', dynamic=False):
         r"""
         Run the requested halo analysis.
 
@@ -430,7 +426,8 @@ class AnalysisPipeline(ParallelAnalysisInterface):
         if save_objects:
             self.target_list = []
 
-        for my_index, chunk in self._yield_targets():
+        for my_index, chunk in self._yield_targets(
+                njobs=njobs, dynamic=dynamic):
             self._process_target(
                 my_index, my_index,
                 save_objects, data_source=chunk)
