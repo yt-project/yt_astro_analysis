@@ -140,8 +140,11 @@ class AnalysisPipeline(ParallelAnalysisInterface):
     def _add_default_quantities(self):
         pass
 
+    _source_ds = None
     @property
     def source_ds(self):
+        if self._source_ds is not None:
+            return self._source_ds
         return getattr(self.data_source, 'ds', {})
 
     @property
@@ -505,6 +508,8 @@ class AnalysisPipeline(ParallelAnalysisInterface):
 
         if ds is None:
             ds = self.source_ds
+        else:
+            self._source_ds = ds
 
         data_dir = ensure_dir(self.output_dir)
         filename = os.path.join(
@@ -543,3 +548,4 @@ class AnalysisPipeline(ParallelAnalysisInterface):
                 ds, filename, data,
                 field_types=ftypes,
                 extra_attrs=extra_attrs_d)
+        self._source_ds = None
