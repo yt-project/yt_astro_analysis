@@ -134,7 +134,6 @@ setup(
                  "Operating System :: POSIX :: Linux",
                  "Programming Language :: C",
                  "Programming Language :: Python :: 3",
-                 "Programming Language :: Python :: 3.5",
                  "Programming Language :: Python :: 3.6",
                  "Programming Language :: Python :: 3.7",
                  "Programming Language :: Python :: 3.8",
@@ -171,5 +170,5 @@ setup(
     zip_safe=False,
     scripts=[],
     ext_modules=cython_extensions + extensions,
-    python_requires='>=3.5'
+    python_requires='>=3.6'
 )
