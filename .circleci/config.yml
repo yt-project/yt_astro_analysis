@@ -88,6 +88,16 @@ commands:
                 girder-cli --api-url https://girder.hub.yt/api/v1 download 577c09480d7c6b0001ad5be2 $YT_DATA/enzo_tiny_cosmology
             fi
 
+  lint:
+    description: "Lint."
+    steps:
+      - run:
+          name: "Lint."
+          command: |
+            source $BASH_ENV
+            source $HOME/venv/bin/activate
+            flake8 ytree
+
   build-and-test:
     description: "Build yt_astro_analysis and run tests."
     steps:
@@ -170,6 +180,8 @@ jobs:
           key: test-data-v2
           paths:
             - ~/yt_test
+
+      - lint
 
       - restore_cache:
           name: "Restore test answers."
