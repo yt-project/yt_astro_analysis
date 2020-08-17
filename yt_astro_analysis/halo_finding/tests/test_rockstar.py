@@ -3,7 +3,7 @@ import shutil
 import sys
 import tempfile
 
-from yt.convenience import load
+from yt.loaders import load
 from yt.utilities.answer_testing.framework import \
     FieldValuesTest, \
     requires_sim

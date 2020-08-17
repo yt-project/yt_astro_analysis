@@ -23,7 +23,7 @@ from yt.funcs import \
     ensure_dir, \
     mylog, \
     only_on_root
-from yt.convenience import \
+from yt.loaders import \
     load
 from yt.utilities.parallel_tools.parallel_analysis_interface import \
     parallel_objects, \

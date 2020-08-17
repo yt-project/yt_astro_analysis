@@ -16,7 +16,7 @@ CosmologyTimeSeries class and member functions.
 import numpy as np
 import os
 
-from yt.convenience import \
+from yt.loaders import \
     simulation
 from yt.funcs import mylog
 from yt.utilities.cosmology import \

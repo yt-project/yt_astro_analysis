@@ -21,7 +21,7 @@ import tempfile
 from yt_astro_analysis.halo_analysis.api import \
     HaloCatalog, \
     add_quantity
-from yt.convenience import \
+from yt.loaders import \
     load
 from yt.testing import \
     assert_equal

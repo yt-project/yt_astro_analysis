@@ -3,7 +3,7 @@ import shutil
 import sys
 import tempfile
 
-from yt.convenience import load
+from yt.loaders import load
 from yt.frontends.halo_catalog.data_structures import \
     HaloCatalogDataset
 from yt.utilities.answer_testing.framework import \
