@@ -96,7 +96,7 @@ commands:
           command: |
             source $BASH_ENV
             source $HOME/venv/bin/activate
-            flake8 ytree
+            flake8 yt_astro_analysis
 
   build-and-test:
     description: "Build yt_astro_analysis and run tests."
