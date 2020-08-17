@@ -71,7 +71,7 @@ class LightConeProjectionTest(AnswerTestingTest):
             weight_field=self.weight_field, save_stack=True)
 
         dname = "%s_%s" % (self.field, self.weight_field)
-        fh = h5py.File("LC/LightCone.h5")
+        fh = h5py.File("LC/LightCone.h5", mode="r")
         data = fh[dname][()]
         units = fh[dname].attrs["units"]
         if self.weight_field is None:

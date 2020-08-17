@@ -412,8 +412,7 @@ class Halo(object):
         cen = self.center_of_mass()
         mark = 0
         # Find the distances to the particles. I don't like this much, but I
-        # can't see a way to eliminate a loop like this, either here or in
-        # yt.
+        # can't see a way to eliminate a loop like this, either here or in yt.
         for pos in zip(self["particle_position_x"],
                 self["particle_position_y"], self["particle_position_z"]):
             dist[mark] = periodic_dist(cen, pos, period)

@@ -10,7 +10,7 @@ Unit test the sunyaev_zeldovich analysis module.
 # The full license is in the file COPYING.txt, distributed with this software.
 #-----------------------------------------------------------------------------
 
-from yt.frontends.stream.api import load_uniform_grid
+from yt.loaders import load_uniform_grid
 from yt.funcs import get_pbar
 from yt.utilities.physical_ratios import \
     cm_per_kpc, \

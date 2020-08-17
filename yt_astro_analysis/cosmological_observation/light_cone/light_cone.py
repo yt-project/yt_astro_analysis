@@ -23,7 +23,7 @@ from yt.funcs import \
     ensure_dir, \
     mylog, \
     only_on_root
-from yt.convenience import \
+from yt.loaders import \
     load
 from yt.utilities.parallel_tools.parallel_analysis_interface import \
     parallel_objects, \
@@ -435,7 +435,7 @@ class LightCone(CosmologySplice):
 
         mylog.info("Writing light cone data to %s." % filename)
 
-        fh = h5py.File(filename, "a")
+        fh = h5py.File(filename, mode="a")
 
         if field_node in fh:
             del fh[field_node]
