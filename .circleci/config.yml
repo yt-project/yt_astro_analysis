@@ -43,11 +43,11 @@ commands:
           pip install Cython mpi4py numpy
           # install yt from source
           if [ ! -f $YT_DIR/README.md ]; then
-              git clone --branch=master https://github.com/yt-project/yt $YT_DIR
+              git clone --branch=yt-4.0 https://github.com/yt-project/yt $YT_DIR
           fi
           pushd $YT_DIR
-          git pull origin master
-          git checkout master
+          git pull origin yt-4.0
+          git checkout yt-4.0
           pip install -e .
           popd
           # install rockstar
