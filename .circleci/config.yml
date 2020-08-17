@@ -41,6 +41,7 @@ commands:
           pip install --upgrade wheel
           pip install --upgrade setuptools
           pip install Cython mpi4py numpy
+          export MAX_BUILD_CORES=2
           # install yt from source
           if [ ! -f $YT_DIR/README.md ]; then
               git clone --branch=master https://github.com/yt-project/yt $YT_DIR
