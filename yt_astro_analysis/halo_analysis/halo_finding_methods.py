@@ -18,7 +18,7 @@ import numpy as np
 from yt_astro_analysis.halo_finding.halo_objects import \
     FOFHaloFinder, \
     HOPHaloFinder
-from yt.frontends.stream.data_structures import \
+from yt.loaders import \
     load_particles
 from yt.units.dimensions import length
 from yt.utilities.operator_registry import \
