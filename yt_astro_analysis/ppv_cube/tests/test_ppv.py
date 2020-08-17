@@ -10,7 +10,7 @@ Unit test the PPVCube analysis module.
 # The full license is in the file COPYING.txt, distributed with this software.
 #-----------------------------------------------------------------------------
 
-from yt.frontends.stream.api import load_uniform_grid
+from yt.loaders import load_uniform_grid
 from yt_astro_analysis.ppv_cube.api import PPVCube
 import yt.units as u
 from yt.utilities.physical_constants import kboltz, mh, clight
