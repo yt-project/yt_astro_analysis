@@ -182,6 +182,7 @@ jobs:
 
     steps:
       - checkout
+      - set-env
 
       - restore_cache:
           name: "Restore dependencies cache."
