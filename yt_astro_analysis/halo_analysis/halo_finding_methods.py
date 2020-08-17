@@ -156,7 +156,7 @@ def _parse_old_halo_list(data_ds, halo_list):
 
     particle_ds.unit_registry.modify("h", particle_ds.hubble_constant)
     # Comoving lengths
-    for my_unit in ["m", "pc", "AU", "au"]:
+    for my_unit in ["m", "pc", "AU"]:
         new_unit = "%scm" % my_unit
         particle_ds.unit_registry.add(new_unit, particle_ds.unit_registry.lut[my_unit][0] /
                                       (1 + particle_ds.current_redshift),
