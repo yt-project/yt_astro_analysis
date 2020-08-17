@@ -17,7 +17,7 @@ import numpy as np
 import os
 
 from yt.loaders import \
-    simulation
+    load_simulation
 from yt.funcs import mylog
 from yt.utilities.cosmology import \
     Cosmology
@@ -33,8 +33,8 @@ class CosmologySplice(object):
     def __init__(self, parameter_filename, simulation_type, find_outputs=False):
         self.parameter_filename = parameter_filename
         self.simulation_type = simulation_type
-        self.simulation = simulation(parameter_filename, simulation_type, 
-                                     find_outputs=find_outputs)
+        self.simulation = load_simulation(parameter_filename, simulation_type, 
+                                          find_outputs=find_outputs)
 
         self.cosmology = Cosmology(
             hubble_constant=(self.simulation.hubble_constant),
