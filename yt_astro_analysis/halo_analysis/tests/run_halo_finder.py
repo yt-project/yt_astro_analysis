@@ -12,7 +12,8 @@ method = sys.argv[1]
 data_dir = sys.argv[2]
 comm = MPI.Comm.Get_parent()
 
-methods = {"fof": {}, "hop": {},
+methods = {"fof": {"ptype": "dark_matter"},
+           "hop": {"ptype": "dark_matter"},
            "rockstar": {"num_readers":1,
                         "num_writers":1,
                         "particle_type":"dark_matter"}}

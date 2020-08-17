@@ -203,6 +203,16 @@ version of Rockstar has been slightly patched and modified to run as a
 library inside of ``yt_astro_analysis``.  For installation instructions,
 see :ref:`installation-rockstar`.
 
+Saving Halo Particles
+^^^^^^^^^^^^^^^^^^^^^
+
+As of version 1.1 of ``yt_astro_analysis``, the ids of the particles
+belonging to each halo can be saved to the catalog when using either the
+:ref:`fof_finding` or :ref:`hop_finding` methods. The is enabled by default
+and can be disabled by setting ``save_particles`` to ``False`` in the
+``finder_kwargs`` dictionary, as described above. This is not supported for
+the ``yt`` version of Rockstar.
+
 .. _halo_catalog_analysis:
 
 Extra Halo Analysis

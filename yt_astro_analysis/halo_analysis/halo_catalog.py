@@ -493,6 +493,17 @@ class HaloCatalog(ParallelAnalysisInterface):
                 data[key] = self.halos_ds.arr(
                     [halo[key] for halo in self.catalog])
 
+            particles = getattr(self.halos_ds, 'particles', None)
+            if particles is not None:
+                for key in ['particle_number',
+                            'particle_index_start']:
+                    ftypes[key] = "."
+                    data[key] = particles.pop(key)
+
+                for pfield in particles:
+                    data[pfield] = particles[pfield]
+                    ftypes[pfield] = 'particles'
+
         save_as_dataset(self.halos_ds, filename, data,
                         field_types=ftypes, extra_attrs=extra_attrs)
 

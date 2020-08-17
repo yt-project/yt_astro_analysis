@@ -6,7 +6,7 @@ commands:
     steps:
       - run: |
           echo 'export GOLD_STANDARD=HEAD' >> $BASH_ENV
-          echo 'export ROCKSTAR_DIR=$HOME/rockstar' >> $BASH_ENV
+          echo 'export ROCKSTAR_DIR=$HOME/rockstar-galaxies' >> $BASH_ENV
           echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ROCKSTAR_DIR' >> $BASH_ENV
           echo 'export YT_DIR=$HOME/yt-git' >> $BASH_ENV
           echo 'export YT_DATA=$HOME/yt_test' >> $BASH_ENV
@@ -52,7 +52,7 @@ commands:
           popd
           # install rockstar
           if [ ! -f $ROCKSTAR_DIR/VERSION ]; then
-              git clone https://github.com/yt-project/rockstar $ROCKSTAR_DIR
+              git clone https://bitbucket.org/pbehroozi/rockstar-galaxies $ROCKSTAR_DIR
               pushd $ROCKSTAR_DIR
               make lib
               popd
@@ -132,18 +132,18 @@ jobs:
 
       - restore_cache:
           name: "Restore dependencies cache."
-          key: python-<< parameters.tag >>-dependencies-v3
+          key: python-<< parameters.tag >>-dependencies-v6
 
       - install-with-yt-dev
 
       - save_cache:
           name: "Save dependencies cache"
-          key: python-<< parameters.tag >>-dependencies-v3
+          key: python-<< parameters.tag >>-dependencies-v6
           paths:
             - ~/.cache/pip
             - ~/venv
             - ~/yt-git
-            - ~/rockstar
+            - ~/rockstar-galaxies
 
       - restore_cache:
           name: "Restore test data cache."
@@ -159,13 +159,13 @@ jobs:
 
       - restore_cache:
           name: "Restore test answers."
-          key: python-<< parameters.tag >>-test-answers-v1
+          key: python-<< parameters.tag >>-test-answers-v5
 
       - build-and-test
 
       - save_cache:
           name: "Save test answers cache."
-          key: python-<< parameters.tag >>-test-answers-v1
+          key: python-<< parameters.tag >>-test-answers-v5
           paths:
             - ~/test_results
 
@@ -192,16 +192,41 @@ workflows:
      jobs:
        - run-tests:
            name: "Python 3.5 tests"
-           tag: "3.5.7"
+           tag: "3.5.9"
 
        - run-tests:
-           name: "Python 3.6 tests"
-           tag: "3.6.8"
-
-       - run-tests:
-           name: "Python 3.7 tests"
-           tag: "3.7.2"
+           name: "Python 3.8 tests"
+           tag: "3.8.2"
 
        - docs-test:
            name: "Test docs build"
-           tag: "3.7.2"
+           tag: "3.8.2"
+
+   weekly:
+     triggers:
+       - schedule:
+           cron: "0 0 * * 2"
+           filters:
+            branches:
+              only:
+                - master
+     jobs:
+       - run-tests:
+           name: "Python 3.5 tests"
+           tag: "3.5.9"
+
+       - run-tests:
+           name: "Python 3.6 tests"
+           tag: "3.6.10"
+
+       - run-tests:
+           name: "Python 3.7 tests"
+           tag: "3.7.7"
+
+       - run-tests:
+           name: "Python 3.8 tests"
+           tag: "3.8.2"
+
+       - docs-test:
+           name: "Test docs build"
+           tag: "3.8.2"

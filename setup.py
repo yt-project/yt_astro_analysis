@@ -13,12 +13,6 @@ from setupext import \
 from distutils.version import LooseVersion
 import pkg_resources
 
-if sys.version_info < (2, 7) or (3, 0) < sys.version_info < (3, 5):
-    print("yt_astro_analysis currently supports Python 2.7 or versions " +
-          "newer than Python 3.5. Certain features may fail unexpectedly " +
-          "and silently with older versions.")
-    sys.exit(1)
-
 try:
     distribute_ver = \
         LooseVersion(pkg_resources.get_distribution("distribute").version)
@@ -67,8 +61,8 @@ extensions = [
 
 dev_requirements = [
     'astropy', 'codecov', 'flake8', 'girder-client', 'gitpython', 'nose',
-    'nose-timer', 'scipy', 'sphinx', 'sphinx_bootstrap_theme', 'twine',
-    'wheel']
+    'nose-timer', 'pytest', 'scipy', 'sphinx', 'sphinx_bootstrap_theme',
+    'twine', 'wheel']
 
 # ROCKSTAR
 if os.path.exists("rockstar.cfg"):
@@ -77,8 +71,8 @@ if os.path.exists("rockstar.cfg"):
     except IOError:
         print("Reading Rockstar location from rockstar.cfg failed.")
         print("Please place the base directory of your")
-        print("Rockstar install in rockstar.cfg and restart.")
-        print("(ex: \"echo '/path/to/Rockstar-0.99' > rockstar.cfg\" )")
+        print("rockstar-galaxies install in rockstar.cfg and restart.")
+        print("(ex: \"echo '/path/to/rockstar-galaxies' > rockstar.cfg\" )")
         sys.exit(1)
 
     rockstar_extdir = "yt_astro_analysis/halo_finding/rockstar"
@@ -90,7 +84,7 @@ if os.path.exists("rockstar.cfg"):
     ]
     for ext in rockstar_extensions:
         ext.library_dirs.append(rd)
-        ext.libraries.append("rockstar")
+        ext.libraries.append("rockstar-galaxies")
         ext.define_macros.append(("THREADSAFE", ""))
         ext.include_dirs += [rd,
                              os.path.join(rd, "io"), os.path.join(rd, "util")]
@@ -139,11 +133,11 @@ setup(
                  "Operating System :: POSIX :: AIX",
                  "Operating System :: POSIX :: Linux",
                  "Programming Language :: C",
-                 "Programming Language :: Python :: 2",
-                 "Programming Language :: Python :: 2.7",
                  "Programming Language :: Python :: 3",
-                 "Programming Language :: Python :: 3.4",
                  "Programming Language :: Python :: 3.5",
+                 "Programming Language :: Python :: 3.6",
+                 "Programming Language :: Python :: 3.7",
+                 "Programming Language :: Python :: 3.8",
                  "Topic :: Scientific/Engineering :: Astronomy",
                  "Topic :: Scientific/Engineering :: Physics",
                  "Topic :: Scientific/Engineering :: Visualization"],
@@ -158,7 +152,7 @@ setup(
         'sympy',
         'numpy',
         'cython',
-        'yt>=4.0.dev0',
+        'yt>=3.6.0',
     ],
     extras_require = {
         'dev':  dev_requirements,
@@ -177,4 +171,5 @@ setup(
     zip_safe=False,
     scripts=[],
     ext_modules=cython_extensions + extensions,
+    python_requires='>=3.5'
 )
