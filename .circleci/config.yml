@@ -43,11 +43,11 @@ commands:
           pip install Cython mpi4py numpy
           # install yt from source
           if [ ! -f $YT_DIR/README.md ]; then
-              git clone --branch=yt-4.0 https://github.com/yt-project/yt $YT_DIR
+              git clone --branch=master https://github.com/yt-project/yt $YT_DIR
           fi
           pushd $YT_DIR
-          git pull origin yt-4.0
-          git checkout yt-4.0
+          git pull origin master
+          git checkout master
           pip install -e .
           popd
           # install rockstar
@@ -132,13 +132,13 @@ jobs:
 
       - restore_cache:
           name: "Restore dependencies cache."
-          key: python-<< parameters.tag >>-dependencies-v6
+          key: python-<< parameters.tag >>-dependencies-v7
 
       - install-with-yt-dev
 
       - save_cache:
           name: "Save dependencies cache"
-          key: python-<< parameters.tag >>-dependencies-v6
+          key: python-<< parameters.tag >>-dependencies-v7
           paths:
             - ~/.cache/pip
             - ~/venv
@@ -159,13 +159,13 @@ jobs:
 
       - restore_cache:
           name: "Restore test answers."
-          key: python-<< parameters.tag >>-test-answers-v5
+          key: python-<< parameters.tag >>-test-answers-v6
 
       - build-and-test
 
       - save_cache:
           name: "Save test answers cache."
-          key: python-<< parameters.tag >>-test-answers-v5
+          key: python-<< parameters.tag >>-test-answers-v6
           paths:
             - ~/test_results
 
