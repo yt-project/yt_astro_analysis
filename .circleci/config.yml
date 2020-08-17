@@ -182,7 +182,22 @@ jobs:
 
     steps:
       - checkout
-      - install-dependencies
+
+      - restore_cache:
+          name: "Restore dependencies cache."
+          key: python-<< parameters.tag >>-dependencies-v7
+
+      - install-with-yt-dev
+
+      - save_cache:
+          name: "Save dependencies cache"
+          key: python-<< parameters.tag >>-dependencies-v7
+          paths:
+            - ~/.cache/pip
+            - ~/venv
+            - ~/yt-git
+            - ~/rockstar-galaxies
+
       - build-docs
 
 workflows:
