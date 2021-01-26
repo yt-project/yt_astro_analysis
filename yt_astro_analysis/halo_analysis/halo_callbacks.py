@@ -223,7 +223,7 @@ def profile(halo, bin_fields, profile_fields, n_bins=32, extrema=None, logs=None
         output_dir = storage
     output_dir = os.path.join(halo.halo_catalog.output_dir, output_dir)
     
-    bin_fields = always_iterable(bin_fields)
+    bin_fields = list(always_iterable(bin_fields))
     my_profile = create_profile(halo.data_object, bin_fields, profile_fields, n_bins=n_bins,
                                 extrema=extrema, logs=logs, units=units, weight_field=weight_field,
                                 accumulation=accumulation, fractional=fractional)
