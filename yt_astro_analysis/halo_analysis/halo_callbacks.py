@@ -412,9 +412,8 @@ def virial_quantities(halo, fields,
     mylog.info("Calculating virial quantities for halo %d." %
                halo.quantities["particle_identifier"])
 
-    fields = always_iterable(fields)
     fields = [halo.data_object._determine_fields(field)[0]
-              for field in fields]
+              for field in always_iterable(fields)]
     
     dds = halo.halo_catalog.data_ds
     profile_data = getattr(halo, profile_storage)
