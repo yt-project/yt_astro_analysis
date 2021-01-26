@@ -40,7 +40,7 @@ import numpy as np
 class InlineRunner(ParallelAnalysisInterface):
     def __init__(self):
         # If this is being run inline, num_readers == comm.size, always.
-        psize = ytcfg.getint("yt", "__global_parallel_size")
+        psize = ytcfg.get("yt", "internals", "global_parallel_size")
         self.num_readers = psize
         # No choice for you, everyone's a writer too!
         self.num_writers =  psize
@@ -73,14 +73,14 @@ class InlineRunner(ParallelAnalysisInterface):
     def setup_pool(self):
         pool = ProcessorPool()
         # Everyone is a reader, and when we're inline, that's all that matters.
-        readers = np.arange(ytcfg.getint("yt", "__global_parallel_size"))
+        readers = np.arange(ytcfg.get("yt", "internals", "global_parallel_size"))
         pool.add_workgroup(ranks=readers, name="readers")
         return pool, pool.workgroups[0]
 
 class StandardRunner(ParallelAnalysisInterface):
     def __init__(self, num_readers, num_writers):
         self.num_readers = num_readers
-        psize = ytcfg.getint("yt", "__global_parallel_size")
+        psize = ytcfg.get("yt", "internals", "global_parallel_size")
         if num_writers is None:
             self.num_writers =  psize - num_readers - 1
         else:
@@ -226,7 +226,7 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
             mylog.info("http://adsabs.harvard.edu/abs/2013ApJ...762..109B")
         ParallelAnalysisInterface.__init__(self)
         # Decide how we're working.
-        if ytcfg.getboolean("yt", "inline"):
+        if ytcfg.get("yt", "inline"):
             self.runner = InlineRunner()
         else:
             self.runner = StandardRunner(num_readers, num_writers)

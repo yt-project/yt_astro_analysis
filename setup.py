@@ -165,7 +165,7 @@ setup(
         'sympy',
         'numpy',
         'cython',
-        'yt>=3.6.0',
+        'yt>=4.0.0',
     ],
     extras_require = {
         'dev':  dev_requirements,

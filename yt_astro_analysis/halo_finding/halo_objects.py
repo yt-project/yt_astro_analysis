@@ -811,7 +811,7 @@ class HOPHaloFinder(GenericHaloFinder, HOPHaloList):
         # sub_mass can be skipped if subvolume is not used and this is not
         # parallel.
         if subvolume is None and \
-                ytcfg.getint("yt", "__topcomm_parallel_size") == 1:
+                ytcfg.get("yt", "internals", "topcomm_parallel_size") == 1:
             sub_mass = total_mass
         else:
             sub_mass = \
