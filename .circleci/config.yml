@@ -70,10 +70,10 @@ commands:
             pip install -e .[dev]
             # configure yt
             mkdir -p $HOME/.config/yt
-            echo "[yt]" > $HOME/.config/yt/ytrc
-            echo "suppressStreamLogging = True" >> $HOME/.config/yt/ytrc
-            echo "test_data_dir = $YT_DATA" >> $HOME/.config/yt/ytrc
-            echo "loglevel = 30" >> $HOME/.config/yt/ytrc
+            echo "[yt]" > $HOME/.config/yt/yt.toml
+            echo "suppress_stream_logging = True" >> $HOME/.config/yt/yt.toml
+            echo "test_data_dir = $YT_DATA" >> $HOME/.config/yt/yt.toml
+            echo "log_level = 30" >> $HOME/.config/yt/yt.toml
 
   download-test-data:
     description: "Download test data."
