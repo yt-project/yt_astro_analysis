@@ -69,11 +69,9 @@ commands:
             # install yt_astro_analysis with extra dev dependencies
             pip install -e .[dev]
             # configure yt
-            mkdir -p $HOME/.config/yt
-            echo "[yt]" > $HOME/.config/yt/yt.toml
-            echo "suppress_stream_logging = True" >> $HOME/.config/yt/yt.toml
-            echo "test_data_dir = $YT_DATA" >> $HOME/.config/yt/yt.toml
-            echo "log_level = 30" >> $HOME/.config/yt/yt.toml
+            yt config set --global yt suppress_stream_logging True
+            yt config set --global yt test_data_dir $YT_DATA
+            yt config set --global yt log_level 30
 
   download-test-data:
     description: "Download test data."
