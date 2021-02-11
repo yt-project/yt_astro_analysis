@@ -51,11 +51,11 @@ commands:
             export MAX_BUILD_CORES=2
             # install yt from source
             if [ ! -f $YT_DIR/README.md ]; then
-                git clone --branch=master https://github.com/yt-project/yt $YT_DIR
+                git clone --branch=main https://github.com/yt-project/yt $YT_DIR
             fi
             pushd $YT_DIR
-            git pull origin master
-            git checkout master
+            git pull origin main
+            git checkout main
             pip install -e .
             popd
             # install rockstar
