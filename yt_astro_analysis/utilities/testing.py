@@ -33,3 +33,25 @@ class TempDirTest(TestCase):
     def tearDown(self):
         os.chdir(self.curdir)
         shutil.rmtree(self.tmpdir)
+
+def requires_sim(sim_fn, sim_type, big_data=False, file_check=False):
+    from functools import wraps
+
+    from nose import SkipTest
+
+    def ffalse(func):
+        @wraps(func)
+        def fskip(*args, **kwargs):
+            raise SkipTest
+
+        return fskip
+
+    def ftrue(func):
+        return func
+
+    if not run_big_data and big_data:
+        return ffalse
+    elif not can_run_sim(sim_fn, sim_type, file_check):
+        return ffalse
+    else:
+        return ftrue

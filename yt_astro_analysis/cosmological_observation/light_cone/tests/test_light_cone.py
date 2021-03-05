@@ -28,7 +28,9 @@ from yt.testing import \
     assert_equal, \
     requires_module
 from yt.utilities.answer_testing.framework import \
-    AnswerTestingTest, \
+    AnswerTestingTest
+
+from yt_astro_analysis.utilities.testing import \
     requires_sim
 
 ETC = "enzo_tiny_cosmology/32Mpc_32.enzo"

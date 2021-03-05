@@ -5,7 +5,9 @@ import tempfile
 
 from yt.loaders import load
 from yt.utilities.answer_testing.framework import \
-    FieldValuesTest, \
+    FieldValuesTest
+
+from yt_astro_analysis.utilities.testing import \
     requires_sim
 
 _fields = (("halos", "particle_position_x"),
