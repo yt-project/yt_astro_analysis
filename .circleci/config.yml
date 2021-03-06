@@ -7,7 +7,7 @@ commands:
       - run:
           name:  "Set environment variables."
           command: |
-            echo 'export GOLD_STANDARD=HEAD' >> $BASH_ENV
+            echo 'export GOLD_STANDARD=master' >> $BASH_ENV
             echo 'export ROCKSTAR_DIR=$HOME/rockstar-galaxies' >> $BASH_ENV
             echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ROCKSTAR_DIR' >> $BASH_ENV
             echo 'export YT_DIR=$HOME/yt-git' >> $BASH_ENV
@@ -154,13 +154,13 @@ jobs:
 
       - restore_cache:
           name: "Restore dependencies cache."
-          key: python-<< parameters.tag >>-dependencies-v7
+          key: python-<< parameters.tag >>-dependencies-v8
 
       - install-with-yt-dev
 
       - save_cache:
           name: "Save dependencies cache"
-          key: python-<< parameters.tag >>-dependencies-v7
+          key: python-<< parameters.tag >>-dependencies-v8
           paths:
             - ~/.cache/pip
             - ~/venv
@@ -183,13 +183,13 @@ jobs:
 
       - restore_cache:
           name: "Restore test answers."
-          key: python-<< parameters.tag >>-test-answers-v7
+          key: python-<< parameters.tag >>-test-answers-v8
 
       - build-and-test
 
       - save_cache:
           name: "Save test answers cache."
-          key: python-<< parameters.tag >>-test-answers-v7
+          key: python-<< parameters.tag >>-test-answers-v8
           paths:
             - ~/test_results
 
@@ -210,13 +210,13 @@ jobs:
 
       - restore_cache:
           name: "Restore dependencies cache."
-          key: python-<< parameters.tag >>-dependencies-v7
+          key: python-<< parameters.tag >>-dependencies-v8
 
       - install-with-yt-dev
 
       - save_cache:
           name: "Save dependencies cache"
-          key: python-<< parameters.tag >>-dependencies-v7
+          key: python-<< parameters.tag >>-dependencies-v8
           paths:
             - ~/.cache/pip
             - ~/venv

@@ -28,6 +28,9 @@ def test_halo_analysis_finders():
     filename = os.path.join(os.path.dirname(__file__),
                             "run_halo_finder.py")
     for method in methods:
+        if method == "rockstar":
+            from nose import SkipTest
+            raise SkipTest
         tmpdir = tempfile.mkdtemp()
         os.chdir(tmpdir)
         comm = MPI.COMM_SELF.Spawn(sys.executable,
