@@ -13,6 +13,20 @@ from setupext import \
 from distutils.version import LooseVersion
 import pkg_resources
 
+def get_version(filename):
+    """
+    Get version from a file.
+
+    Inspired by https://github.mabuchilab/QNET/.
+    """
+    with open(filename) as f:
+        for line in f.readlines():
+            if line.startswith("__version__"):
+                return line.split("=")[1].strip()[1:-1]
+    raise RuntimeError(
+        "Could not get version from %s." % filename)
+
+
 try:
     distribute_ver = \
         LooseVersion(pkg_resources.get_distribution("distribute").version)
@@ -26,7 +40,7 @@ try:
 except pkg_resources.DistributionNotFound:
     pass  # yay!
 
-VERSION = "1.1.0.dev0"
+VERSION = get_version("yt_astro_analysis/__init__.py")
 
 if os.path.exists('MANIFEST'):
     os.remove('MANIFEST')
@@ -134,7 +148,6 @@ setup(
                  "Operating System :: POSIX :: Linux",
                  "Programming Language :: C",
                  "Programming Language :: Python :: 3",
-                 "Programming Language :: Python :: 3.5",
                  "Programming Language :: Python :: 3.6",
                  "Programming Language :: Python :: 3.7",
                  "Programming Language :: Python :: 3.8",
@@ -171,5 +184,5 @@ setup(
     zip_safe=False,
     scripts=[],
     ext_modules=cython_extensions + extensions,
-    python_requires='>=3.5'
+    python_requires='>=3.6'
 )

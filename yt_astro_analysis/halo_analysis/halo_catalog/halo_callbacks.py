@@ -26,8 +26,6 @@ from yt.units.yt_array import \
     YTArray
 from yt.utilities.exceptions import \
     YTSphereTooSmall
-from yt.funcs import \
-    ensure_list
 from yt.utilities.logger import ytLogger as mylog
 from yt.utilities.operator_registry import \
     OperatorRegistry
@@ -35,6 +33,8 @@ from yt.utilities.parallel_tools.parallel_analysis_interface import \
     parallel_root_only
 from yt.visualization.profile_plotter import \
     PhasePlot
+
+from more_itertools import always_iterable
 
 callback_registry = OperatorRegistry()
     
@@ -223,7 +223,7 @@ def profile(halo, bin_fields, profile_fields, n_bins=32, extrema=None, logs=None
         output_dir = storage
     output_dir = os.path.join(halo.halo_catalog.output_dir, output_dir)
     
-    bin_fields = ensure_list(bin_fields)
+    bin_fields = list(always_iterable(bin_fields))
     my_profile = create_profile(halo.data_object, bin_fields, profile_fields, n_bins=n_bins,
                                 extrema=extrema, logs=logs, units=units, weight_field=weight_field,
                                 accumulation=accumulation, fractional=fractional)
@@ -293,7 +293,7 @@ def save_profiles(halo, storage="profiles", filename=None,
     mylog.info("Saving halo %d profile data to %s." %
                (halo.quantities["particle_identifier"], output_file))
 
-    fh = h5py.File(output_file, "w")
+    fh = h5py.File(output_file, mode="w")
     my_profile = getattr(halo, storage)
     profile_group = fh.create_group("profiles")
     for field in my_profile:
@@ -351,7 +351,7 @@ def load_profiles(halo, storage="profiles", fields=None,
     mylog.info("Loading halo %d profile data from %s." %
                (halo.quantities["particle_identifier"], output_file))
 
-    fh = h5py.File(output_file, "r")
+    fh = h5py.File(output_file, mode="r")
     if fields is None:
         profile_fields = fh["profiles"].keys()
     else:
@@ -412,9 +412,8 @@ def virial_quantities(halo, fields,
     mylog.info("Calculating virial quantities for halo %d." %
                halo.quantities["particle_identifier"])
 
-    fields = ensure_list(fields)
     fields = [halo.data_object._determine_fields(field)[0]
-              for field in fields]
+              for field in always_iterable(fields)]
     
     dds = halo.halo_catalog.data_ds
     profile_data = getattr(halo, profile_storage)

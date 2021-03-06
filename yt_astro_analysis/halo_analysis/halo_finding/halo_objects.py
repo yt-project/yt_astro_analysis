@@ -412,8 +412,7 @@ class Halo(object):
         cen = self.center_of_mass()
         mark = 0
         # Find the distances to the particles. I don't like this much, but I
-        # can't see a way to eliminate a loop like this, either here or in
-        # yt.
+        # can't see a way to eliminate a loop like this, either here or in yt.
         for pos in zip(self["particle_position_x"],
                 self["particle_position_y"], self["particle_position_z"]):
             dist[mark] = periodic_dist(cen, pos, period)
@@ -812,7 +811,7 @@ class HOPHaloFinder(GenericHaloFinder, HOPHaloList):
         # sub_mass can be skipped if subvolume is not used and this is not
         # parallel.
         if subvolume is None and \
-                ytcfg.getint("yt", "__topcomm_parallel_size") == 1:
+                ytcfg.get("yt", "internals", "topcomm_parallel_size") == 1:
             sub_mass = total_mass
         else:
             sub_mass = \

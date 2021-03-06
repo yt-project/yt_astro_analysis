@@ -3,9 +3,9 @@ import shutil
 import sys
 import tempfile
 
-from yt.convenience import load
+from yt.loaders import load
 from yt.frontends.halo_catalog.data_structures import \
-    HaloCatalogDataset
+    YTHaloCatalogDataset
 from yt.utilities.answer_testing.framework import \
     FieldValuesTest, \
     requires_ds
@@ -28,6 +28,9 @@ def test_halo_analysis_finders():
     filename = os.path.join(os.path.dirname(__file__),
                             "run_halo_finder.py")
     for method in methods:
+        if method == "rockstar":
+            from nose import SkipTest
+            raise SkipTest
         tmpdir = tempfile.mkdtemp()
         os.chdir(tmpdir)
         comm = MPI.COMM_SELF.Spawn(sys.executable,
@@ -40,7 +43,7 @@ def test_halo_analysis_finders():
         ds = load(fn)
         if method == "rockstar":
             ds.parameters['format_revision'] = 2
-        assert isinstance(ds, HaloCatalogDataset)
+        assert isinstance(ds, YTHaloCatalogDataset)
         for field in _fields:
             yield FieldValuesTest(ds, field, particle_type=True,
                                   decimals=decimals[method])

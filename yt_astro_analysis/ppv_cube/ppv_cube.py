@@ -19,7 +19,7 @@ from yt.funcs import get_pbar
 from yt.utilities.physical_constants import clight, mh
 import yt.units.dimensions as ytdims
 from yt.units.yt_array import YTQuantity
-from yt.funcs import iterable
+from yt.funcs import is_sequence
 from yt.utilities.parallel_tools.parallel_analysis_interface import \
     parallel_root_only, parallel_objects
 import re
@@ -217,7 +217,7 @@ class PPVCube(object):
         self.axis_type = "velocity"
 
         # Now fix the width
-        if iterable(self.width):
+        if is_sequence(self.width):
             self.width = ds.quan(self.width[0], self.width[1])
         elif not isinstance(self.width, YTQuantity):
             self.width = ds.quan(self.width, "code_length")

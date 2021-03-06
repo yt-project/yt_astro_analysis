@@ -15,7 +15,7 @@ def _dm_filter(pfilter, data):
 def setup_ds(ds):
     ds.add_particle_filter("dark_matter")
 
-es = yt.simulation("enzo_tiny_cosmology/32Mpc_32.enzo", "Enzo")
+es = yt.load_simulation("enzo_tiny_cosmology/32Mpc_32.enzo", "Enzo")
 es.get_time_series(setup_function=setup_ds,
                    redshifts=[1., 0.])
 

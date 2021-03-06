@@ -2,8 +2,7 @@ Cosmological Analysis
 ---------------------
 
 These scripts demonstrate some basic and more advanced analysis that can be
-performed on cosmological simulation datasets.  Most of the following
-recipes are derived from functionality in yt's :ref:`analysis-modules`.
+performed on cosmological simulation datasets.
 
 Plotting Halos
 ~~~~~~~~~~~~~~

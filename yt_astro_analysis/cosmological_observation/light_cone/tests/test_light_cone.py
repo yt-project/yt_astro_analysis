@@ -28,7 +28,9 @@ from yt.testing import \
     assert_equal, \
     requires_module
 from yt.utilities.answer_testing.framework import \
-    AnswerTestingTest, \
+    AnswerTestingTest
+
+from yt_astro_analysis.utilities.testing import \
     requires_sim
 
 ETC = "enzo_tiny_cosmology/32Mpc_32.enzo"
@@ -71,7 +73,7 @@ class LightConeProjectionTest(AnswerTestingTest):
             weight_field=self.weight_field, save_stack=True)
 
         dname = "%s_%s" % (self.field, self.weight_field)
-        fh = h5py.File("LC/LightCone.h5")
+        fh = h5py.File("LC/LightCone.h5", mode="r")
         data = fh[dname][()]
         units = fh[dname].attrs["units"]
         if self.weight_field is None:

@@ -280,7 +280,7 @@ cdef class RockstarInterface:
 
     def __cinit__(self, ts):
         self.ts = ts
-        self.tsl = ts.__iter__() #timeseries generator used by read
+        self.tsl = iter(ts)  # timeseries generator used by read
 
     def setup_rockstar(self, char *server_address, char *server_port,
                        int num_snaps, int total_particles,
