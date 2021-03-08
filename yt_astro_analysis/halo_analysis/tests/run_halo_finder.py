@@ -2,7 +2,7 @@ from mpi4py import MPI
 import os
 import sys
 import yt
-from yt_astro_analysis.halo_analysis.api import \
+from yt_astro_analysis.halo_analysis import \
     HaloCatalog
 from yt.data_objects.particle_filters import \
     particle_filter

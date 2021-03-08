@@ -1,17 +1,9 @@
 """
-Halo callback object
+HaloCatalog callbacks
 
 
 
 """
-
-#-----------------------------------------------------------------------------
-# Copyright (c) 2013, yt Development Team.
-#
-# Distributed under the terms of the Modified BSD License.
-#
-# The full license is in the file COPYING.txt, distributed with this software.
-#-----------------------------------------------------------------------------
 
 from yt.utilities.on_demand_imports import _h5py as h5py
 import numpy as np
@@ -27,8 +19,6 @@ from yt.units.yt_array import \
 from yt.utilities.exceptions import \
     YTSphereTooSmall
 from yt.utilities.logger import ytLogger as mylog
-from yt.utilities.operator_registry import \
-    OperatorRegistry
 from yt.utilities.parallel_tools.parallel_analysis_interface import \
     parallel_root_only
 from yt.visualization.profile_plotter import \
@@ -36,27 +26,8 @@ from yt.visualization.profile_plotter import \
 
 from more_itertools import always_iterable
 
-callback_registry = OperatorRegistry()
-    
-def add_callback(name, function):
-    callback_registry[name] =  HaloCallback(function)
-
-class HaloCallback(object):
-    r"""
-    A HaloCallback is a function that minimally takes in a Halo object 
-    and performs some analysis on it.  This function may attach attributes 
-    to the Halo object, write out data, etc, but does not return anything.
-    """
-    def __init__(self, function, args=None, kwargs=None):
-        self.function = function
-        self.args = args
-        if self.args is None: self.args = []
-        self.kwargs = kwargs
-        if self.kwargs is None: self.kwargs = {}
-
-    def __call__(self, halo):
-        self.function(halo, *self.args, **self.kwargs)
-        return True
+from yt_astro_analysis.halo_analysis.halo_catalog.analysis_operators import \
+    add_callback
 
 def halo_sphere(halo, radius_field="virial_radius", factor=1.0, 
                 field_parameters=None):
@@ -473,7 +444,7 @@ def virial_quantities(halo, fields,
           np.log(vod[index + 1] / vod[index])
         value = dds.quan(np.exp(slope * np.log(critical_overdensity / 
                                                vod[index])) * v_prof[index],
-                         profile_data[field].units).in_cgs()
+                         profile_data[field].units)
         vquantities["%s_%d" % (v_fields[field], critical_overdensity)] = value
 
     halo.quantities.update(vquantities)

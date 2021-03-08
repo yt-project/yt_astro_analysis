@@ -5,14 +5,6 @@ Halo Finding methods
 
 """
 
-#-----------------------------------------------------------------------------
-# Copyright (c) yt Development Team. All rights reserved.
-#
-# Distributed under the terms of the Modified BSD License.
-#
-# The full license is in the file COPYING.txt, distributed with this software.
-#-----------------------------------------------------------------------------
-
 import numpy as np
 
 from yt.data_objects.time_series import \
@@ -59,7 +51,7 @@ def _hop_method(hc, **finder_kwargs):
 
     for my_ds in ts:
         halo_list = HOPHaloFinder(my_ds, **finder_kwargs)
-        _parse_old_halo_list(hc, halo_list)
+        _parse_halo_list(hc, halo_list)
 
 add_finding_method("hop", _hop_method)
 
@@ -76,7 +68,7 @@ def _fof_method(hc, **finder_kwargs):
 
     for my_ds in ts:
         halo_list = FOFHaloFinder(my_ds, **finder_kwargs)
-        _parse_old_halo_list(hc, halo_list)
+        _parse_halo_list(hc, halo_list)
 
 add_finding_method("fof", _fof_method)
 
@@ -85,18 +77,19 @@ def _rockstar_method(hc, **finder_kwargs):
     Run the Rockstar halo finding method.
     """
 
-    from yt_astro_analysis.halo_analysis.halo_finding.rockstar.api import \
+    from yt_astro_analysis.halo_analysis.halo_finding.rockstar import \
      RockstarHaloFinder
 
     if 'outbase' not in finder_kwargs:
-        finder_kwargs['outbase'] = hc.output_dir
+        finder_kwargs['outbase'] = hc.output_basedir
 
     ds = hc.data_ds
     rh = RockstarHaloFinder(ds, **finder_kwargs)
     rh.run()
+
 add_finding_method("rockstar", _rockstar_method)
 
-def _parse_old_halo_list(hc, halo_list):
+def _parse_halo_list(hc, halo_list):
     r"""
     Save the halo list as a HaloCatalog.
     """
@@ -161,9 +154,9 @@ def _parse_old_halo_list(hc, halo_list):
             'particle_number': n_particles,
             'particle_index_start': start})
 
-    ftypes = dict((field, '.') for field in halo_properties
+    field_types = dict((field, '.') for field in halo_properties
                   if field != 'ids')
     if save_particles:
-        ftypes['ids'] = 'particles'
+        field_types['ids'] = 'particles'
 
-    hc._save(ds, data=halo_properties, ftypes=ftypes)
+    hc._save(ds=ds, data=halo_properties, field_types=field_types)

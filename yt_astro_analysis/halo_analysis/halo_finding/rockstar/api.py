@@ -15,7 +15,7 @@ API for Rockstar halo finding
 
 import warnings
 
-from yt.funcs import VisibleDeprecationWarning
+from numpy import VisibleDeprecationWarning
 
 warnings.warn(
     "Running the RockstarHaloFinder directly is deprecated. " +

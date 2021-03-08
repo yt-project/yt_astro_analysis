@@ -14,6 +14,7 @@ Operations to run Rockstar
 #-----------------------------------------------------------------------------
 
 from yt.config import ytcfg
+from yt.data_objects.static_output import Dataset
 from yt.data_objects.time_series import \
     DatasetSeries
 from yt.funcs import \
@@ -387,8 +388,12 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
             fp = open(os.path.join(self.outbase, 'datasets.txt'), 'w')
             fp.write("# dsname\tindex\n")
             for i, ds in enumerate(self.ts.outputs):
-                dsloc = os.path.join(os.path.relpath(ds))
-                line = "%s\t%d\n" % (dsloc, i)
+                if isinstance(ds, Dataset):
+                    fn = ds.parameter_filename
+                else:
+                    fn = ds
+                dsloc = os.path.join(os.path.relpath(fn))
+                line = f"{dsloc}\t{i}\n"
                 fp.write(line)
             fp.close()
         # This barrier makes sure the directory exists before it might be used.
