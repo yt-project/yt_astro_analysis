@@ -23,7 +23,7 @@ decimals = {"fof": 10, "hop": 10, "rockstar": 1}
 etiny = "enzo_tiny_cosmology/DD0046/DD0046"
 
 @requires_ds(etiny, big_data=True)
-def test_halo_analysis_finders():
+def test_halo_finders_single():
     from mpi4py import MPI
 
     tmpdir = tempfile.mkdtemp()
