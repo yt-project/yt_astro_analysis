@@ -48,6 +48,8 @@ To run halo finding on a series of snapshots, provide a
 :class:`~yt_astro_analysis.halo_analysis.halo_catalog.halo_catalog.HaloCatalog`.
 See :ref:`time-series-analysis` and :ref:`analyzing-an-entire-simulation` for
 more information on creating these. All three halo finders can be run this way.
+If you want to make merger trees with Rockstar halo catalogs, you must run
+Rockstar in this way.
 
 .. code-block:: python
 
@@ -180,7 +182,27 @@ see :ref:`rockstar`.
 Parallelism
 -----------
 
-DO THIS TOO
+All three halo finders can be run in parallel using `mpirun` and by adding
+``yt.enable_parallelism()`` to the top of the script. The computational domain
+will be divided evenly among all processes (among the writers in the case of
+Rockstar) with a small amount of padding to ensure halos on sub-volume
+boundaries are not split. For FoF and HOP, the number of processors used only
+needs to provided to `mpirun` (e.g., `mpirun -np 8` to run on 8 processors).
+
+.. code-block:: python
+
+   import yt
+   yt.enable_parallelism()
+   from yt.extensions.astro_analysis.halo_analysis import HaloCatalog
+
+   data_ds = yt.load('Enzo_64/RD0006/RedshiftOutput0006')
+   hc = HaloCatalog(data_ds=data_ds, finder_method='fof',
+                    finder_kwargs={"ptype": "stars",
+                                   "padding": 0.02})
+   hc.create()
+
+For more information on running ``yt`` in parallel, see
+:ref:`parallel-computation`.
 
 Saving Halo Particles
 ---------------------
@@ -189,5 +211,7 @@ As of version 1.1 of ``yt_astro_analysis``, the ids of the particles
 belonging to each halo can be saved to the catalog when using either the
 :ref:`fof_finding` or :ref:`hop_finding` methods. The is enabled by default
 and can be disabled by setting ``save_particles`` to ``False`` in the
-``finder_kwargs`` dictionary, as described above. This is not supported for
-the ``yt`` version of Rockstar.
+``finder_kwargs`` dictionary, as described above. Rockstar will also save
+halo particles to the `.bin` files. However, reading these is not currently
+supported in yt. See :ref:`halocatalog` for information on accessing halo
+particles for FoF and HOP catalogs.
