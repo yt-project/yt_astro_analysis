@@ -121,6 +121,15 @@ procedure is roughly as follows.
    depending on the user-supplied over density
    threshold parameter. The default is 160.
 
+For both the FoF and HOP halo finders, the resulting halo catalogs will be written
+to a directory associated with the ``output_dir`` keyword provided to the
+:class:`~yt_astro_analysis.halo_analysis.halo_catalog.halo_catalog.HaloCatalog`.
+The number of files for each catalog is equal to the number of processors used. The
+catalog files have the naming convention
+`<dataset_name>/<dataset_name>.<processor_number>.h5`, where `dataset_name` refers
+to the name of the snapshot. For more information on loading these with yt, see
+:ref:`halocatalog`.
+
 .. _rockstar_finding:
 
 Rockstar-galaxies
@@ -137,65 +146,36 @@ The ``yt_astro_analysis`` package works with the latest version of
 obtaining and installing ``rockstar-galaxies`` for use with
 ``yt_astro_analysis``.
 
-### YOU ARE HERE.
-To run with Rockstar
+To run Rockstar, your script must be run with `mpirun` using a minimum of three
+processors. Rockstar processes are divided into three groups:
 
-To run the Rockstar Halo finding, you must launch python with MPI and
-parallelization enabled. While Rockstar itself does not require MPI to run,
-the MPI libraries allow yt to distribute particle information across multiple
-nodes.
+* readers: these read particle data from the snapshots. Set the number of readers
+  with the ``num_readers`` keyword argument.
+* writers: these perform the halo finding and write the subsequent halo catalogs.
+  Set the number of writers with the ``num_writers`` keyword argument.
+* server: this process coordinates the activity of the readers and writers.
+  There is only one server process. The total number of processes given with
+  `mpirun` must be equal to the number of readers plus writers plus one
+  (for the server).
 
-.. warning:: At the moment, running Rockstar inside of yt on multiple compute nodes
-   connected by an Infiniband network can be problematic. Therefore, for now
-   we recommend forcing the use of the non-Infiniband network (e.g. Ethernet)
-   using this flag: ``--mca btl ^openib``.
-   For example, here is how Rockstar might be called using 24 cores:
-   ``mpirun -n 24 --mca btl ^openib python ./run_rockstar.py --parallel``.
+.. warning:: Running Rockstar from yt on multiple compute nodes
+   connected by an Infiniband network can be problematic. It is recommended to
+   force the use of the non-Infiniband network (e.g. Ethernet) using this flag:
+   ``--mca btl ^openib``.  For example, to run with 24 cores, do:
+   ``mpirun -n 24 --mca btl ^openib python ./run_rockstar.py``.
 
-The script above configures the Halo finder, launches a server process which
-disseminates run information and coordinates writer-reader processes.
-Afterwards, it launches reader and writer tasks, filling the available MPI
-slots, which alternately read particle information and analyze for halo
-content.
+See
+:class:`~yt_astro_analysis.halo_analysis.halo_finding.rockstar.rockstar.RockstarHaloFinder`
+for the list of available options.
 
-The RockstarHaloFinder class has these options that can be supplied to the
-halo catalog through the ``finder_kwargs`` argument:
-
-* ``dm_type``, the index of the dark matter particle. Default is 1.
-* ``outbase``, This is where the out*list files that Rockstar makes should be
-  placed. Default is 'rockstar_halos'.
-* ``num_readers``, the number of reader tasks (which are idle most of the
-  time.) Default is 1.
-* ``num_writers``, the number of writer tasks (which are fed particles and
-  do most of the analysis). Default is MPI_TASKS-num_readers-1.
-  If left undefined, the above options are automatically
-  configured from the number of available MPI tasks.
-* ``force_res``, the resolution that Rockstar uses for various calculations
-  and smoothing lengths. This is in units of Mpc/h.
-  If no value is provided, this parameter is automatically set to
-  the width of the smallest grid element in the simulation from the
-  last data snapshot (i.e. the one where time has evolved the
-  longest) in the time series:
-  ``ds_last.index.get_smallest_dx() * ds_last['Mpch']``.
-* ``total_particles``, if supplied, this is a pre-calculated
-  total number of dark matter
-  particles present in the simulation. For example, this is useful
-  when analyzing a series of snapshots where the number of dark
-  matter particles should not change and this will save some disk
-  access time. If left unspecified, it will
-  be calculated automatically. Default: ``None``.
-* ``dm_only``, if set to ``True``, it will be assumed that there are
-  only dark matter particles present in the simulation.
-  This option does not modify the halos found by Rockstar, however
-  this option can save disk access time if there are no star particles
-  (or other non-dark matter particles) in the simulation. Default: ``False``.
-
-Rockstar dumps halo information in a series of text (halo*list and
-out*list) and binary (halo*bin) files inside the ``outbase`` directory.
-We use the halo list classes to recover the information.
-
-Inside the ``outbase`` directory there is a text file named ``datasets.txt``
-that records the connection between ds names and the Rockstar file names.
+Rockstar halo catalogs are saved to the directory associated the ``output_dir``
+keyword provided to the
+:class:`~yt_astro_analysis.halo_analysis.halo_catalog.halo_catalog.HaloCatalog`.
+The number of files for each catalog is equal to the number of writers. The
+catalog files have the naming convention
+`halos_<catalog_number>.<processor_number>.bin`, where catalog number 0 is the
+first halo catalog calculated. For more information on loading these with yt,
+see :ref:`rockstar`.
 
 Parallelism
 -----------
