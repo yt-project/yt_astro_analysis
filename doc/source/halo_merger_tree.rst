@@ -1,17 +1,16 @@
 .. _merger_tree:
 
-Merger Tree
-===========
+Merger Trees
+============
 
-The ``yt`` merger tree was removed as of :code:`yt-3.0`.  This
-functionality can still be found in :code:`yt-2.x`.  However,
-the recommended option is to use the
-`ytree <http://ytree.readthedocs.io>`_ package, which can be
-installed via pip:
+Merger trees can be created for :ref:`rockstar_finding` halo catalogs using
+`consistent-trees <https://bitbucket.org/pbehroozi/consistent-trees>`__.
+The resulting merger tree data can be loaded with
+`ytree <http://ytree.readthedocs.io>`__. Note, halo finding must be done on
+a series of snapshots for this to work (see :ref:`halo_finding_time_series`).
 
-.. code-block:: bash
-
-    pip install ytree
-
-For more information on ``ytree``, see the documentation
-`here <http://ytree.readthedocs.io>`__.
+For halo catalogs created with :ref:`fof_finding` or :ref:`hop_finding`, the
+`treefarm <https://treefarm.readthedocs.io/>`__ package can be used for
+generating merger trees. For this to work, member particles from halos must
+also be saved (see :ref:`saving_halo_particles`). These merger trees can also
+be loaded with `ytree <http://ytree.readthedocs.io>`__.

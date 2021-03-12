@@ -39,6 +39,8 @@ used.
    hc = HaloCatalog(data_ds=data_ds, finder_method='hop')
    hc.create()
 
+.. _halo_finding_time_series:
+
 Halo Finding on Multiple Snapshots
 ----------------------------------
 
@@ -203,6 +205,8 @@ needs to provided to `mpirun` (e.g., `mpirun -np 8` to run on 8 processors).
 
 For more information on running ``yt`` in parallel, see
 :ref:`parallel-computation`.
+
+.. _saving_halo_particles:
 
 Saving Halo Particles
 ---------------------
