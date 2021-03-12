@@ -11,5 +11,6 @@ If you already have halo catalogs and simply want to load them into yt, see
 .. toctree::
    :maxdepth: 2
 
-   halo_catalogs
+   halo_finding
+   halo_catalog
    halo_merger_tree

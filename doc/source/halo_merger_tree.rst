@@ -1,7 +1,7 @@
 .. _merger_tree:
 
-Halo Merger Tree
-================
+Merger Tree
+===========
 
 The ``yt`` merger tree was removed as of :code:`yt-3.0`.  This
 functionality can still be found in :code:`yt-2.x`.  However,
