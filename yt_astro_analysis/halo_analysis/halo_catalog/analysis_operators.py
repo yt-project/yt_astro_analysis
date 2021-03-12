@@ -15,8 +15,8 @@ def add_callback(name, function):
 
 class AnalysisCallback(object):
     r"""
-    An AnalysisCallback is a function that minimally takes in a target object 
-    and performs some analysis on it. This function may attach attributes 
+    An AnalysisCallback is a function that minimally takes in a target object
+    and performs some analysis on it. This function may attach attributes
     to the target object, write out data, etc, but does not return anything.
     """
     def __init__(self, function, args=None, kwargs=None):
@@ -37,9 +37,9 @@ def add_filter(name, function):
 
 class AnalysisFilter(AnalysisCallback):
     r"""
-    An AnalysisFilter is a function that minimally takes a target object, performs 
-    some analysis, and returns either True or False. The return value determines 
-    whether analysis is continued
+    An AnalysisFilter is a function that minimally takes a target object, performs
+    some analysis, and returns either True or False. The return value determines
+    whether analysis is continued.
     """
     def __init__(self, function, *args, **kwargs):
         AnalysisCallback.__init__(self, function, args, kwargs)
@@ -54,7 +54,7 @@ def add_quantity(name, function):
 
 class AnalysisQuantity(AnalysisCallback):
     r"""
-    A AnalysisQuantity is a function that takes minimally a target object, 
+    An AnalysisQuantity is a function that takes minimally a target object,
     performs some analysis, and then returns a value.
     """
     def __init__(self, function, *args, **kwargs):
@@ -70,7 +70,7 @@ def add_recipe(name, function):
 
 class AnalysisRecipe(object):
     r"""
-    A AnalysisRecipe is a function that accepts an AnalysisPipeline and
+    An AnalysisRecipe is a function that accepts an AnalysisPipeline and
     adds a series of callbacks, quantities, and filters.
     """
     def __init__(self, function, args=None, kwargs=None):

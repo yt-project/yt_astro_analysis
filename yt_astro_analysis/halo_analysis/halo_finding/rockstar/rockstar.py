@@ -27,7 +27,7 @@ try:
     from yt_astro_analysis.halo_analysis.halo_finding.rockstar import \
      rockstar_interface
 except ImportError:
-    mylog.warning(
+    mylog.warn(
         ("Cannot import the rockstar interface.  Rockstar will not run.\n" +
          "If you need Rockstar, see the installation instructions at " +
          "http://yt-astro-analysis.readthedocs.io/."))
@@ -123,11 +123,10 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
 
     Parameters
     ----------
-    ts : DatasetSeries, ~yt.data_objects.static_output.Dataset
-        This is the data source containing the DM particles. Because 
-        halo IDs may change from one snapshot to the next, the only
-        way to keep a consistent halo ID across time is to feed 
-        Rockstar a set of snapshots, ie, via DatasetSeries.
+    ts : ~yt.data_objects.time_series.DatasetSeries, ~yt.data_objects.static_output.Dataset
+        The dataset or datsets on which halo finding will be run. If you intend
+        to make a merger tree later, you must run Rockstar using a DatasetSeries
+        containing all the snapshot to be included.
     num_readers : int
         The number of reader can be increased from the default
         of 1 in the event that a single snapshot is split among

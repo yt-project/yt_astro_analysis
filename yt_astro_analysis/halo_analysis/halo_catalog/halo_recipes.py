@@ -1,5 +1,5 @@
 """
-Halo recipes
+HaloCatalog recipes
 
 
 

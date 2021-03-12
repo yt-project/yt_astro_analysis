@@ -3,14 +3,13 @@
 Halo Analysis
 =============
 
-This section covers halo finding, performing extra analysis on halos,
-and the halo mass function calculator.  If you already have halo
-catalogs and simply want to load them into yt, see
+This section covers finding and analyzing halos using the
+:class:`~yt_astro_analysis.halo_analysis.halo_catalog.halo_catalog.HaloCatalog`.
+If you already have halo catalogs and simply want to load them into yt, see
 :ref:`halo-catalog-data`.
 
 .. toctree::
    :maxdepth: 2
 
    halo_catalogs
-   halo_transition
    halo_merger_tree
