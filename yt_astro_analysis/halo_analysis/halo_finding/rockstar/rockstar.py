@@ -27,7 +27,7 @@ try:
     from yt_astro_analysis.halo_analysis.halo_finding.rockstar import \
      rockstar_interface
 except ImportError:
-    mylog.warn(
+    mylog.warning(
         ("Cannot import the rockstar interface.  Rockstar will not run.\n" +
          "If you need Rockstar, see the installation instructions at " +
          "http://yt-astro-analysis.readthedocs.io/."))

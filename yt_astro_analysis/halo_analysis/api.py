@@ -9,7 +9,7 @@ import warnings
 
 from numpy import VisibleDeprecationWarning
 
-warnings.warn(
+warnings.warning(
     "Importing from yt_astro_analysis.halo_analysis.api is deprecated. " +
     "Please import from yt_astro_analysis.halo_analysis or " +
     "yt.extensions.astro_analysis.halo_analysis.",

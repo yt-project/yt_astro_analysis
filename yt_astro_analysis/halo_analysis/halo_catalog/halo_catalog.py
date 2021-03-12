@@ -150,7 +150,8 @@ class HaloCatalog(ParallelAnalysisInterface):
         for field in _default_fields:
             field_name = (field_type, field)
             if field_name not in self.halos_ds.derived_field_list:
-                mylog.warn(f"Halo dataset {self.halos_ds} has no field {field_name}.")
+                mylog.warning(
+                    f"Halo dataset {self.halos_ds} has no field {field_name}.")
                 continue
             self.add_quantity(field, from_data_source=True,
                               field_type=field_type)
