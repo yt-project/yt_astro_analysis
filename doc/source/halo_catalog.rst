@@ -239,13 +239,14 @@ Running the Pipeline
 --------------------
 
 After all callbacks, quantities, and filters have been added, the
-analysis begins with a call to HaloCatalog.create.
+analysis begins with a call to
+:meth:`~yt_astro_analysis.halo_analysis.halo_catalog.halo_catalog.HaloCatalog.create`.
 
 .. code-block:: python
 
    hc.create()
 
-The save_halos keyword determines whether the actual Halo objects
+The `save_halos` keyword determines whether the actual Halo objects
 are saved after analysis on them has completed or whether just the
 contents of their quantities dicts will be retained for creating the
 final catalog. The looping over halos uses a call to parallel_objects
@@ -282,7 +283,7 @@ script and running with `mpirun`.
    hc.create(njobs="auto")
 
 The nature of the parallelism can be configured with two keywords provided to the
-:func:`~yt_astro_analysis.halo_analysis.halo_catalog.halo_catalog.HaloCatalog.create`
+:meth:`~yt_astro_analysis.halo_analysis.halo_catalog.halo_catalog.HaloCatalog.create`
 function: `njobs` and `dynamic`. If `dynamic` is set to False, halos will be
 distributed evenly over all processors. If `dynamic` is set to True, halos
 will be allocated to processors via a task queue. The `njobs` keyword determines
