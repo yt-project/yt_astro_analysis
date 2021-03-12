@@ -15,6 +15,8 @@ the
 
 .. code-block:: python
 
+   import yt
+   from yt.extensions.astro_analysis.halo_analysis import HaloCatalog
    halos_ds = yt.load('rockstar_halos/halos_0.0.bin')
    data_ds = yt.load('Enzo_64/RD0006/RedshiftOutput0006')
    hc = HaloCatalog(data_ds=data_ds, halos_ds=halos_ds)
@@ -60,9 +62,12 @@ An example of adding a filter:
 
    hc.add_filter('quantity_value', 'particle_mass', '>', 1E13, 'Msun')
 
-Currently quantity_value is the only available filter, but more can be
-added by the user by defining a function that accepts a halo object as
-the first argument and then adding it as an available filter. If you
+The two available filters are
+:func:`~yt_astro_analysis.halo_analysis.halo_catalog.halo_filters.quantity_value`
+and
+:func:`~yt_astro_analysis.halo_analysis.halo_catalog.halo_filters.not_subhalo`.
+More can be added by the user by defining a function that accepts a halo object
+as the first argument and then adding it as an available filter. If you
 think that your filter may be of use to the general community, you can
 add it to ``yt_astro_analysis/halo_analysis/halo_catalog/halo_filters.py`` and issue a
 pull request.
@@ -258,26 +263,43 @@ the user to add filters at multiple stages to skip remaining analysis if it
 is not warranted.
 
 Parallelism
-___________
+-----------
 
-DO THIS TOO
-
-Saving and Reloading Halo Catalogs
-----------------------------------
-
-A :class:`~yt_astro_analysis.halo_analysis.halo_catalog.halo_catalog.HaloCatalog`
-saved to disk can be reloaded as a yt dataset with the
-standard call to ``yt.load``.  See :ref:`halocatalog` for a demonstration
-of loading and working only with the catalog.
-Any side data, such as profiles, can be reloaded
-with a ``load_profiles`` callback and a call to
-:func:`~yt_astro_analysis.halo_analysis.halo_catalog.halo_catalog.HaloCatalog.load`.
+Halo analysis using the
+:class:`~yt_astro_analysis.halo_analysis.halo_catalog.halo_catalog.HaloCatalog`
+can be parallelized by adding ``yt.enable_parallelism()`` to the top of the
+script and running with `mpirun`.
 
 .. code-block:: python
 
-   hds = yt.load(path+"halo_catalogs/catalog_0046/catalog_0046.0.h5")
-   hc = HaloCatalog(halos_ds=hds,
-                    output_dir="halo_catalogs/catalog_0046")
-   hc.add_callback("load_profiles", output_dir="profiles",
-                   filename="virial_profiles")
-   hc.load()
+   import yt
+   yt.enable_parallelism()
+   from yt.extensions.astro_analysis.halo_analysis import HaloCatalog
+
+   halos_ds = yt.load('rockstar_halos/halos_0.0.bin')
+   data_ds = yt.load('Enzo_64/RD0006/RedshiftOutput0006')
+   hc = HaloCatalog(data_ds=data_ds, halos_ds=halos_ds)
+   hc.create(njobs="auto")
+
+The nature of the parallelism can be configured with two keywords provided to the
+:func:`~yt_astro_analysis.halo_analysis.halo_catalog.halo_catalog.HaloCatalog.create`
+function: `njobs` and `dynamic`. If `dynamic` is set to False, halos will be
+distributed evenly over all processors. If `dynamic` is set to True, halos
+will be allocated to processors via a task queue. The `njobs` keyword determines
+the number of processor groups over which the analysis will be divided. The
+default value for `njobs` is "auto". In this mode, a single processor will be
+allocated to analyze a halo. The `dynamic` keyword is overridden to False if
+the number of processors being used is even and True (use a task queue) if odd.
+Set `njobs` to -1 to mandate a single processor to analyze a halo and to a positive
+number to create that many processor groups for performing analysis. The number of
+processors used per halo will then be the total number of processors divided by
+`njobs`. For more information on running ``yt`` in parallel, see
+:ref:`parallel-computation`.
+
+Loading Created Halo Catalogs
+-----------------------------
+
+A :class:`~yt_astro_analysis.halo_analysis.halo_catalog.halo_catalog.HaloCatalog`
+saved to disk can be reloaded as a yt dataset with the standard call to
+:func:`~yt.loaders.load`. See :ref:`halocatalog` for more information on
+loading a newly created catalog.
