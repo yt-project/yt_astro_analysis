@@ -33,7 +33,7 @@ used.
 .. code-block:: python
 
    import yt
-   from yt.extensions.astro_analysis.halo_analysis Import
+   from yt.extensions.astro_analysis.halo_analysis import HaloCatalog
 
    data_ds = yt.load('Enzo_64/RD0006/RedshiftOutput0006')
    hc = HaloCatalog(data_ds=data_ds, finder_method='hop')
@@ -52,7 +52,7 @@ more information on creating these. All three halo finders can be run this way.
 .. code-block:: python
 
    import yt
-   from yt.extensions.astro_analysis.halo_analysis Import
+   from yt.extensions.astro_analysis.halo_analysis import HaloCatalog
 
    my_sim = yt.load_simulation('enzo_tiny_cosmology/32Mpc_32.enzo', 'Enzo')
    hc = HaloCatalog(data_ds=my_sim, finder_method='hop')
@@ -69,7 +69,7 @@ of a dictionary using the ``finder_kwargs`` keyword.
 .. code-block:: python
 
    import yt
-   from yt.extensions.astro_analysis.halo_analysis.api import HaloCatalog
+   from yt.extensions.astro_analysis.halo_analysis import HaloCatalog
 
    data_ds = yt.load('Enzo_64/RD0006/RedshiftOutput0006')
    hc = HaloCatalog(data_ds=data_ds, finder_method='fof',
@@ -137,7 +137,8 @@ The ``yt_astro_analysis`` package works with the latest version of
 obtaining and installing ``rockstar-galaxies`` for use with
 ``yt_astro_analysis``.
 
-### YOU ARE HERE
+### YOU ARE HERE.
+To run with Rockstar
 
 To run the Rockstar Halo finding, you must launch python with MPI and
 parallelization enabled. While Rockstar itself does not require MPI to run,

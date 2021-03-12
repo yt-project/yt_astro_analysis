@@ -114,10 +114,8 @@ class StandardRunner(ParallelAnalysisInterface):
         return pool, workgroup
 
 class RockstarHaloFinder(ParallelAnalysisInterface):
-    r"""Spawns the Rockstar Halo finder, distributes dark matter
-    particles and finds halos.
+    r"""Spawns the Rockstar Halo finder, distributes particles and finds halos.
 
-    The halo finder requires dark matter particles of a fixed size.
     Rockstar has three main processes: reader, writer, and the 
     server which coordinates reader/writer processes.
 
@@ -179,10 +177,8 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
         it will be calculated automatically. Default: ``None``.
     particle_mass : float
         If supplied, use this as the particle mass supplied to rockstar.
-        Otherwise, the smallest particle mass will be identified and calculated
-        internally.  This is useful for multi-dm-mass simulations. Note that
-        this will only give sensible results for halos that are not "polluted"
-        by lower resolution particles. Default: ``None``.
+        Otherwise, particle masses are read from the dataset.
+        Default: ``None``.
 
     Returns
     -------
@@ -192,27 +188,15 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
     --------
 
     To use the script below you must run it using MPI:
-    mpirun -np 4 python run_rockstar.py
+    `mpirun -np 4 python run_rockstar.py`
 
     >>> import yt
     >>> yt.enable_parallelism()
-    >>> from yt.extensions.astro_analysis.halo_finding.rockstar.api import \
-    ...     RockstarHaloFinder
-
-    >>> # create a particle filter to remove star particles
-    >>> @yt.particle_filter("dark_matter", requires=["creation_time"])
-    ... def _dm_filter(pfilter, data):
-    ...     return data["creation_time"] <= 0.0
-
-    >>> def setup_ds(ds):
-    ...     ds.add_particle_filter("dark_matter")
-
-    >>> es = yt.load_simulation("enzo_tiny_cosmology/32Mpc_32.enzo", "Enzo")
-    >>> es.get_time_series(setup_function=setup_ds, redshift_data=False)
-
-    >>> rh = RockstarHaloFinder(es, num_readers=1, num_writers=2,
-    ...                         particle_type="dark_matter")
-    >>> rh.run()
+    >>> from yt.extensions.astro_analysis.halo_analysis import HaloCatalog
+    >>> data_ds = yt.load('Enzo_64/RD0006/RedshiftOutput0006')
+    >>> hc = HaloCatalog(data_ds=data_ds, finder_method='rockstar',
+    ...                  finder_kwargs={"num_readers": 1, "num_writers": 2})
+    >>> hc.create()
 
     """
     def __init__(self, ts, num_readers = 1, num_writers = None,
