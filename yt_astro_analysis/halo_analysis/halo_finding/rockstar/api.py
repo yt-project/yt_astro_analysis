@@ -17,7 +17,7 @@ import warnings
 
 from numpy import VisibleDeprecationWarning
 
-warnings.warning(
+warnings.warn(
     "Running the RockstarHaloFinder directly is deprecated. " +
     "Please run using the HaloCatalog. See " +
     "https://yt-astro-analysis.readthedocs.io for more information.",
