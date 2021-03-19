@@ -29,8 +29,8 @@ from yt.utilities.physical_ratios import \
 from yt.utilities.parallel_tools.parallel_analysis_interface import \
     ParallelAnalysisInterface
 
-from yt_astro_analysis.halo_finding.hop.EnzoHop import RunHOP
-from yt_astro_analysis.halo_finding.fof.EnzoFOF import RunFOF
+from yt_astro_analysis.halo_analysis.halo_finding.hop.EnzoHop import RunHOP
+from yt_astro_analysis.halo_analysis.halo_finding.fof.EnzoFOF import RunFOF
 
 class Halo(object):
     """
@@ -761,8 +761,12 @@ class HOPHaloFinder(GenericHaloFinder, HOPHaloList):
 
     Examples
     --------
-    >>> ds = load("RedshiftOutput0000")
-    >>> halos = HaloFinder(ds)
+    >>> import yt
+    >>> from yt.extensions.astro_analysis.halo_analysis import HaloCatalog
+    >>> data_ds = yt.load('Enzo_64/RD0006/RedshiftOutput0006')
+    >>> hc = HaloCatalog(data_ds=data_ds, finder_method='hop',
+    ...                  finder_kwargs={"threshold": 160})
+    >>> hc.create()
     """
     def __init__(self, ds, subvolume=None, threshold=160, dm_only=False,
                  ptype='all', padding=0.02, total_mass=None,
@@ -862,8 +866,12 @@ class FOFHaloFinder(GenericHaloFinder, FOFHaloList):
 
     Examples
     --------
-    >>> ds = load("RedshiftOutput0000")
-    >>> halos = FOFHaloFinder(ds)
+    >>> import yt
+    >>> from yt.extensions.astro_analysis.halo_analysis import HaloCatalog
+    >>> data_ds = yt.load('Enzo_64/RD0006/RedshiftOutput0006')
+    >>> hc = HaloCatalog(data_ds=data_ds, finder_method='fof',
+    ...                  finder_kwargs={"link": 0.2})
+    >>> hc.create()
     """
     def __init__(self, ds, subvolume=None, link=0.2, dm_only=False,
                  ptype='all', padding=0.02, save_particles=True):

@@ -65,12 +65,12 @@ cython_extensions = [
 ]
 
 extensions = [
-    Extension("yt_astro_analysis.halo_finding.fof.EnzoFOF",
-              ["yt_astro_analysis/halo_finding/fof/EnzoFOF.c",
-               "yt_astro_analysis/halo_finding/fof/kd.c"],
+    Extension("yt_astro_analysis.halo_analysis.halo_finding.fof.EnzoFOF",
+              ["yt_astro_analysis/halo_analysis/halo_finding/fof/EnzoFOF.c",
+               "yt_astro_analysis/halo_analysis/halo_finding/fof/kd.c"],
               libraries=std_libs),
-    Extension("yt_astro_analysis.halo_finding.hop.EnzoHop",
-              glob.glob("yt_astro_analysis/halo_finding/hop/*.c")),
+    Extension("yt_astro_analysis.halo_analysis.halo_finding.hop.EnzoHop",
+              glob.glob("yt_astro_analysis/halo_analysis/halo_finding/hop/*.c")),
 ]
 
 dev_requirements = [
@@ -89,11 +89,11 @@ if os.path.exists("rockstar.cfg"):
         print("(ex: \"echo '/path/to/rockstar-galaxies' > rockstar.cfg\" )")
         sys.exit(1)
 
-    rockstar_extdir = "yt_astro_analysis/halo_finding/rockstar"
+    rockstar_extdir = "yt_astro_analysis/halo_analysis/halo_finding/rockstar"
     rockstar_extensions = [
-        Extension("yt_astro_analysis.halo_finding.rockstar.rockstar_interface",
+        Extension("yt_astro_analysis.halo_analysis.halo_finding.rockstar.rockstar_interface",
                   sources=[os.path.join(rockstar_extdir, "rockstar_interface.pyx")]),
-        Extension("yt_astro_analysis.halo_finding.rockstar.rockstar_groupies",
+        Extension("yt_astro_analysis.halo_analysis.halo_finding.rockstar.rockstar_groupies",
                   sources=[os.path.join(rockstar_extdir, "rockstar_groupies.pyx")])
     ]
     for ext in rockstar_extensions:

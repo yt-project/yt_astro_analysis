@@ -20,8 +20,6 @@ Example Scripts
 Example Notebooks
 -----------------
 
-- `Halo Analysis Example <https://github.com/yt-project/yt_astro_analysis/blob/master/doc/source/cookbook/Halo_Analysis.ipynb>`__
-
 - `PPV Cube <https://github.com/yt-project/yt_astro_analysis/blob/master/doc/source/PPVCube.ipynb>`__
 
 - `Sunyaev Zeldovich <https://github.com/yt-project/yt_astro_analysis/blob/master/doc/source/SZ_projections.ipynb>`__

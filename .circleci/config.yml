@@ -102,16 +102,18 @@ commands:
       - run:
           name: "Build yt_astro_analysis and run tests."
           command: |
+            # tag the tip so we can get back there
+            git tag tip
             source $BASH_ENV
             source $HOME/venv/bin/activate
             # generate answers if not cached
-            if [ ! -f $TEST_DIR/$TEST_NAME/$TEST_NAME ]; then
+            if [ ! -d $TEST_DIR/$TEST_NAME ]; then
               git checkout $GOLD_STANDARD
               pip install -e .
               nosetests $TEST_FLAGS --answer-store
             fi
             # return to tip and run comparison tests
-            git checkout -
+            git checkout tip
             pip install -e .
             coverage run `which nosetests` $TEST_FLAGS
             # code coverage report

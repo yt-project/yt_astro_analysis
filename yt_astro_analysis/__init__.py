@@ -13,12 +13,11 @@ API for yt astro analysis.
 # The full license is in the file COPYING.txt, distributed with this software.
 #-----------------------------------------------------------------------------
 
-__version__ = '1.1.0.dev1'
+__version__ = '1.1.0.dev2'
 
 from yt_astro_analysis import \
     cosmological_observation, \
     halo_analysis, \
-    halo_finding, \
     ppv_cube, \
     radmc3d_export, \
     sunyaev_zeldovich

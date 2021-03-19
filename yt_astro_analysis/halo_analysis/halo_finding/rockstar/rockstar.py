@@ -1,5 +1,5 @@
 """
-Operations to get Rockstar loaded up
+Operations to run Rockstar
 
 
 
@@ -14,6 +14,7 @@ Operations to get Rockstar loaded up
 #-----------------------------------------------------------------------------
 
 from yt.config import ytcfg
+from yt.data_objects.static_output import Dataset
 from yt.data_objects.time_series import \
     DatasetSeries
 from yt.funcs import \
@@ -23,10 +24,10 @@ from yt.utilities.parallel_tools.parallel_analysis_interface import \
     ProcessorPool
 
 try:
-    from yt_astro_analysis.halo_finding.rockstar import \
+    from yt_astro_analysis.halo_analysis.halo_finding.rockstar import \
      rockstar_interface
 except ImportError:
-    mylog.warn(
+    mylog.warning(
         ("Cannot import the rockstar interface.  Rockstar will not run.\n" +
          "If you need Rockstar, see the installation instructions at " +
          "http://yt-astro-analysis.readthedocs.io/."))
@@ -113,20 +114,17 @@ class StandardRunner(ParallelAnalysisInterface):
         return pool, workgroup
 
 class RockstarHaloFinder(ParallelAnalysisInterface):
-    r"""Spawns the Rockstar Halo finder, distributes dark matter
-    particles and finds halos.
+    r"""Spawns the Rockstar Halo finder, distributes particles and finds halos.
 
-    The halo finder requires dark matter particles of a fixed size.
     Rockstar has three main processes: reader, writer, and the 
     server which coordinates reader/writer processes.
 
     Parameters
     ----------
-    ts : DatasetSeries, ~yt.data_objects.static_output.Dataset
-        This is the data source containing the DM particles. Because 
-        halo IDs may change from one snapshot to the next, the only
-        way to keep a consistent halo ID across time is to feed 
-        Rockstar a set of snapshots, ie, via DatasetSeries.
+    ts : ~yt.data_objects.time_series.DatasetSeries, ~yt.data_objects.static_output.Dataset
+        The dataset or datsets on which halo finding will be run. If you intend
+        to make a merger tree later, you must run Rockstar using a DatasetSeries
+        containing all the snapshot to be included.
     num_readers : int
         The number of reader can be increased from the default
         of 1 in the event that a single snapshot is split among
@@ -179,10 +177,8 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
         it will be calculated automatically. Default: ``None``.
     particle_mass : float
         If supplied, use this as the particle mass supplied to rockstar.
-        Otherwise, the smallest particle mass will be identified and calculated
-        internally.  This is useful for multi-dm-mass simulations. Note that
-        this will only give sensible results for halos that are not "polluted"
-        by lower resolution particles. Default: ``None``.
+        Otherwise, particle masses are read from the dataset.
+        Default: ``None``.
 
     Returns
     -------
@@ -192,27 +188,15 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
     --------
 
     To use the script below you must run it using MPI:
-    mpirun -np 4 python run_rockstar.py
+    `mpirun -np 4 python run_rockstar.py`
 
     >>> import yt
     >>> yt.enable_parallelism()
-    >>> from yt.extensions.astro_analysis.halo_finding.rockstar.api import \
-    ...     RockstarHaloFinder
-
-    >>> # create a particle filter to remove star particles
-    >>> @yt.particle_filter("dark_matter", requires=["creation_time"])
-    ... def _dm_filter(pfilter, data):
-    ...     return data["creation_time"] <= 0.0
-
-    >>> def setup_ds(ds):
-    ...     ds.add_particle_filter("dark_matter")
-
-    >>> es = yt.load_simulation("enzo_tiny_cosmology/32Mpc_32.enzo", "Enzo")
-    >>> es.get_time_series(setup_function=setup_ds, redshift_data=False)
-
-    >>> rh = RockstarHaloFinder(es, num_readers=1, num_writers=2,
-    ...                         particle_type="dark_matter")
-    >>> rh.run()
+    >>> from yt.extensions.astro_analysis.halo_analysis import HaloCatalog
+    >>> data_ds = yt.load('Enzo_64/RD0006/RedshiftOutput0006')
+    >>> hc = HaloCatalog(data_ds=data_ds, finder_method='rockstar',
+    ...                  finder_kwargs={"num_readers": 1, "num_writers": 2})
+    >>> hc.create()
 
     """
     def __init__(self, ts, num_readers = 1, num_writers = None,
@@ -342,11 +326,11 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
             if not os.path.exists(restart_file):
                 raise RuntimeError("Restart file %s not found" % (restart_file))
             with open(restart_file) as restart_fh:
-                for line in restart_fh:
-                    if line.startswith("RESTART_SNAP"):
-                        restart_num = int(line.split("=")[1])
-                    if line.startswith("NUM_WRITERS"):
-                        num_writers = int(line.split("=")[1])
+                for par in restart_fh:
+                    if par.startswith("RESTART_SNAP"):
+                        restart_num = int(par.split("=")[1])
+                    if par.startswith("NUM_WRITERS"):
+                        num_writers = int(par.split("=")[1])
             if num_writers != self.num_writers:
                 raise RuntimeError(
                     "Number of writers in restart has changed from the original "
@@ -386,9 +370,13 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
             # output files because it will be easy to lose this connection.
             fp = open(os.path.join(self.outbase, 'datasets.txt'), 'w')
             fp.write("# dsname\tindex\n")
-            for i, ds in enumerate(self.ts):
-                dsloc = os.path.join(os.path.relpath(ds.fullpath), ds.basename)
-                line = "%s\t%d\n" % (dsloc, i)
+            for i, ds in enumerate(self.ts.outputs):
+                if isinstance(ds, Dataset):
+                    fn = ds.parameter_filename
+                else:
+                    fn = ds
+                dsloc = os.path.join(os.path.relpath(fn))
+                line = f"{dsloc}\t{i}\n"
                 fp.write(line)
             fp.close()
         # This barrier makes sure the directory exists before it might be used.

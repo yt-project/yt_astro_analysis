@@ -1,43 +1,14 @@
 """
-Halo recipe object
+HaloCatalog recipes
 
 
 
 """
 
-#-----------------------------------------------------------------------------
-# Copyright (c) 2016, yt Development Team.
-#
-# Distributed under the terms of the Modified BSD License.
-#
-# The full license is in the file COPYING.txt, distributed with this software.
-#-----------------------------------------------------------------------------
+from yt_astro_analysis.halo_analysis.halo_catalog.analysis_operators import \
+    add_recipe
 
-from yt.utilities.operator_registry import \
-    OperatorRegistry
-
-recipe_registry = OperatorRegistry()
-
-def add_recipe(name, function):
-    recipe_registry[name] =  HaloRecipe(function)
-
-class HaloRecipe(object):
-    r"""
-    A HaloRecipe is a function that minimally takes in a Halo object
-    and performs some analysis on it.  This function may attach attributes
-    to the Halo object, write out data, etc, but does not return anything.
-    """
-    def __init__(self, function, args=None, kwargs=None):
-        self.function = function
-        self.args = args
-        if self.args is None: self.args = []
-        self.kwargs = kwargs
-        if self.kwargs is None: self.kwargs = {}
-
-    def __call__(self, halo_catalog):
-        return self.function(halo_catalog, *self.args, **self.kwargs)
-
-def calculate_virial_quantities(hc, fields,
+def calculate_virial_quantities(pipeline, fields,
                                 weight_field=None, accumulation=True,
                                 radius_field="virial_radius", factor=2.0,
                                 overdensity_field=("gas", "overdensity"),
@@ -87,20 +58,20 @@ def calculate_virial_quantities(hc, fields,
     storage = "virial_quantities_profiles"
     pfields = [field for field in fields if field != "radius"]
 
-    hc.add_callback("sphere", factor=factor)
+    pipeline.add_callback("sphere", factor=factor)
     if pfields:
-        hc.add_callback("profile", ["radius"], pfields,
-                        weight_field=weight_field,
-                        accumulation=accumulation,
-                        storage=storage)
-    hc.add_callback("profile", ["radius"], [overdensity_field],
-                    weight_field="cell_volume", accumulation=True,
-                    storage=storage)
-    hc.add_callback("virial_quantities", fields,
-                    overdensity_field=overdensity_field,
-                    critical_overdensity=critical_overdensity,
-                    profile_storage=storage)
-    hc.add_callback("delete_attribute", storage)
-    hc.add_callback("delete_attribute", "data_object")
+        pipeline.add_callback("profile", ["radius"], pfields,
+                              weight_field=weight_field,
+                              accumulation=accumulation,
+                              storage=storage)
+    pipeline.add_callback("profile", ["radius"], [overdensity_field],
+                          weight_field="cell_volume", accumulation=True,
+                          storage=storage)
+    pipeline.add_callback("virial_quantities", fields,
+                          overdensity_field=overdensity_field,
+                          critical_overdensity=critical_overdensity,
+                          profile_storage=storage)
+    pipeline.add_callback("delete_attribute", storage)
+    pipeline.add_callback("delete_attribute", "data_object")
 
 add_recipe("calculate_virial_quantities", calculate_virial_quantities)
