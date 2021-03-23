@@ -107,7 +107,7 @@ commands:
             source $BASH_ENV
             source $HOME/venv/bin/activate
             # generate answers if not cached
-            if [ ! -d $TEST_DIR/$TEST_NAME ]; then
+            if [ ! -f ${TEST_DIR}/${TEST_NAME}/${TEST_NAME}.dat ]; then
               git checkout $GOLD_STANDARD
               pip install -e .
               nosetests $TEST_FLAGS --answer-store
@@ -156,13 +156,13 @@ jobs:
 
       - restore_cache:
           name: "Restore dependencies cache."
-          key: python-<< parameters.tag >>-dependencies-v8
+          key: python-<< parameters.tag >>-dependencies-2021-23-03
 
       - install-with-yt-dev
 
       - save_cache:
           name: "Save dependencies cache"
-          key: python-<< parameters.tag >>-dependencies-v8
+          key: python-<< parameters.tag >>-dependencies-2021-23-03
           paths:
             - ~/.cache/pip
             - ~/venv
@@ -171,13 +171,13 @@ jobs:
 
       - restore_cache:
           name: "Restore test data cache."
-          key: test-data-v2
+          key: test-data-2021-23-03
 
       - download-test-data
 
       - save_cache:
           name: "Save test data cache."
-          key: test-data-v2
+          key: test-data-2021-23-03
           paths:
             - ~/yt_test
 
@@ -185,13 +185,13 @@ jobs:
 
       - restore_cache:
           name: "Restore test answers."
-          key: python-<< parameters.tag >>-test-answers-v8
+          key: python-<< parameters.tag >>-test-answers-2021-23-03
 
       - build-and-test
 
       - save_cache:
           name: "Save test answers cache."
-          key: python-<< parameters.tag >>-test-answers-v8
+          key: python-<< parameters.tag >>-test-answers-2021-23-03
           paths:
             - ~/test_results
 
@@ -212,13 +212,13 @@ jobs:
 
       - restore_cache:
           name: "Restore dependencies cache."
-          key: python-<< parameters.tag >>-dependencies-v8
+          key: python-<< parameters.tag >>-dependencies-2021-23-03
 
       - install-with-yt-dev
 
       - save_cache:
           name: "Save dependencies cache"
-          key: python-<< parameters.tag >>-dependencies-v8
+          key: python-<< parameters.tag >>-dependencies-2021-23-03
           paths:
             - ~/.cache/pip
             - ~/venv
@@ -234,15 +234,15 @@ workflows:
      jobs:
        - run-tests:
            name: "Python 3.6 tests"
-           tag: "3.6.11"
+           tag: "3.6.13"
 
        - run-tests:
-           name: "Python 3.8 tests"
-           tag: "3.8.5"
+           name: "Python 3.9 tests"
+           tag: "3.9.2"
 
        - docs-test:
            name: "Test docs build"
-           tag: "3.8.5"
+           tag: "3.9.2"
 
    weekly:
      triggers:
@@ -255,16 +255,20 @@ workflows:
      jobs:
        - run-tests:
            name: "Python 3.6 tests"
-           tag: "3.6.11"
+           tag: "3.6.13"
 
        - run-tests:
            name: "Python 3.7 tests"
-           tag: "3.7.8"
+           tag: "3.7.9"
 
        - run-tests:
            name: "Python 3.8 tests"
-           tag: "3.8.5"
+           tag: "3.8.8"
+
+       - run-tests:
+           name: "Python 3.9 tests"
+           tag: "3.9.2"
 
        - docs-test:
            name: "Test docs build"
-           tag: "3.8.5"
+           tag: "3.9.2"
