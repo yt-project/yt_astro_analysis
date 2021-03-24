@@ -3,7 +3,7 @@
 [![Users' Mailing List](https://img.shields.io/badge/Users-List-lightgrey.svg)](https://mail.python.org/archives/list/yt-users@python.org//)
 [![Devel Mailing List](https://img.shields.io/badge/Devel-List-lightgrey.svg)](https://mail.python.org/archives/list/yt-dev@python.org//)
 [![CircleCI](https://circleci.com/gh/yt-project/yt_astro_analysis.svg?style=svg)](https://circleci.com/gh/yt-project/yt_astro_analysis)
-[![codecov](https://codecov.io/gh/yt-project/yt_astro_analysis/branch/master/graph/badge.svg)](https://codecov.io/gh/yt-project/yt_astro_analysis)
+[![codecov](https://codecov.io/gh/yt-project/yt_astro_analysis/branch/main/graph/badge.svg)](https://codecov.io/gh/yt-project/yt_astro_analysis)
 [![Documentation Status](https://readthedocs.org/projects/yt-astro-analysis/badge/?version=latest)](https://yt-astro-analysis.readthedocs.io/en/latest/?badge=latest)
 [![PyPI version](https://badge.fury.io/py/yt-astro-analysis.svg)](https://badge.fury.io/py/yt-astro-analysis)
 [![Conda Version](https://img.shields.io/conda/vn/conda-forge/yt_astro_analysis.svg)](https://anaconda.org/conda-forge/yt_astro_analysis)
