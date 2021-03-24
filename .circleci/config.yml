@@ -107,7 +107,7 @@ commands:
             source $BASH_ENV
             source $HOME/venv/bin/activate
             # generate answers if not cached
-            if [ ! -f ${TEST_DIR}/${TEST_NAME}/${TEST_NAME}.dat ]; then
+            if [ ! -f ${TEST_DIR}/${TEST_NAME}/${TEST_NAME} ]; then
               git checkout $GOLD_STANDARD
               pip install -e .
               nosetests $TEST_FLAGS --answer-store
