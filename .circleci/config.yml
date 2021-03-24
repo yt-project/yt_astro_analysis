@@ -251,7 +251,7 @@ workflows:
            filters:
             branches:
               only:
-                - master
+                - main
      jobs:
        - run-tests:
            name: "Python 3.6 tests"
