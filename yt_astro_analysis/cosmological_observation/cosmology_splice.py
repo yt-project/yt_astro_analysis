@@ -228,6 +228,7 @@ class CosmologySplice(object):
         return cosmology_splice
 
     def plan_cosmology_splice(self, near_redshift, far_redshift,
+                              max_box_fraction=1.0,
                               decimals=3, filename=None,
                               start_index=0):
         r"""Create imaginary list of redshift outputs to maximally
@@ -244,6 +245,15 @@ class CosmologySplice(object):
             The nearest (lowest) redshift in the cosmology splice list.
         far_redshift : float
             The furthest (highest) redshift in the cosmology splice list.
+        max_box_fraction : float
+            In terms of the size of the domain, the maximum length a light
+            ray segment can be in order to span the redshift interval from
+            one dataset to another.  If using a zoom-in simulation, this
+            parameter can be set to the length of the high resolution
+            region so as to limit ray segments to that size.  If the
+            high resolution region is not cubical, the smallest side
+            should be used.
+            Default: 1.0 (the size of the box)
         decimals : int
             The decimal place to which the output redshift will be rounded.
             If the decimal place in question is nonzero, the redshift will
@@ -263,6 +273,8 @@ class CosmologySplice(object):
         >>> my_splice.plan_cosmology_splice(0.0, 0.1, filename='redshifts.out')
 
         """
+
+        self.max_box_fraction = max_box_fraction
 
         z = far_redshift
         outputs = []
