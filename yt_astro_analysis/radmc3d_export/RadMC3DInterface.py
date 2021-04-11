@@ -232,10 +232,10 @@ class RadMC3DWriter:
             ix = int(ind[0]+0.5)
             iy = int(ind[1]+0.5)
             iz = int(ind[2]+0.5)
+            nx, ny, nz = layer.ActiveDimensions / 2
             nx = int(nx)
             ny = int(ny)
             nz = int(nz)
-            nx, ny, nz = layer.ActiveDimensions / 2
             s = '{}    {}    {}    {}    {}    {}    {} \n'
             s = s.format(p, ix, iy, iz, nx, ny, nz)
             grid_file.write(s)
