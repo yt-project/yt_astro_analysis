@@ -59,6 +59,7 @@ Rockstar in this way.
    from yt.extensions.astro_analysis.halo_analysis import HaloCatalog
 
    my_sim = yt.load_simulation('enzo_tiny_cosmology/32Mpc_32.enzo', 'Enzo')
+   my_sim.get_time_series()
    hc = HaloCatalog(data_ds=my_sim, finder_method='hop')
    hc.create()
 
@@ -169,6 +170,7 @@ processors. Rockstar processes are divided into three groups:
    from yt.extensions.astro_analysis.halo_analysis import HaloCatalog
 
    my_sim = yt.load_simulation('enzo_tiny_cosmology/32Mpc_32.enzo', 'Enzo')
+   my_sim.get_time_series()
    hc = HaloCatalog(data_ds=my_sim, finder_method='rockstar',
                     finder_kwargs={"num_readers": 1, "num_writers": 1})
    hc.create()
