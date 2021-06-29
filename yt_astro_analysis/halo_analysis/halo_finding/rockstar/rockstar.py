@@ -203,7 +203,7 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
                  outbase="rockstar_halos", particle_type="all", star_types=None,
                  force_res=None, initial_metric_scaling=1.0, non_dm_metric_scaling=10.0,
                  suppress_galaxies=1, total_particles=None, dm_only=False, particle_mass=None,
-                 min_halo_size=25):
+                 min_halo_size=25, restart=False):
 
         if is_root():
             mylog.info("The citation for the Rockstar halo finder can be found at")
@@ -214,6 +214,7 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
             self.runner = InlineRunner()
         else:
             self.runner = StandardRunner(num_readers, num_writers)
+        self.restart = restart
         self.num_readers = self.runner.num_readers
         self.num_writers = self.runner.num_writers
         mylog.info("Rockstar is using %d readers and %d writers",
@@ -321,6 +322,7 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
         self._get_hosts()
         # Find restart output number
         num_outputs = len(self.ts)
+        restart = restart or self.restart
         if restart:
             restart_file = os.path.join(self.outbase, "restart.cfg")
             if not os.path.exists(restart_file):
