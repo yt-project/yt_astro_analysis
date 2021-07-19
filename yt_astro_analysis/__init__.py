@@ -19,5 +19,4 @@ from yt_astro_analysis import \
     cosmological_observation, \
     halo_analysis, \
     ppv_cube, \
-    radmc3d_export, \
-    sunyaev_zeldovich
+    radmc3d_export

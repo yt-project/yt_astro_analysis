@@ -11,7 +11,6 @@ from simulation data.
 
    light_cone_generator
    planning_cosmology_simulations
-   sunyaev_zeldovich
    ppv_cubes
 
 The following routines have been moved to the `Trident
