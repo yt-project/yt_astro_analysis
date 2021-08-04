@@ -118,10 +118,6 @@ class HaloCatalog(ParallelAnalysisInterface):
         self.data_ds = data_ds
         self.halo_field_type = halo_field_type
 
-        self.output_basedir = ensure_dir(output_dir)
-        self.pipeline = AnalysisPipeline(output_dir=self.output_basedir)
-        self.quantities = self.pipeline.quantities
-
         if halos_ds is None:
             if data_ds is None:
                 raise RuntimeError("Must specify a halos_ds, data_ds, or both.")
@@ -131,6 +127,10 @@ class HaloCatalog(ParallelAnalysisInterface):
         if data_source is None and halos_ds is not None:
             data_source = halos_ds.all_data()
         self.data_source = data_source
+
+        self.output_basedir = ensure_dir(output_dir)
+        self.pipeline = AnalysisPipeline(output_dir=self.output_dir)
+        self.quantities = self.pipeline.quantities
 
         self.finder_method_name = finder_method
         if finder_kwargs is None:
@@ -167,7 +167,9 @@ class HaloCatalog(ParallelAnalysisInterface):
 
     @property
     def output_basename(self):
-        ds = self.source_ds
+        ds = self.data_ds
+        if ds is None:
+            ds = self.source_ds
         if ds is None:
             basename = "halo_catalog"
         else:
