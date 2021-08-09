@@ -172,7 +172,7 @@ setup(
         'setuptools>=19.6',
         'sympy',
         'unyt',
-        'yt>=3.6',
+        'yt>=4.0.1',
     ],
     extras_require = {
         'dev':  dev_requirements,
