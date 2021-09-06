@@ -22,8 +22,9 @@ commands:
       - run:
           name: "Install dependencies."
           command: |
-            sudo apt-get update
-            sudo apt-get install -y dvipng texlive-latex-extra
+            sudo apt update
+            sudo apt upgrade
+            sudo apt install -y dvipng texlive-latex-extra
             python3 -m venv $HOME/venv
             source $HOME/venv/bin/activate
             pip install --upgrade pip
@@ -39,9 +40,10 @@ commands:
           name: "Install dependencies with yt from source."
           command: |
             source $BASH_ENV
-            sudo apt-get update
-            sudo apt-get install -y dvipng texlive-latex-extra
-            sudo apt-get install -y libopenmpi-dev openmpi-bin
+            sudo apt update
+            sudo apt upgrade
+            sudo apt install -y dvipng texlive-latex-extra
+            sudo apt install -y libopenmpi-dev openmpi-bin
             python3 -m venv $HOME/venv
             source $HOME/venv/bin/activate
             pip install --upgrade pip
