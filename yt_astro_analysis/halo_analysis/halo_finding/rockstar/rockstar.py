@@ -179,6 +179,11 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
         If supplied, use this as the particle mass supplied to rockstar.
         Otherwise, particle masses are read from the dataset.
         Default: ``None``.
+    restart : optional, bool
+        Set to True to have rockstar restart from the first uncompleted
+        snapshot. If False, rockstar will start at the first snapshot in the
+        simulation.
+        Default: False
 
     Returns
     -------
