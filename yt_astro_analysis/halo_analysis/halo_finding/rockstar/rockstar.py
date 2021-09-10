@@ -13,6 +13,8 @@ Operations to run Rockstar
 # The full license is in the file COPYING.txt, distributed with this software.
 #-----------------------------------------------------------------------------
 
+from unyt import unyt_quantity
+
 from yt.config import ytcfg
 from yt.data_objects.static_output import Dataset
 from yt.data_objects.time_series import \
@@ -175,9 +177,12 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
         of snapshots where the number of dark matter particles should not
         change and this will save some disk access time. If left unspecified,
         it will be calculated automatically. Default: ``None``.
-    particle_mass : float
-        If supplied, use this as the particle mass supplied to rockstar.
-        Otherwise, particle masses are read from the dataset.
+    particle_mass : optional, None, float, tuple, or :class:`~unyt.array.unyt_quantity`
+        If supplied, use this as the mass of all particles supplied to rockstar.
+        If None, particle masses are read from the dataset. If a float, units
+        are assumed to be in Msun/h. If a tuple, the format is assume to be
+        (<value>, <units>). If a :class:`~unyt.array.unyt_quantity`, it must
+        be convertible to units of Msun/h.
         Default: ``None``.
 
     Returns
@@ -266,6 +271,11 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
             pmass_min, pmass_max = dd.quantities.extrema(
                 (ptype, "particle_mass"), non_zero = True)
             particle_mass = pmass_min
+        elif isinstance(particle_mass, (tuple, list)) and len(particle_mass) == 2:
+            particle_mass = tds.quan(*particle_mass)
+        elif not isinstance(particle_mass, unyt_quantity):
+            particle_mass = tds.quan(particle_mass, "Msun / h")
+        particle_mass.convert_to_units("Msun / h")
 
         p = {}
         if self.total_particles is None:
@@ -277,7 +287,6 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
         p['right_edge'] = tds.domain_right_edge.in_units("Mpccm/h")
         p['center'] = tds.domain_center.in_units("Mpccm/h")
         p['particle_mass'] = self.particle_mass = particle_mass
-        p['particle_mass'].convert_to_units("Msun / h")
         del tds
         return p
 
