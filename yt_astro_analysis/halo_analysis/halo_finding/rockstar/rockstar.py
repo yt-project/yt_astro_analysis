@@ -208,7 +208,7 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
                  outbase="rockstar_halos", particle_type="all", star_types=None,
                  force_res=None, initial_metric_scaling=1.0, non_dm_metric_scaling=10.0,
                  suppress_galaxies=1, total_particles=None, dm_only=False, particle_mass=None,
-                 min_halo_size=25):
+                 mass_field="particle_mass", min_halo_size=25):
 
         if is_root():
             mylog.info("The citation for the Rockstar halo finder can be found at")
@@ -248,6 +248,7 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
         self.total_particles = total_particles
         self.dm_only = dm_only
         self.particle_mass = particle_mass
+        self.mass_field = mass_field
         # Setup pool and workgroups.
         self.pool, self.workgroup = self.runner.setup_pool()
         p = self._setup_parameters(ts)
@@ -269,7 +270,7 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
         particle_mass = self.particle_mass
         if particle_mass is None:
             pmass_min, pmass_max = dd.quantities.extrema(
-                (ptype, "particle_mass"), non_zero = True)
+                (ptype, self.mass_field), non_zero = True)
             particle_mass = pmass_min
         elif isinstance(particle_mass, (tuple, list)) and len(particle_mass) == 2:
             particle_mass = tds.quan(*particle_mass)
@@ -354,6 +355,7 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
         self.handler.setup_rockstar(self.server_address, self.port,
                     num_outputs, self.total_particles, 
                     self.particle_type,
+                    self.mass_field,
                     star_types = self.star_types,
                     particle_mass = self.particle_mass,
                     parallel = self.comm.size > 1,
