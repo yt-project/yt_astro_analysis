@@ -1,7 +1,6 @@
 import contextlib
 import glob
 import os
-import shutil
 import subprocess
 import sys
 import tempfile
@@ -10,8 +9,6 @@ from distutils import log
 from distutils.ccompiler import new_compiler
 from distutils.sysconfig import customize_compiler
 from distutils.errors import CompileError, LinkError
-from pkg_resources import resource_filename
-from subprocess import Popen, PIPE
 
 
 CCODE = """
@@ -122,87 +119,3 @@ def check_for_openmp():
                  "extensions will be compiled without parallel support")
 
     return using_openmp
-
-
-def check_for_pyembree():
-    try:
-        fn = resource_filename("pyembree", "rtcore.pxd")
-    except ImportError:
-        return None
-    return os.path.dirname(fn)
-
-def in_conda_env():
-    return any(s in sys.version for s in ("Anaconda", "Continuum"))
-
-def read_embree_location():
-    '''
-
-    Attempts to locate the embree installation. First, we check for an
-    EMBREE_DIR environment variable. If one is not defined, we look for
-    an embree.cfg file in the root yt source directory. Finally, if that
-    is not present, we default to /usr/local. If embree is installed in a
-    non-standard location and none of the above are set, the compile will
-    not succeed. This only gets called if check_for_pyembree() returns
-    something other than None.
-
-    '''
-
-    rd = os.environ.get('EMBREE_DIR')
-    if rd is None:
-        try:
-            rd = open("embree.cfg").read().strip()
-        except IOError:
-            rd = '/usr/local'
-
-    fail_msg = ("I attempted to find Embree headers in %s. \n"
-               "If this is not correct, please set your correct embree location \n"
-               "using EMBREE_DIR environment variable or your embree.cfg file. \n"
-               "Please see http://yt-project.org/docs/dev/visualizing/unstructured_mesh_rendering.html "
-                "for more information. \n" % rd)
-
-    # Create a temporary directory
-    tmpdir = tempfile.mkdtemp()
-    curdir = os.getcwd()
-
-    try:
-        os.chdir(tmpdir)
-
-        # Get compiler invocation
-        compiler = os.getenv('CXX', 'c++')
-        compiler = compiler.split(' ')
-
-        # Attempt to compile a test script.
-        filename = r'test.cpp'
-        file = open(filename, 'wt', 1)
-        file.write(
-            '#include "embree2/rtcore.h"\n'
-            'int main() {\n'
-            'return 0;\n'
-            '}'
-        )
-        file.flush()
-        p = Popen(compiler + ['-I%s/include/' % rd, filename], 
-                  stdin=PIPE, stdout=PIPE, stderr=PIPE)
-        output, err = p.communicate()
-        exit_code = p.returncode
-
-        if exit_code != 0:
-            log.warn("Pyembree is installed, but I could not compile Embree "
-                     "test code.")
-            log.warn("The error message was: ")
-            log.warn(err)
-            log.warn(fail_msg)
-
-        # Clean up
-        file.close()
-
-    except OSError:
-        log.warn("read_embree_location() could not find your C compiler. "
-                 "Attempted to use '%s'. " % compiler)
-        return False
-
-    finally:
-        os.chdir(curdir)
-        shutil.rmtree(tmpdir)
-
-    return rd
