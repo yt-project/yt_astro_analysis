@@ -11,6 +11,7 @@ import os
 
 from unyt import unyt_array
 
+from yt.data_objects.time_series import DatasetSeries
 from yt.frontends.ytdata.utilities import \
     save_as_dataset
 from yt.funcs import \
@@ -168,12 +169,16 @@ class HaloCatalog(ParallelAnalysisInterface):
     @property
     def output_basename(self):
         ds = self.data_ds
+        if isinstance(ds, DatasetSeries):
+            ds = None
+
         if ds is None:
             ds = self.source_ds
         if ds is None:
             basename = "halo_catalog"
         else:
             basename = ds.basename
+
         if '.' in basename:
             basename = basename[:basename.find('.')]
         return basename
