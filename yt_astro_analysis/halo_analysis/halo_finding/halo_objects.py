@@ -900,7 +900,7 @@ class FOFHaloFinder(GenericHaloFinder, FOFHaloList):
 
         if link > 0.0:
             n_parts = self.comm.mpi_allreduce(
-                self._data_source["particle_position_x"].size, op='sum')
+                self._data_source[self.ptype, "particle_ones"].size, op='sum')
             # get the average spacing between particles
             #l = ds.domain_right_edge - ds.domain_left_edge
             #vol = l[0] * l[1] * l[2]
