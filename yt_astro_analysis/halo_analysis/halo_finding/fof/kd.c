@@ -20,7 +20,7 @@ void kdTimeFoF(KDFOF kd,int *puSecond,int *puMicro)
         HANDLE hProcess = GetCurrentProcess();
 	FILETIME ftCreation, ftExit, ftKernel, ftUser;
 	SYSTEMTIME stUser;
-	GetProcessTimes(hProcess, &ftCreation, &ftExit, 
+	GetProcessTimes(hProcess, &ftCreation, &ftExit,
 			&ftKernel, &ftUser);
 	FileTimeToSystemTime(&ftUser, &stUser);
 	secs = (int)((double)stUser.wHour*3600.0 +
@@ -233,7 +233,7 @@ void kdBuildTreeFoF(KDFOF kd)
 		}
 	for (i=1;i<kd->nActive;++i) {
 		for (j=0;j<3;++j) {
-			if (bnd.fMin[j] > kd->p[i].r[j]) 
+			if (bnd.fMin[j] > kd->p[i].r[j])
 				bnd.fMin[j] = kd->p[i].r[j];
 			else if (bnd.fMax[j] < kd->p[i].r[j])
 				bnd.fMax[j] = kd->p[i].r[j];
@@ -252,7 +252,7 @@ void kdBuildTreeFoF(KDFOF kd)
 		if (i < kd->nSplit && (c[i].pUpper - c[i].pLower) > 0) {
 			d = 0;
 			for (j=1;j<3;++j) {
-				if (c[i].bnd.fMax[j]-c[i].bnd.fMin[j] > 
+				if (c[i].bnd.fMax[j]-c[i].bnd.fMin[j] >
 					c[i].bnd.fMax[d]-c[i].bnd.fMin[d]) d = j;
 				}
 			c[i].iDim = d;
@@ -467,4 +467,3 @@ void kdFinishFoF(KDFOF kd)
 	free(kd->kdNodes);
 	free(kd);
 	}
-

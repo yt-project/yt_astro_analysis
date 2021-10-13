@@ -3,7 +3,7 @@
 
 /* ----------------------------------------------------------------------- */
 /* The following structures track all the information about the groups */
- 
+
 typedef struct groupstruct {
     int npart;          /* Number of particles in the group */
     int npartcum;       /* Cumulative number of particles */
@@ -14,7 +14,7 @@ typedef struct groupstruct {
                                 unique! */
     int rootgroup;	/* The fully traced group id */
 } Group;  /* Type Group is defined */
- 
+
 typedef struct groupliststruct {
     int npart;          /* Number of particles in the simulation */
     int ngroups;        /* Number of groups in list */
@@ -22,7 +22,7 @@ typedef struct groupliststruct {
     int npartingroups;  /* Number of particles in groups */
     Group *list;        /* List of groups, zero-offset */
 } Grouplist; /* Type Grouplist is defined */
- 
+
 
 typedef struct hopComm {
     int ngroups;

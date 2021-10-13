@@ -18,7 +18,7 @@ from conda-forge:
 .. code-block:: bash
 
    $ conda install -c conda-forge yt_astro_analysis
-   
+
 Installing from source
 ----------------------
 

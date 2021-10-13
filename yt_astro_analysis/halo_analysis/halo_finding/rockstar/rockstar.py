@@ -5,40 +5,41 @@ Operations to run Rockstar
 
 """
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Copyright (c) yt Development Team. All rights reserved.
 #
 # Distributed under the terms of the Modified BSD License.
 #
 # The full license is in the file COPYING.txt, distributed with this software.
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 from unyt import unyt_quantity
 
 from yt.config import ytcfg
 from yt.data_objects.static_output import Dataset
-from yt.data_objects.time_series import \
-    DatasetSeries
-from yt.funcs import \
-    is_root, mylog
-from yt.utilities.parallel_tools.parallel_analysis_interface import \
-    ParallelAnalysisInterface, \
-    ProcessorPool
+from yt.data_objects.time_series import DatasetSeries
+from yt.funcs import is_root, mylog
+from yt.utilities.parallel_tools.parallel_analysis_interface import (
+    ParallelAnalysisInterface,
+    ProcessorPool,
+)
 
 try:
-    from yt_astro_analysis.halo_analysis.halo_finding.rockstar import \
-     rockstar_interface
+    from yt_astro_analysis.halo_analysis.halo_finding.rockstar import rockstar_interface
 except ImportError:
     mylog.warning(
-        ("Cannot import the rockstar interface.  Rockstar will not run.\n" +
-         "If you need Rockstar, see the installation instructions at " +
-         "http://yt-astro-analysis.readthedocs.io/."))
+        "Cannot import the rockstar interface.  Rockstar will not run.\n"
+        + "If you need Rockstar, see the installation instructions at "
+        + "http://yt-astro-analysis.readthedocs.io/."
+    )
     rockstar_interface = None
 
+import os
 import socket
 import time
-import os
+
 import numpy as np
+
 
 class InlineRunner(ParallelAnalysisInterface):
     def __init__(self):
@@ -46,8 +47,8 @@ class InlineRunner(ParallelAnalysisInterface):
         psize = ytcfg.get("yt", "internals", "global_parallel_size")
         self.num_readers = psize
         # No choice for you, everyone's a writer too!
-        self.num_writers =  psize
-    
+        self.num_writers = psize
+
     def run(self, handler, pool):
         # If inline, we use forks.
         server_pid = 0
@@ -59,13 +60,13 @@ class InlineRunner(ParallelAnalysisInterface):
                 os._exit(0)
         # Start writers on all.
         writer_pid = 0
-        time.sleep(0.05 + pool.comm.rank/10.0)
+        time.sleep(0.05 + pool.comm.rank / 10.0)
         writer_pid = os.fork()
         if writer_pid == 0:
             handler.start_writer()
             os._exit(0)
         # Everyone's a reader!
-        time.sleep(0.05 + pool.comm.rank/10.0)
+        time.sleep(0.05 + pool.comm.rank / 10.0)
         handler.start_reader()
         # Make sure the forks are done, which they should be.
         if writer_pid != 0:
@@ -80,21 +81,22 @@ class InlineRunner(ParallelAnalysisInterface):
         pool.add_workgroup(ranks=readers, name="readers")
         return pool, pool.workgroups[0]
 
+
 class StandardRunner(ParallelAnalysisInterface):
     def __init__(self, num_readers, num_writers):
         self.num_readers = num_readers
         psize = ytcfg.get("yt", "internals", "global_parallel_size")
         if num_writers is None:
-            self.num_writers =  psize - num_readers - 1
+            self.num_writers = psize - num_readers - 1
         else:
             self.num_writers = min(num_writers, psize)
         if self.num_readers + self.num_writers + 1 != psize:
             raise RuntimeError(
-                'The number of MPI processes (%i) does not equal the '
-                'number of readers (%i) plus the number of writers '
-                '(%i) plus 1 server' % (
-                    self.num_readers, self.num_writers, psize))
-    
+                "The number of MPI processes (%i) does not equal the "
+                "number of readers (%i) plus the number of writers "
+                "(%i) plus 1 server" % (self.num_readers, self.num_writers, psize)
+            )
+
     def run(self, handler, wg):
         # Not inline so we just launch them directly from our MPI threads.
         if wg.name == "server":
@@ -105,20 +107,23 @@ class StandardRunner(ParallelAnalysisInterface):
         if wg.name == "writers":
             time.sleep(0.1)
             handler.start_writer()
-    
+
     def setup_pool(self):
         pool = ProcessorPool()
         pool, workgroup = ProcessorPool.from_sizes(
-           [ (1, "server"),
-             (self.num_readers, "readers"),
-             (self.num_writers, "writers") ]
+            [
+                (1, "server"),
+                (self.num_readers, "readers"),
+                (self.num_writers, "writers"),
+            ]
         )
         return pool, workgroup
+
 
 class RockstarHaloFinder(ParallelAnalysisInterface):
     r"""Spawns the Rockstar Halo finder, distributes particles and finds halos.
 
-    Rockstar has three main processes: reader, writer, and the 
+    Rockstar has three main processes: reader, writer, and the
     server which coordinates reader/writer processes.
 
     Parameters
@@ -217,11 +222,26 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
     >>> hc.create()
 
     """
-    def __init__(self, ts, num_readers = 1, num_writers = None,
-                 outbase="rockstar_halos", particle_type="all", mass_field="particle_mass",
-                 star_types=None, force_res=None, initial_metric_scaling=1.0, non_dm_metric_scaling=10.0,
-                 suppress_galaxies=1, total_particles=None, dm_only=False, particle_mass=None,
-                 min_halo_size=25, restart=False):
+
+    def __init__(
+        self,
+        ts,
+        num_readers=1,
+        num_writers=None,
+        outbase="rockstar_halos",
+        particle_type="all",
+        mass_field="particle_mass",
+        star_types=None,
+        force_res=None,
+        initial_metric_scaling=1.0,
+        non_dm_metric_scaling=10.0,
+        suppress_galaxies=1,
+        total_particles=None,
+        dm_only=False,
+        particle_mass=None,
+        min_halo_size=25,
+        restart=False,
+    ):
 
         if is_root():
             mylog.info("The citation for the Rockstar halo finder can be found at")
@@ -235,8 +255,11 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
         self.restart = restart
         self.num_readers = self.runner.num_readers
         self.num_writers = self.runner.num_writers
-        mylog.info("Rockstar is using %d readers and %d writers",
-            self.num_readers, self.num_writers)
+        mylog.info(
+            "Rockstar is using %d readers and %d writers",
+            self.num_readers,
+            self.num_writers,
+        )
         # Note that Rockstar does not support subvolumes.
         # We assume that all of the snapshots in the time series
         # use the same domain info as the first snapshots.
@@ -250,7 +273,7 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
         self.outbase = outbase
         self.min_halo_size = min_halo_size
         if force_res is None:
-            tds = ts[-1] # Cache a reference
+            tds = ts[-1]  # Cache a reference
             self.force_res = tds.index.get_smallest_dx().to("Mpccm/h")
             # We have to delete now to wipe the index
             del tds
@@ -266,15 +289,16 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
         # Setup pool and workgroups.
         self.pool, self.workgroup = self.runner.setup_pool()
         p = self._setup_parameters(ts)
-        params = self.comm.mpi_bcast(p, root = self.pool['readers'].ranks[0])
+        params = self.comm.mpi_bcast(p, root=self.pool["readers"].ranks[0])
         self.__dict__.update(params)
         self.handler = rockstar_interface.RockstarInterface(self.ts)
 
     def _setup_parameters(self, ts):
-        if self.workgroup.name != "readers": return None
+        if self.workgroup.name != "readers":
+            return None
         tds = ts[0]
         ptype = self.particle_type
-        if ptype not in tds.particle_types and ptype != 'all':
+        if ptype not in tds.particle_types and ptype != "all":
             has_particle_filter = tds.add_particle_filter(ptype)
             if not has_particle_filter:
                 raise RuntimeError("Particle type (filter) %s not found." % (ptype))
@@ -284,7 +308,8 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
         particle_mass = self.particle_mass
         if particle_mass is None:
             pmass_min, pmass_max = dd.quantities.extrema(
-                (ptype, self.mass_field), non_zero = True)
+                (ptype, self.mass_field), non_zero=True
+            )
             particle_mass = pmass_min
         elif isinstance(particle_mass, (tuple, list)) and len(particle_mass) == 2:
             particle_mass = tds.quan(*particle_mass)
@@ -296,12 +321,12 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
         if self.total_particles is None:
             # Get total_particles in parallel.
             tp = dd.quantities.total_quantity((ptype, "particle_ones"))
-            p['total_particles'] = int(tp)
+            p["total_particles"] = int(tp)
             mylog.info("Total Particle Count: %d.", int(tp))
-        p['left_edge'] = tds.domain_left_edge.in_units("Mpccm/h")
-        p['right_edge'] = tds.domain_right_edge.in_units("Mpccm/h")
-        p['center'] = tds.domain_center.in_units("Mpccm/h")
-        p['particle_mass'] = self.particle_mass = particle_mass
+        p["left_edge"] = tds.domain_left_edge.in_units("Mpccm/h")
+        p["right_edge"] = tds.domain_right_edge.in_units("Mpccm/h")
+        p["center"] = tds.domain_center.in_units("Mpccm/h")
+        p["particle_mass"] = self.particle_mass = particle_mass
         del tds
         return p
 
@@ -317,8 +342,8 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
 
     def _get_hosts(self):
         if self.comm.rank == 0 or self.comm.size == 1:
-            
-            #Temporary mac hostname fix
+
+            # Temporary mac hostname fix
             try:
                 server_address = socket.gethostname()
                 socket.gethostbyname(server_address)
@@ -326,20 +351,17 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
                 server_address = "localhost"
 
             sock = socket.socket()
-            sock.bind(('', 0))
+            sock.bind(("", 0))
             port = sock.getsockname()[-1]
             del sock
         else:
             server_address, port = None, None
-        self.server_address, self.port = self.comm.mpi_bcast(
-            (server_address, port))
-        self.server_address = bytearray(str(self.server_address), 'utf-8')
-        self.port = bytearray(str(self.port), 'utf-8')
+        self.server_address, self.port = self.comm.mpi_bcast((server_address, port))
+        self.server_address = bytearray(str(self.server_address), "utf-8")
+        self.port = bytearray(str(self.port), "utf-8")
 
-    def run(self, block_ratio = 1, callbacks = None, restart = False):
-        """
-        
-        """
+    def run(self, block_ratio=1, callbacks=None, restart=False):
+        """ """
         if block_ratio != 1:
             raise NotImplementedError
         self._get_hosts()
@@ -360,32 +382,37 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
                 raise RuntimeError(
                     "Number of writers in restart has changed from the original "
                     "run (OLD = %d, NEW = %d).  To avoid problems in the "
-                    "restart, choose the same number of writers." % \
-                        (num_writers, self.num_writers))
+                    "restart, choose the same number of writers."
+                    % (num_writers, self.num_writers)
+                )
             # Remove the datasets that were already analyzed
             self.ts._pre_outputs = self.ts._pre_outputs[restart_num:]
         else:
             restart_num = 0
-        outbase = bytearray(self.outbase, 'utf-8')
-        self.handler.setup_rockstar(self.server_address, self.port,
-                    num_outputs, self.total_particles, 
-                    self.particle_type,
-                    self.mass_field,
-                    star_types = self.star_types,
-                    particle_mass = self.particle_mass,
-                    parallel = self.comm.size > 1,
-                    num_readers = self.num_readers,
-                    num_writers = self.num_writers,
-                    writing_port = -1,
-                    block_ratio = block_ratio,
-                    outbase = outbase,
-                    force_res = self.force_res,
-                    initial_metric_scaling = self.initial_metric_scaling,
-                    non_dm_metric_scaling = self.non_dm_metric_scaling,
-                    suppress_galaxies = self.suppress_galaxies,
-                    callbacks = callbacks,
-                    restart_num = restart_num,
-                    min_halo_size = self.min_halo_size)
+        outbase = bytearray(self.outbase, "utf-8")
+        self.handler.setup_rockstar(
+            self.server_address,
+            self.port,
+            num_outputs,
+            self.total_particles,
+            self.particle_type,
+            self.mass_field,
+            star_types=self.star_types,
+            particle_mass=self.particle_mass,
+            parallel=self.comm.size > 1,
+            num_readers=self.num_readers,
+            num_writers=self.num_writers,
+            writing_port=-1,
+            block_ratio=block_ratio,
+            outbase=outbase,
+            force_res=self.force_res,
+            initial_metric_scaling=self.initial_metric_scaling,
+            non_dm_metric_scaling=self.non_dm_metric_scaling,
+            suppress_galaxies=self.suppress_galaxies,
+            callbacks=callbacks,
+            restart_num=restart_num,
+            min_halo_size=self.min_halo_size,
+        )
         # Make the directory to store the halo lists in.
         if not self.outbase:
             self.outbase = os.getcwd()
@@ -394,7 +421,7 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
                 os.makedirs(self.outbase)
             # Make a record of which dataset corresponds to which set of
             # output files because it will be easy to lose this connection.
-            fp = open(os.path.join(self.outbase, 'datasets.txt'), 'w')
+            fp = open(os.path.join(self.outbase, "datasets.txt"), "w")
             fp.write("# dsname\tindex\n")
             for i, ds in enumerate(self.ts.outputs):
                 if isinstance(ds, Dataset):

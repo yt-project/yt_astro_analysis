@@ -5,6 +5,7 @@ Halo object.
 
 """
 
+
 class Halo:
     def __init__(self, halo_catalog, data_source, index):
         self.halo_catalog = halo_catalog
@@ -16,5 +17,4 @@ class Halo:
         return self.data_source[fieldname][self.index]
 
     def _set_field_value(self, fieldkey, fieldname):
-        self.quantities[fieldkey] = \
-          self._get_field_value(fieldname)
+        self.quantities[fieldkey] = self._get_field_value(fieldname)

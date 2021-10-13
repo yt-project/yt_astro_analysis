@@ -5,55 +5,65 @@ halo finding
 
 """
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Copyright (c) yt Development Team. All rights reserved.
 #
 # Distributed under the terms of the Modified BSD License.
 #
 # The full license is in the file COPYING.txt, distributed with this software.
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 import gc
+
 import numpy as np
 
 from yt.config import ytcfg
 from yt.funcs import mylog
-from yt.utilities.math_utils import \
-    get_rotation_matrix, \
-    periodic_dist
-from yt.utilities.physical_constants import \
-    mass_sun_cgs
-from yt.utilities.physical_ratios import \
-    rho_crit_g_cm3_h2, \
-    TINY
-from yt.utilities.parallel_tools.parallel_analysis_interface import \
-    ParallelAnalysisInterface
-
-from yt_astro_analysis.halo_analysis.halo_finding.hop.EnzoHop import RunHOP
+from yt.utilities.math_utils import get_rotation_matrix, periodic_dist
+from yt.utilities.parallel_tools.parallel_analysis_interface import (
+    ParallelAnalysisInterface,
+)
+from yt.utilities.physical_constants import mass_sun_cgs
+from yt.utilities.physical_ratios import TINY, rho_crit_g_cm3_h2
 from yt_astro_analysis.halo_analysis.halo_finding.fof.EnzoFOF import RunFOF
+from yt_astro_analysis.halo_analysis.halo_finding.hop.EnzoHop import RunHOP
 
-class Halo(object):
+
+class Halo:
     """
     A data source that returns particle information about the members of a
     HOP-identified halo.
     """
+
     _distributed = False
     _processing = False
     _owner = 0
     indices = None
     extra_wrap = ["__getitem__"]
 
-    def __init__(self, halo_list, id, indices=None, size=None, CoM=None,
-        max_dens_point=None, group_total_mass=None, max_radius=None,
-        bulk_vel=None, tasks=None, rms_vel=None, supp=None, ptype='all'):
+    def __init__(
+        self,
+        halo_list,
+        id,
+        indices=None,
+        size=None,
+        CoM=None,
+        max_dens_point=None,
+        group_total_mass=None,
+        max_radius=None,
+        bulk_vel=None,
+        tasks=None,
+        rms_vel=None,
+        supp=None,
+        ptype="all",
+    ):
         self.ptype = ptype
         self.halo_list = halo_list
         self._max_dens = halo_list._max_dens
         self.id = id
         self.data = halo_list._data_source
         self.ds = self.data.ds
-        self.gridsize = (self.ds.domain_right_edge - \
-                 self.ds.domain_left_edge)
+        self.gridsize = self.ds.domain_right_edge - self.ds.domain_left_edge
         if indices is not None:
             self.indices = halo_list._base_indices[indices]
         else:
@@ -86,15 +96,19 @@ class Halo(object):
         if self._particle_mask is not None:
             return self._particle_mask
         # This is from disk.
-        pid = self.__getitem__('particle_index')
+        pid = self.__getitem__("particle_index")
         # This is from the sphere.
         if self._name == "RockstarHalo":
             ds = self.ds.sphere(self.CoM, self._radjust * self.max_radius)
         elif self._name == "LoadedHalo":
-            ds = self.ds.sphere(self.CoM, np.maximum(self._radjust * \
-            self.ds.quan(self.max_radius, 'code_length'), \
-            self.ds.index.get_smallest_dx()))
-        sp_pid = ds['particle_index']
+            ds = self.ds.sphere(
+                self.CoM,
+                np.maximum(
+                    self._radjust * self.ds.quan(self.max_radius, "code_length"),
+                    self.ds.index.get_smallest_dx(),
+                ),
+            )
+        sp_pid = ds["particle_index"]
         self._ds_sort = sp_pid.argsort()
         sp_pid = sp_pid[self._ds_sort]
         # This matches them up.
@@ -112,7 +126,7 @@ class Halo(object):
         """
         if self.CoM is not None:
             return self.CoM
-        pm = self["particle_mass"].in_units('Msun')
+        pm = self["particle_mass"].in_units("Msun")
         c = {}
         # We shift into a box where the origin is the left edge
         c[0] = self["particle_position_x"] - self.ds.domain_left_edge[0]
@@ -126,18 +140,18 @@ class Halo(object):
             # So skip the rest if the converse is true.
             # Note we might make a change here when periodicity-handling is
             # fully implemented.
-            if (c[i].max() - c[i].min()) < (self.ds.domain_width[i] / 2.):
+            if (c[i].max() - c[i].min()) < (self.ds.domain_width[i] / 2.0):
                 com.append(c[i])
                 continue
             # Now we want to flip around only those close to the left boundary.
-            sel = (c[i] <= (self.ds.domain_width[i]/2))
+            sel = c[i] <= (self.ds.domain_width[i] / 2)
             c[i][sel] += self.ds.domain_width[i]
             com.append(c[i])
 
         c = (com * pm).sum(axis=1) / pm.sum()
-        c = self.ds.arr(c, 'code_length')
+        c = self.ds.arr(c, "code_length")
 
-        return c%self.ds.domain_width + self.ds.domain_left_edge
+        return c % self.ds.domain_width + self.ds.domain_left_edge
 
     def maximum_density(self):
         r"""Return the HOP-identified maximum density. Not applicable to
@@ -165,10 +179,13 @@ class Halo(object):
         """
         if self.max_dens_point is not None:
             return self.max_dens_point[1:]
-        return np.array([
+        return np.array(
+            [
                 self._max_dens[self.id][1],
                 self._max_dens[self.id][2],
-                self._max_dens[self.id][3]])
+                self._max_dens[self.id][3],
+            ]
+        )
 
     def total_mass(self):
         r"""Returns the total mass in solar masses of the halo.
@@ -182,7 +199,7 @@ class Halo(object):
         """
         if self.group_total_mass is not None:
             return self.group_total_mass
-        return self["particle_mass"].in_units('Msun').sum()
+        return self["particle_mass"].in_units("Msun").sum()
 
     def bulk_velocity(self):
         r"""Returns the mass-weighted average velocity in cm/s.
@@ -196,7 +213,7 @@ class Halo(object):
         """
         if self.bulk_vel is not None:
             return self.bulk_vel
-        pm = self["particle_mass"].in_units('Msun')
+        pm = self["particle_mass"].in_units("Msun")
         vx = (self["particle_velocity_x"] * pm).sum()
         vy = (self["particle_velocity_y"] * pm).sum()
         vz = (self["particle_velocity_z"] * pm).sum()
@@ -217,12 +234,12 @@ class Halo(object):
         if self.rms_vel is not None:
             return self.rms_vel
         bv = self.bulk_velocity()
-        pm = self["particle_mass"].in_units('Msun')
+        pm = self["particle_mass"].in_units("Msun")
         sm = pm.sum()
         vx = (self["particle_velocity_x"] - bv[0]) * pm / sm
         vy = (self["particle_velocity_y"] - bv[1]) * pm / sm
         vz = (self["particle_velocity_z"] - bv[2]) * pm / sm
-        s = vx ** 2. + vy ** 2. + vz ** 2.
+        s = vx ** 2.0 + vy ** 2.0 + vz ** 2.0
         ms = np.mean(s)
         return np.sqrt(ms) * pm.size
 
@@ -257,9 +274,11 @@ class Halo(object):
         ry = np.abs(self["particle_position_y"] - center[1])
         rz = np.abs(self["particle_position_z"] - center[2])
         DW = self.data.ds.domain_right_edge - self.data.ds.domain_left_edge
-        r = np.sqrt(np.minimum(rx, DW[0] - rx) ** 2.0
-                + np.minimum(ry, DW[1] - ry) ** 2.0
-                + np.minimum(rz, DW[2] - rz) ** 2.0)
+        r = np.sqrt(
+            np.minimum(rx, DW[0] - rx) ** 2.0
+            + np.minimum(ry, DW[1] - ry) ** 2.0
+            + np.minimum(rz, DW[2] - rz) ** 2.0
+        )
         return r.max()
 
     def __getitem__(self, key):
@@ -304,7 +323,7 @@ class Halo(object):
             return self.size
         return self.indices.size
 
-    def virial_mass(self, virial_overdensity=200., bins=300):
+    def virial_mass(self, virial_overdensity=200.0, bins=300):
         r"""Return the virial mass of the halo in Msun,
         using only the particles
         in the halo (no baryonic information used).
@@ -332,14 +351,13 @@ class Halo(object):
         >>> vm = halos[0].virial_mass()
         """
         self.virial_info(bins=bins)
-        vir_bin = self.virial_bin(virial_overdensity=virial_overdensity,
-            bins=bins)
+        vir_bin = self.virial_bin(virial_overdensity=virial_overdensity, bins=bins)
         if vir_bin != -1:
             return self.mass_bins[vir_bin]
         else:
             return -1
 
-    def virial_radius(self, virial_overdensity=200., bins=300):
+    def virial_radius(self, virial_overdensity=200.0, bins=300):
         r"""Return the virial radius of the halo in code units.
 
         The virial radius of the halo is calculated, using only the particles
@@ -366,20 +384,19 @@ class Halo(object):
         >>> vr = halos[0].virial_radius()
         """
         self.virial_info(bins=bins)
-        vir_bin = self.virial_bin(virial_overdensity=virial_overdensity,
-            bins=bins)
+        vir_bin = self.virial_bin(virial_overdensity=virial_overdensity, bins=bins)
         if vir_bin != -1:
             return self.radial_bins[vir_bin]
         else:
             return -1
 
-    def virial_bin(self, virial_overdensity=200., bins=300):
+    def virial_bin(self, virial_overdensity=200.0, bins=300):
         r"""Returns the bin index of the virial radius of the halo. Generally,
         it is better to call virial_radius instead, which calls this function
         automatically.
         """
         self.virial_info(bins=bins)
-        over = (self.overdensity > virial_overdensity)
+        over = self.overdensity > virial_overdensity
         if over.any():
             vir_bin = max(np.arange(bins + 1)[over])
             return vir_bin
@@ -399,46 +416,55 @@ class Halo(object):
         h = self.ds.hubble_constant
         Om_matter = self.ds.omega_matter
         z = self.ds.current_redshift
-        period = self.ds.domain_right_edge - \
-            self.ds.domain_left_edge
+        period = self.ds.domain_right_edge - self.ds.domain_left_edge
         thissize = self.get_size()
         rho_crit = rho_crit_g_cm3_h2 * h ** 2.0 * Om_matter  # g cm^-3
         Msun2g = mass_sun_cgs
         rho_crit = rho_crit * ((1.0 + z) ** 3.0)
         # Get some pertinent information about the halo.
-        self.mass_bins = self.ds.arr(np.zeros(self.bin_count + 1,
-                                              dtype='float64'),'Msun')
-        dist = np.empty(thissize, dtype='float64')
+        self.mass_bins = self.ds.arr(
+            np.zeros(self.bin_count + 1, dtype="float64"), "Msun"
+        )
+        dist = np.empty(thissize, dtype="float64")
         cen = self.center_of_mass()
         mark = 0
         # Find the distances to the particles. I don't like this much, but I
         # can't see a way to eliminate a loop like this, either here or in yt.
-        for pos in zip(self["particle_position_x"],
-                self["particle_position_y"], self["particle_position_z"]):
+        for pos in zip(
+            self["particle_position_x"],
+            self["particle_position_y"],
+            self["particle_position_z"],
+        ):
             dist[mark] = periodic_dist(cen, pos, period)
             mark += 1
         # Set up the radial bins.
         # Multiply min and max to prevent issues with digitize below.
-        self.radial_bins = np.logspace(np.log10(min(dist) * .99 + TINY),
-            np.log10(max(dist) * 1.01 + 2 * TINY), num=self.bin_count + 1)
-        self.radial_bins = self.ds.arr(self.radial_bins,'code_length')
+        self.radial_bins = np.logspace(
+            np.log10(min(dist) * 0.99 + TINY),
+            np.log10(max(dist) * 1.01 + 2 * TINY),
+            num=self.bin_count + 1,
+        )
+        self.radial_bins = self.ds.arr(self.radial_bins, "code_length")
         # Find out which bin each particle goes into, and add the particle
         # mass to that bin.
         inds = np.digitize(dist, self.radial_bins) - 1
         if self["particle_position_x"].size > 1:
             for index in np.unique(inds):
-                self.mass_bins[index] += \
-                np.sum(self["particle_mass"][inds == index]).in_units('Msun')
+                self.mass_bins[index] += np.sum(
+                    self["particle_mass"][inds == index]
+                ).in_units("Msun")
         # Now forward sum the masses in the bins.
         for i in range(self.bin_count):
             self.mass_bins[i + 1] += self.mass_bins[i]
         # Calculate the over densities in the bins.
-        self.overdensity = self.mass_bins * Msun2g / \
-            (4./3. * np.pi * rho_crit * \
-            (self.radial_bins )**3.0)
+        self.overdensity = (
+            self.mass_bins
+            * Msun2g
+            / (4.0 / 3.0 * np.pi * rho_crit * (self.radial_bins) ** 3.0)
+        )
 
     def _get_ellipsoid_parameters_basic(self):
-        np.seterr(all='ignore')
+        np.seterr(all="ignore")
         # check if there are 4 particles to form an ellipsoid
         # neglecting to check if the 4 particles in the same plane,
         # that is almost certainly never to occur,
@@ -450,52 +476,50 @@ class Halo(object):
         # the particles that constitute the halo. This function returns
         # all the parameters except for the center of mass.
         com = self.center_of_mass()
-        position = [self["particle_position_x"],
-                    self["particle_position_y"],
-                    self["particle_position_z"]]
+        position = [
+            self["particle_position_x"],
+            self["particle_position_y"],
+            self["particle_position_z"],
+        ]
         # Locate the furthest particle from com, its vector length and index
-        DW = np.array([self.gridsize[0],self.gridsize[1],self.gridsize[2]])
-        position = [position[0] - com[0],
-                    position[1] - com[1],
-                    position[2] - com[2]]
+        DW = np.array([self.gridsize[0], self.gridsize[1], self.gridsize[2]])
+        position = [position[0] - com[0], position[1] - com[1], position[2] - com[2]]
         # different cases of particles being on other side of boundary
         for axis in range(np.size(DW)):
-            cases = np.array([position[axis],
-                                position[axis] + DW[axis],
-                              position[axis] - DW[axis]])
+            cases = np.array(
+                [position[axis], position[axis] + DW[axis], position[axis] - DW[axis]]
+            )
             # pick out the smallest absolute distance from com
             position[axis] = np.choose(np.abs(cases).argmin(axis=0), cases)
         # find the furthest particle's index
-        r = np.sqrt(position[0]**2 +
-                    position[1]**2 +
-                    position[2]**2)
+        r = np.sqrt(position[0] ** 2 + position[1] ** 2 + position[2] ** 2)
         A_index = r.argmax()
         mag_A = r.max()
         # designate the A vector
-        A_vector = (position[0][A_index],
-                    position[1][A_index],
-                    position[2][A_index])
+        A_vector = (position[0][A_index], position[1][A_index], position[2][A_index])
         # designate the e0 unit vector
         e0_vector = A_vector / mag_A
         # locate the tB particle position by finding the max B
-        e0_vector_copy = np.empty((np.size(position[0]), 3), dtype='float64')
+        e0_vector_copy = np.empty((np.size(position[0]), 3), dtype="float64")
         for i in range(3):
             e0_vector_copy[:, i] = e0_vector[i]
-        rr = np.array([position[0],
-                       position[1],
-                       position[2]]).T # Similar to tB_vector in old code.
+        rr = np.array(
+            [position[0], position[1], position[2]]
+        ).T  # Similar to tB_vector in old code.
         tC_vector = np.cross(e0_vector_copy, rr)
         te2 = tC_vector.copy()
         for dim in range(3):
-            te2[:,dim] *= np.sum(tC_vector**2., axis = 1)**(-0.5)
+            te2[:, dim] *= np.sum(tC_vector ** 2.0, axis=1) ** (-0.5)
         te1 = np.cross(te2, e0_vector_copy)
-        length = np.abs(-np.sum(rr * te1, axis = 1) * \
-            (1. - np.sum(rr * e0_vector_copy, axis = 1)**2. * \
-            mag_A**-2.)**(-0.5))
+        length = np.abs(
+            -np.sum(rr * te1, axis=1)
+            * (1.0 - np.sum(rr * e0_vector_copy, axis=1) ** 2.0 * mag_A ** -2.0)
+            ** (-0.5)
+        )
         # This problem apparently happens sometimes, that the NaNs are turned
         # into infs, which messes up the nanargmax below.
-        length[length == np.inf] = 0.
-        tB_index = np.nanargmax(length) # ignores NaNs created above.
+        length[length == np.inf] = 0.0
+        tB_index = np.nanargmax(length)  # ignores NaNs created above.
         mag_B = length[tB_index]
         e1_vector = te1[tB_index]
         e2_vector = te2[tB_index]
@@ -503,13 +527,19 @@ class Halo(object):
         temp_e1 = rr.copy()
         temp_e2 = rr.copy()
         for dim in range(3):
-            temp_e0[:,dim] = e0_vector[dim]
-            temp_e1[:,dim] = e1_vector[dim]
-            temp_e2[:,dim] = e2_vector[dim]
-        length = np.abs(np.sum(rr * temp_e2, axis = 1) * (1 - \
-            np.sum(rr * temp_e0, axis = 1)**2. * mag_A**-2. - \
-            np.sum(rr * temp_e1, axis = 1)**2. * mag_B**-2.)**(-0.5))
-        length[length == np.inf] = 0.
+            temp_e0[:, dim] = e0_vector[dim]
+            temp_e1[:, dim] = e1_vector[dim]
+            temp_e2[:, dim] = e2_vector[dim]
+        length = np.abs(
+            np.sum(rr * temp_e2, axis=1)
+            * (
+                1
+                - np.sum(rr * temp_e0, axis=1) ** 2.0 * mag_A ** -2.0
+                - np.sum(rr * temp_e1, axis=1) ** 2.0 * mag_B ** -2.0
+            )
+            ** (-0.5)
+        )
+        length[length == np.inf] = 0.0
         tC_index = np.nanargmax(length)
         mag_C = length[tC_index]
         # tilt is calculated from the rotation about x axis
@@ -525,15 +555,15 @@ class Halo(object):
         r2 = np.dot(RY, np.dot(RZ, e1_vector))
         # find the tilt angle needed to rotate about x axis to align e1 to y and e2 to z
         tilt = np.arctan(-r2[2] / r2[1])
-        return (mag_A, mag_B, mag_C, e0_vector[0], e0_vector[1],
-            e0_vector[2], tilt)
+        return (mag_A, mag_B, mag_C, e0_vector[0], e0_vector[1], e0_vector[2], tilt)
+
 
 class HOPHalo(Halo):
     _name = "HOPHalo"
     pass
 
-class FOFHalo(Halo):
 
+class FOFHalo(Halo):
     def maximum_density(self):
         r"""Not implemented."""
         return -1
@@ -542,11 +572,12 @@ class FOFHalo(Halo):
         r"""Not implemented."""
         return self.center_of_mass()
 
-class HaloList(object):
 
-    _fields = ["particle_position_%s" % ax for ax in 'xyz']
+class HaloList:
 
-    def __init__(self, data_source, redshift=-1, ptype='all'):
+    _fields = ["particle_position_%s" % ax for ax in "xyz"]
+
+    def __init__(self, data_source, redshift=-1, ptype="all"):
         """
         Run hop on *data_source* with a given density *threshold*.
         Returns an iterable collection of
@@ -569,11 +600,13 @@ class HaloList(object):
         for field in self._fields:
             tot_part = self._data_source[(self.ptype, field)].size
             if field == "particle_index":
-                self.particle_fields[field] = \
-                    self._data_source[(self.ptype, field)][ii].astype('int64')
+                self.particle_fields[field] = self._data_source[(self.ptype, field)][
+                    ii
+                ].astype("int64")
             else:
-                self.particle_fields[field] = \
-                    self._data_source[(self.ptype, field)][ii].astype('float64')
+                self.particle_fields[field] = self._data_source[(self.ptype, field)][
+                    ii
+                ].astype("float64")
             del self._data_source[(self.ptype, field)]
         self._base_indices = np.arange(tot_part)[ii]
         gc.collect()
@@ -591,77 +624,83 @@ class HaloList(object):
                 cp += counts[i + 1]
                 continue
             group_indices = grab_indices[cp:cp_c]
-            self._groups.append(self._halo_class(self, i, group_indices,
-                                                 ptype=self.ptype))
+            self._groups.append(
+                self._halo_class(self, i, group_indices, ptype=self.ptype)
+            )
             md_i = np.argmax(dens[cp:cp_c])
-            px, py, pz = \
-                [self.particle_fields['particle_position_%s' % ax][group_indices]
-                 for ax in 'xyz']
-            self._max_dens[i] = (dens[cp:cp_c][md_i], px[md_i],
-                py[md_i], pz[md_i])
+            px, py, pz = (
+                self.particle_fields["particle_position_%s" % ax][group_indices]
+                for ax in "xyz"
+            )
+            self._max_dens[i] = (dens[cp:cp_c][md_i], px[md_i], py[md_i], pz[md_i])
             cp += counts[i + 1]
 
     def __len__(self):
         return len(self._groups)
 
     def __iter__(self):
-        for i in self._groups:
-            yield i
+        yield from self._groups
 
     def __getitem__(self, key):
         return self._groups[key]
+
 
 class HOPHaloList(HaloList):
     """
     Run hop on *data_source* with a given density *threshold*.
     Returns an iterable collection of *HopGroup* items.
     """
+
     _name = "HOP"
     _halo_class = HOPHalo
-    _fields = ["particle_position_%s" % ax for ax in 'xyz'] + \
-              ["particle_mass"]
+    _fields = ["particle_position_%s" % ax for ax in "xyz"] + ["particle_mass"]
 
-    def __init__(self, data_source, threshold=160.0, ptype='all'):
+    def __init__(self, data_source, threshold=160.0, ptype="all"):
         self.threshold = threshold
         mylog.info("Initializing HOP")
         HaloList.__init__(self, data_source, ptype=ptype)
 
     def _run_finder(self):
-        self.densities, self.tags = \
-            RunHOP(self.particle_fields["particle_position_x"] / self.period[0],
-                self.particle_fields["particle_position_y"] / self.period[1],
-                self.particle_fields["particle_position_z"] / self.period[2],
-                self.particle_fields["particle_mass"].in_units('Msun'),
-                self.threshold)
+        self.densities, self.tags = RunHOP(
+            self.particle_fields["particle_position_x"] / self.period[0],
+            self.particle_fields["particle_position_y"] / self.period[1],
+            self.particle_fields["particle_position_z"] / self.period[2],
+            self.particle_fields["particle_mass"].in_units("Msun"),
+            self.threshold,
+        )
         self.particle_fields["densities"] = self.densities
         self.particle_fields["tags"] = self.tags
+
 
 class FOFHaloList(HaloList):
     _name = "FOF"
     _halo_class = FOFHalo
 
-    def __init__(self, data_source, link=0.2, redshift=-1, ptype='all'):
+    def __init__(self, data_source, link=0.2, redshift=-1, ptype="all"):
         self.link = link
         mylog.info("Initializing FOF")
         HaloList.__init__(self, data_source, redshift=redshift, ptype=ptype)
 
     def _run_finder(self):
-        self.tags = \
-        RunFOF(self.particle_fields["particle_position_x"] / self.period[0],
-               self.particle_fields["particle_position_y"] / self.period[1],
-               self.particle_fields["particle_position_z"] / self.period[2],
-               self.link)
-        self.densities = np.ones(self.tags.size, dtype='float64') * -1
+        self.tags = RunFOF(
+            self.particle_fields["particle_position_x"] / self.period[0],
+            self.particle_fields["particle_position_y"] / self.period[1],
+            self.particle_fields["particle_position_z"] / self.period[2],
+            self.link,
+        )
+        self.densities = np.ones(self.tags.size, dtype="float64") * -1
         self.particle_fields["densities"] = self.densities
         self.particle_fields["tags"] = self.tags
 
+
 class GenericHaloFinder(HaloList, ParallelAnalysisInterface):
-    def __init__(self, ds, data_source, padding=0.0, ptype='all'):
+    def __init__(self, ds, data_source, padding=0.0, ptype="all"):
         ParallelAnalysisInterface.__init__(self)
         self.ds = ds
         self.index = ds.index
-        self.center = (np.array(data_source.right_edge) +
-                       np.array(data_source.left_edge)) / 2.0
+        self.center = (
+            np.array(data_source.right_edge) + np.array(data_source.left_edge)
+        ) / 2.0
         self.ptype = ptype
 
     def _parse_halolist(self, threshold_adjustment):
@@ -677,10 +716,8 @@ class GenericHaloFinder(HaloList, ParallelAnalysisInterface):
                 # self.hop_list
                 # We need to mock up the HOPHaloList thingie, so we need to
                 #     set self._max_dens
-                max_dens_temp = list(self._max_dens[halo.id])[0] / \
-                    threshold_adjustment
-                max_dens[hi] = [max_dens_temp] + \
-                    list(self._max_dens[halo.id])[1:4]
+                max_dens_temp = list(self._max_dens[halo.id])[0] / threshold_adjustment
+                max_dens[hi] = [max_dens_temp] + list(self._max_dens[halo.id])[1:4]
                 groups.append(self._halo_class(self, hi, ptype=self.ptype))
                 groups[-1].indices = halo.indices
                 self.comm.claim_object(groups[-1])
@@ -691,8 +728,7 @@ class GenericHaloFinder(HaloList, ParallelAnalysisInterface):
 
     def _join_halolists(self):
         groups = {self.comm.rank: len(self)}
-        groups = self.comm.par_combine_object(
-            groups, datatype='dict', op='join')
+        groups = self.comm.par_combine_object(groups, datatype="dict", op="join")
 
         ngroups = np.array([groups[rank] for rank in sorted(groups)])
         offsets = ngroups.cumsum() - ngroups
@@ -705,10 +741,11 @@ class GenericHaloFinder(HaloList, ParallelAnalysisInterface):
         # else.  The only reason we even do periodicity is the
         LE, RE = bounds
         dw = self.ds.domain_right_edge - self.ds.domain_left_edge
-        for i, ax in enumerate('xyz'):
+        for i, ax in enumerate("xyz"):
             arr = self._data_source[self.ptype, "particle_position_%s" % ax]
             arr[arr < LE[i] - self.padding] += dw[i]
             arr[arr > RE[i] + self.padding] -= dw[i]
+
 
 class HOPHaloFinder(GenericHaloFinder, HOPHaloList):
     r"""HOP halo finder.
@@ -768,29 +805,38 @@ class HOPHaloFinder(GenericHaloFinder, HOPHaloList):
     ...                  finder_kwargs={"threshold": 160})
     >>> hc.create()
     """
-    def __init__(self, ds, subvolume=None, threshold=160, dm_only=False,
-                 ptype='all', padding=0.02, total_mass=None,
-                 save_particles=True):
+
+    def __init__(
+        self,
+        ds,
+        subvolume=None,
+        threshold=160,
+        dm_only=False,
+        ptype="all",
+        padding=0.02,
+        total_mass=None,
+        save_particles=True,
+    ):
         if subvolume is not None:
             ds_LE = np.array(subvolume.left_edge)
             ds_RE = np.array(subvolume.right_edge)
         self.period = ds.domain_right_edge - ds.domain_left_edge
         self.save_particles = save_particles
         self._data_source = ds.all_data()
-        GenericHaloFinder.__init__(self, ds, self._data_source, padding,
-                                   ptype=ptype)
+        GenericHaloFinder.__init__(self, ds, self._data_source, padding, ptype=ptype)
         # do it once with no padding so the total_mass is correct
         # (no duplicated particles), and on the entire volume, even if only
         # a small part is actually going to be used.
         self.padding = 0.0
-        padded, LE, RE, self._data_source = \
-            self.partition_index_3d(ds=self._data_source,
-                padding=self.padding)
+        padded, LE, RE, self._data_source = self.partition_index_3d(
+            ds=self._data_source, padding=self.padding
+        )
 
         if dm_only:
             raise RuntimeError(
-                "dm_only has been removed. " +
-                "Use ptype to specify a particle type, instead.")
+                "dm_only has been removed. "
+                + "Use ptype to specify a particle type, instead."
+            )
 
         self.ptype = ptype
 
@@ -798,33 +844,40 @@ class HOPHaloFinder(GenericHaloFinder, HOPHaloList):
         if total_mass is None:
             total_mass = self.comm.mpi_allreduce(
                 self._data_source.quantities.total_quantity(
-                    (self.ptype, "particle_mass")).in_units('Msun'), op='sum')
+                    (self.ptype, "particle_mass")
+                ).in_units("Msun"),
+                op="sum",
+            )
         # MJT: Note that instead of this, if we are assuming that the particles
         # are all on different processors, we should instead construct an
         # object representing the entire domain and sum it "lazily" with
         # Derived Quantities.
         if subvolume is not None:
-            self._data_source = ds.region([0.] * 3, ds_LE, ds_RE)
+            self._data_source = ds.region([0.0] * 3, ds_LE, ds_RE)
         else:
             self._data_source = ds.all_data()
         self.padding = padding  # * ds["unitary"] # This should be clevererer
-        padded, LE, RE, self._data_source = \
-            self.partition_index_3d(ds=self._data_source,
-            padding=self.padding)
+        padded, LE, RE, self._data_source = self.partition_index_3d(
+            ds=self._data_source, padding=self.padding
+        )
         self.bounds = (LE, RE)
         # sub_mass can be skipped if subvolume is not used and this is not
         # parallel.
-        if subvolume is None and \
-                ytcfg.get("yt", "internals", "topcomm_parallel_size") == 1:
+        if (
+            subvolume is None
+            and ytcfg.get("yt", "internals", "topcomm_parallel_size") == 1
+        ):
             sub_mass = total_mass
         else:
-            sub_mass = \
-                self._data_source.quantities.total_quantity(
-                    (self.ptype, "particle_mass")).in_units('Msun')
-        HOPHaloList.__init__(self, self._data_source,
-            threshold * total_mass / sub_mass, ptype=self.ptype)
+            sub_mass = self._data_source.quantities.total_quantity(
+                (self.ptype, "particle_mass")
+            ).in_units("Msun")
+        HOPHaloList.__init__(
+            self, self._data_source, threshold * total_mass / sub_mass, ptype=self.ptype
+        )
         self._parse_halolist(total_mass / sub_mass)
         self._join_halolists()
+
 
 class FOFHaloFinder(GenericHaloFinder, FOFHaloList):
     r"""Friends-of-friends halo finder.
@@ -873,8 +926,17 @@ class FOFHaloFinder(GenericHaloFinder, FOFHaloList):
     ...                  finder_kwargs={"link": 0.2})
     >>> hc.create()
     """
-    def __init__(self, ds, subvolume=None, link=0.2, dm_only=False,
-                 ptype='all', padding=0.02, save_particles=True):
+
+    def __init__(
+        self,
+        ds,
+        subvolume=None,
+        link=0.2,
+        dm_only=False,
+        ptype="all",
+        padding=0.02,
+        save_particles=True,
+    ):
         if subvolume is not None:
             ds_LE = np.array(subvolume.left_edge)
             ds_RE = np.array(subvolume.right_edge)
@@ -887,45 +949,51 @@ class FOFHaloFinder(GenericHaloFinder, FOFHaloList):
         GenericHaloFinder.__init__(self, ds, self._data_source, padding)
         self.padding = 0.0  # * ds["unitary"] # This should be clevererer
         # get the total number of particles across all procs, with no padding
-        padded, LE, RE, self._data_source = \
-            self.partition_index_3d(ds=self._data_source,
-            padding=self.padding)
+        padded, LE, RE, self._data_source = self.partition_index_3d(
+            ds=self._data_source, padding=self.padding
+        )
 
         if dm_only:
             raise RuntimeError(
-                "dm_only has been removed. " +
-                "Use ptype to specify a particle type, instead.")
+                "dm_only has been removed. "
+                + "Use ptype to specify a particle type, instead."
+            )
 
         self.ptype = ptype
 
         if link > 0.0:
             n_parts = self.comm.mpi_allreduce(
-                self._data_source[self.ptype, "particle_ones"].size, op='sum')
+                self._data_source[self.ptype, "particle_ones"].size, op="sum"
+            )
             # get the average spacing between particles
-            #l = ds.domain_right_edge - ds.domain_left_edge
-            #vol = l[0] * l[1] * l[2]
+            # l = ds.domain_right_edge - ds.domain_left_edge
+            # vol = l[0] * l[1] * l[2]
             # Because we are now allowing for datasets with non 1-periodicity,
             # but symmetric, vol is always 1.
-            vol = 1.
-            avg_spacing = (float(vol) / n_parts) ** (1. / 3.)
+            vol = 1.0
+            avg_spacing = (float(vol) / n_parts) ** (1.0 / 3.0)
             linking_length = link * avg_spacing
         else:
             linking_length = np.abs(link)
         self.padding = padding
         if subvolume is not None:
-            self._data_source = ds.region([0.] * 3, ds_LE,
-                ds_RE)
+            self._data_source = ds.region([0.0] * 3, ds_LE, ds_RE)
         else:
             self._data_source = ds.all_data()
-        padded, LE, RE, self._data_source = \
-            self.partition_index_3d(ds=self._data_source,
-            padding=self.padding)
+        padded, LE, RE, self._data_source = self.partition_index_3d(
+            ds=self._data_source, padding=self.padding
+        )
         self.bounds = (LE, RE)
         # reflect particles around the periodic boundary
-        #self._reposition_particles((LE, RE))
+        # self._reposition_particles((LE, RE))
         # here is where the FOF halo finder is run
         mylog.info("Using a linking length of %0.3e", linking_length)
-        FOFHaloList.__init__(self, self._data_source, linking_length,
-                             redshift=self.redshift, ptype=self.ptype)
-        self._parse_halolist(1.)
+        FOFHaloList.__init__(
+            self,
+            self._data_source,
+            linking_length,
+            redshift=self.redshift,
+            ptype=self.ptype,
+        )
+        self._parse_halolist(1.0)
         self._join_halolists()

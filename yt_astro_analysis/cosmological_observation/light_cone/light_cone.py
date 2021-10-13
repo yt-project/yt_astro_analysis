@@ -5,41 +5,36 @@ LightCone class and member functions.
 
 """
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Copyright (c) 2013, yt Development Team.
 #
 # Distributed under the terms of the Modified BSD License.
 #
 # The full license is in the file COPYING.txt, distributed with this software.
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
-from yt.utilities.on_demand_imports import _h5py as h5py
-import numpy as np
 import os
 
-from yt.config import \
-    ytcfg
-from yt.funcs import \
-    ensure_dir, \
-    mylog, \
-    only_on_root
-from yt.loaders import \
-    load
-from yt.utilities.parallel_tools.parallel_analysis_interface import \
-    parallel_objects, \
-    parallel_root_only
-from yt.visualization.image_writer import \
-    write_image
-from yt.units.yt_array import \
-    YTArray
+import numpy as np
 
-from yt_astro_analysis.cosmological_observation.cosmology_splice import \
-    CosmologySplice
-from yt_astro_analysis.cosmological_observation.light_cone.light_cone_projection import \
-    _light_cone_projection
+from yt.config import ytcfg
+from yt.funcs import ensure_dir, mylog, only_on_root
+from yt.loaders import load
+from yt.units.yt_array import YTArray
+from yt.utilities.on_demand_imports import _h5py as h5py
+from yt.utilities.parallel_tools.parallel_analysis_interface import (
+    parallel_objects,
+    parallel_root_only,
+)
+from yt.visualization.image_writer import write_image
+from yt_astro_analysis.cosmological_observation.cosmology_splice import CosmologySplice
+from yt_astro_analysis.cosmological_observation.light_cone.light_cone_projection import (
+    _light_cone_projection,
+)
+
 
 class LightCone(CosmologySplice):
-    """
+    r"""
     Initialize a LightCone object.
 
     Parameters
@@ -77,7 +72,7 @@ class LightCone(CosmologySplice):
         datasets for time series.
         Default: True.
     find_outputs : bool
-        Whether or not to search for datasets in the current 
+        Whether or not to search for datasets in the current
         directory.
         Default: False.
     set_parameters : dict
@@ -91,14 +86,24 @@ class LightCone(CosmologySplice):
         Default: "LightCone".
 
     """
-    def __init__(self, parameter_filename, simulation_type,
-                 near_redshift, far_redshift,
-                 observer_redshift=0.0,
-                 use_minimum_datasets=True, deltaz_min=0.0,
-                 minimum_coherent_box_fraction=0.0,
-                 time_data=True, redshift_data=True,
-                 find_outputs=False, set_parameters=None,
-                 output_dir="LC", output_prefix="LightCone"):
+
+    def __init__(
+        self,
+        parameter_filename,
+        simulation_type,
+        near_redshift,
+        far_redshift,
+        observer_redshift=0.0,
+        use_minimum_datasets=True,
+        deltaz_min=0.0,
+        minimum_coherent_box_fraction=0.0,
+        time_data=True,
+        redshift_data=True,
+        find_outputs=False,
+        set_parameters=None,
+        output_dir="LC",
+        output_prefix="LightCone",
+    ):
 
         self.near_redshift = near_redshift
         self.far_redshift = far_redshift
@@ -117,14 +122,17 @@ class LightCone(CosmologySplice):
         ensure_dir(self.output_dir)
 
         # Calculate light cone solution.
-        CosmologySplice.__init__(self, parameter_filename, simulation_type,
-                                 find_outputs=find_outputs)
-        self.light_cone_solution = \
-          self.create_cosmology_splice(self.near_redshift, self.far_redshift,
-                                       minimal=self.use_minimum_datasets,
-                                       deltaz_min=self.deltaz_min,
-                                       time_data=time_data,
-                                       redshift_data=redshift_data)
+        CosmologySplice.__init__(
+            self, parameter_filename, simulation_type, find_outputs=find_outputs
+        )
+        self.light_cone_solution = self.create_cosmology_splice(
+            self.near_redshift,
+            self.far_redshift,
+            minimal=self.use_minimum_datasets,
+            deltaz_min=self.deltaz_min,
+            time_data=time_data,
+            redshift_data=redshift_data,
+        )
 
     def calculate_light_cone_solution(self, seed=None, filename=None):
         r"""Create list of projections to be added together to make the light cone.
@@ -145,10 +153,11 @@ class LightCone(CosmologySplice):
         """
 
         # Don"t use box coherence with maximum projection depths.
-        if self.use_minimum_datasets and \
-                self.minimum_coherent_box_fraction > 0:
-            mylog.info("Setting minimum_coherent_box_fraction to 0 with " +
-                       "minimal light cone.")
+        if self.use_minimum_datasets and self.minimum_coherent_box_fraction > 0:
+            mylog.info(
+                "Setting minimum_coherent_box_fraction to 0 with "
+                + "minimal light cone."
+            )
             self.minimum_coherent_box_fraction = 0
 
         # Calculate projection sizes, and get
@@ -167,64 +176,92 @@ class LightCone(CosmologySplice):
             if q == len(self.light_cone_solution) - 1:
                 z_next = self.near_redshift
             else:
-                z_next = self.light_cone_solution[q+1]["redshift"]
+                z_next = self.light_cone_solution[q + 1]["redshift"]
 
             # Calculate fraction of box required for a depth of delta z
-            self.light_cone_solution[q]["box_depth_fraction"] = \
-                (self.cosmology.comoving_radial_distance(z_next, \
-                        self.light_cone_solution[q]["redshift"]) / \
-                        self.simulation.box_size).in_units("")
+            self.light_cone_solution[q]["box_depth_fraction"] = (
+                self.cosmology.comoving_radial_distance(
+                    z_next, self.light_cone_solution[q]["redshift"]
+                )
+                / self.simulation.box_size
+            ).in_units("")
 
             # Calculate fraction of box required for width corresponding to
             # requested image size.
-            proper_box_size = self.simulation.box_size / \
-              (1.0 + self.light_cone_solution[q]["redshift"])
-            self.light_cone_solution[q]["box_width_per_angle"] = \
-              (self.cosmology.angular_scale(self.observer_redshift,
-               self.light_cone_solution[q]["redshift"]) /
-               proper_box_size).in_units("1 / degree")
+            proper_box_size = self.simulation.box_size / (
+                1.0 + self.light_cone_solution[q]["redshift"]
+            )
+            self.light_cone_solution[q]["box_width_per_angle"] = (
+                self.cosmology.angular_scale(
+                    self.observer_redshift, self.light_cone_solution[q]["redshift"]
+                )
+                / proper_box_size
+            ).in_units("1 / degree")
 
             # Simple error check to make sure more than 100% of box depth
             # is never required.
             if self.light_cone_solution[q]["box_depth_fraction"] > 1.0:
-                mylog.error(("Warning: box fraction required to go from " +
-                             "z = %f to %f is %f") %
-                            (self.light_cone_solution[q]["redshift"], z_next,
-                             self.light_cone_solution[q]["box_depth_fraction"]))
-                mylog.error(("Full box delta z is %f, but it is %f to the " +
-                             "next data dump.") %
-                            (self.light_cone_solution[q]["dz_max"],
-                             self.light_cone_solution[q]["redshift"]-z_next))
+                mylog.error(
+                    (
+                        "Warning: box fraction required to go from "
+                        + "z = %f to %f is %f"
+                    )
+                    % (
+                        self.light_cone_solution[q]["redshift"],
+                        z_next,
+                        self.light_cone_solution[q]["box_depth_fraction"],
+                    )
+                )
+                mylog.error(
+                    ("Full box delta z is %f, but it is %f to the " + "next data dump.")
+                    % (
+                        self.light_cone_solution[q]["dz_max"],
+                        self.light_cone_solution[q]["redshift"] - z_next,
+                    )
+                )
 
             # Get projection axis and center.
             # If using box coherence, only get random axis and center if enough
             # of the box has been used, or if box_fraction_used will be greater
             # than 1 after this slice.
-            if (q == 0) or (self.minimum_coherent_box_fraction == 0) or \
-              (box_fraction_used > self.minimum_coherent_box_fraction) or \
-              (box_fraction_used +
-               self.light_cone_solution[q]["box_depth_fraction"] > 1.0):
+            if (
+                (q == 0)
+                or (self.minimum_coherent_box_fraction == 0)
+                or (box_fraction_used > self.minimum_coherent_box_fraction)
+                or (
+                    box_fraction_used
+                    + self.light_cone_solution[q]["box_depth_fraction"]
+                    > 1.0
+                )
+            ):
                 # Random axis and center.
-                self.light_cone_solution[q]["projection_axis"] = \
-                  np.random.randint(0, 3)
-                self.light_cone_solution[q]["projection_center"] = \
-                  np.random.random(3)
+                self.light_cone_solution[q]["projection_axis"] = np.random.randint(0, 3)
+                self.light_cone_solution[q]["projection_center"] = np.random.random(3)
                 box_fraction_used = 0.0
             else:
                 # Same axis and center as previous slice,
                 # but with depth center shifted.
-                self.light_cone_solution[q]["projection_axis"] = \
-                  self.light_cone_solution[q-1]["projection_axis"]
-                self.light_cone_solution[q]["projection_center"] = \
-                  self.light_cone_solution[q-1]["projection_center"].copy()
-                self.light_cone_solution[q]["projection_center"]\
-                  [self.light_cone_solution[q]["projection_axis"]] += \
-                    0.5 * (self.light_cone_solution[q]["box_depth_fraction"] +
-                           self.light_cone_solution[q-1]["box_depth_fraction"])
-                if self.light_cone_solution[q]["projection_center"]\
-                  [self.light_cone_solution[q]["projection_axis"]] >= 1.0:
-                    self.light_cone_solution[q]["projection_center"]\
-                      [self.light_cone_solution[q]["projection_axis"]] -= 1.0
+                self.light_cone_solution[q][
+                    "projection_axis"
+                ] = self.light_cone_solution[q - 1]["projection_axis"]
+                self.light_cone_solution[q][
+                    "projection_center"
+                ] = self.light_cone_solution[q - 1]["projection_center"].copy()
+                self.light_cone_solution[q]["projection_center"][
+                    self.light_cone_solution[q]["projection_axis"]
+                ] += 0.5 * (
+                    self.light_cone_solution[q]["box_depth_fraction"]
+                    + self.light_cone_solution[q - 1]["box_depth_fraction"]
+                )
+                if (
+                    self.light_cone_solution[q]["projection_center"][
+                        self.light_cone_solution[q]["projection_axis"]
+                    ]
+                    >= 1.0
+                ):
+                    self.light_cone_solution[q]["projection_center"][
+                        self.light_cone_solution[q]["projection_axis"]
+                    ] -= 1.0
 
             box_fraction_used += self.light_cone_solution[q]["box_depth_fraction"]
 
@@ -232,12 +269,20 @@ class LightCone(CosmologySplice):
         if filename is not None:
             self._save_light_cone_solution(filename=filename)
 
-    def project_light_cone(self, field_of_view, image_resolution, field,
-                           weight_field=None, photon_field=False,
-                           save_stack=True, save_final_image=True,
-                           save_slice_images=False,
-                           cmap_name=None,
-                           njobs=1, dynamic=False):
+    def project_light_cone(
+        self,
+        field_of_view,
+        image_resolution,
+        field,
+        weight_field=None,
+        photon_field=False,
+        save_stack=True,
+        save_final_image=True,
+        save_slice_images=False,
+        cmap_name=None,
+        njobs=1,
+        dynamic=False,
+    ):
         r"""Create projections for light cone, then add them together.
 
         Parameters
@@ -286,18 +331,22 @@ class LightCone(CosmologySplice):
             cmap_name = ytcfg.get("yt", "default_colormap")
 
         if isinstance(field_of_view, tuple) and len(field_of_view) == 2:
-            field_of_view = self.simulation.quan(field_of_view[0],
-                                                 field_of_view[1])
+            field_of_view = self.simulation.quan(field_of_view[0], field_of_view[1])
         elif not isinstance(field_of_view, YTArray):
-          raise RuntimeError("field_of_view argument must be either a YTQuantity " +
-                             "or a tuple of type (float, str).")
+            raise RuntimeError(
+                "field_of_view argument must be either a YTQuantity "
+                + "or a tuple of type (float, str)."
+            )
         if isinstance(image_resolution, tuple) and len(image_resolution) == 2:
-            image_resolution = self.simulation.quan(image_resolution[0],
-                                                    image_resolution[1])
+            image_resolution = self.simulation.quan(
+                image_resolution[0], image_resolution[1]
+            )
         elif not isinstance(image_resolution, YTArray):
-          raise RuntimeError("image_resolution argument must be either a YTQuantity " +
-                             "or a tuple of type (float, str).")
-        
+            raise RuntimeError(
+                "image_resolution argument must be either a YTQuantity "
+                + "or a tuple of type (float, str)."
+            )
+
         # Calculate number of pixels on a side.
         pixels = int((field_of_view / image_resolution).in_units(""))
 
@@ -309,33 +358,34 @@ class LightCone(CosmologySplice):
 
         # for q, output in enumerate(self.light_cone_solution):
         all_storage = {}
-        for my_storage, output in parallel_objects(self.light_cone_solution,
-                                                   storage=all_storage,
-                                                   dynamic=dynamic):
+        for my_storage, output in parallel_objects(
+            self.light_cone_solution, storage=all_storage, dynamic=dynamic
+        ):
             output["object"] = load(output["filename"])
             output["object"].parameters.update(self.set_parameters)
 
             # Calculate fraction of box required for width corresponding to
             # requested image size.
-            proper_box_size = self.simulation.box_size / \
-              (1.0 + output["redshift"])
-            output["box_width_fraction"] = (output["box_width_per_angle"] *
-                                            field_of_view).in_units("")
-            
-            frb = _light_cone_projection(output, field, pixels,
-                                         weight_field=weight_field)
+            proper_box_size = self.simulation.box_size / (1.0 + output["redshift"])
+            output["box_width_fraction"] = (
+                output["box_width_per_angle"] * field_of_view
+            ).in_units("")
+
+            frb = _light_cone_projection(
+                output, field, pixels, weight_field=weight_field
+            )
 
             if photon_field:
                 # Decrement the flux by the luminosity distance.
                 # Assume field in frb is in erg/s/cm^2/Hz
-                dL = self.cosmology.luminosity_distance(self.observer_redshift,
-                                                        output["redshift"])
-                proper_box_size = self.simulation.box_size / \
-                  (1.0 + output["redshift"])
-                pixel_area = (proper_box_size.in_cgs() / pixels)**2 #in proper cm^2
-                factor = pixel_area / (4.0 * np.pi * dL.in_cgs()**2)
+                dL = self.cosmology.luminosity_distance(
+                    self.observer_redshift, output["redshift"]
+                )
+                proper_box_size = self.simulation.box_size / (1.0 + output["redshift"])
+                pixel_area = (proper_box_size.in_cgs() / pixels) ** 2  # in proper cm^2
+                factor = pixel_area / (4.0 * np.pi * dL.in_cgs() ** 2)
                 mylog.info("Distance to slice = %s" % dL)
-                frb['field'] *= factor #in erg/s/cm^2/Hz on observer's image plane.
+                frb["field"] *= factor  # in erg/s/cm^2/Hz on observer's image plane.
 
             my_storage.result = frb
 
@@ -346,48 +396,64 @@ class LightCone(CosmologySplice):
         all_slices.sort()
         for my_slice in all_slices:
             if save_slice_images:
-                name = os.path.join(self.output_dir,
-                                    "%s_%04d_%04d" %
-                                    (self.output_prefix,
-                                     my_slice, len(self.light_cone_solution)))
+                name = os.path.join(
+                    self.output_dir,
+                    "%s_%04d_%04d"
+                    % (self.output_prefix, my_slice, len(self.light_cone_solution)),
+                )
                 if weight_field is None:
                     my_image = all_storage[my_slice]["field"]
                 else:
-                    my_image = all_storage[my_slice]["field"] / \
-                      all_storage[my_slice]["weight_field"]
-                only_on_root(write_image, np.log10(my_image),
-                             "%s_%s.png" % (name, field), cmap_name=cmap_name)
+                    my_image = (
+                        all_storage[my_slice]["field"]
+                        / all_storage[my_slice]["weight_field"]
+                    )
+                only_on_root(
+                    write_image,
+                    np.log10(my_image),
+                    f"{name}_{field}.png",
+                    cmap_name=cmap_name,
+                )
 
             projection_stack.append(all_storage[my_slice]["field"])
             if weight_field is not None:
-                projection_weight_stack.append(
-                    all_storage[my_slice]["weight_field"])
+                projection_weight_stack.append(all_storage[my_slice]["weight_field"])
 
         projection_stack = self.simulation.arr(projection_stack)
         projection_weight_stack = self.simulation.arr(projection_weight_stack)
-                
+
         # Add up slices to make light cone projection.
-        if (weight_field is None):
+        if weight_field is None:
             light_cone_projection = projection_stack.sum(axis=0)
         else:
-            light_cone_projection = \
-              projection_stack.sum(axis=0) / \
-              projection_weight_stack.sum(axis=0)
+            light_cone_projection = projection_stack.sum(
+                axis=0
+            ) / projection_weight_stack.sum(axis=0)
 
         filename = os.path.join(self.output_dir, self.output_prefix)
 
         # Write image.
         if save_final_image:
-            only_on_root(write_image, np.log10(light_cone_projection),
-                         "%s_%s.png" % (filename, field), cmap_name=cmap_name)
+            only_on_root(
+                write_image,
+                np.log10(light_cone_projection),
+                f"{filename}_{field}.png",
+                cmap_name=cmap_name,
+            )
 
         # Write stack to hdf5 file.
         if save_stack:
-            self._save_light_cone_stack(field, weight_field,
-                projection_stack, projection_weight_stack,
+            self._save_light_cone_stack(
+                field,
+                weight_field,
+                projection_stack,
+                projection_weight_stack,
                 filename=filename,
-                attrs={"field_of_view": str(field_of_view),
-                       "image_resolution": str(image_resolution)})
+                attrs={
+                    "field_of_view": str(field_of_view),
+                    "image_resolution": str(image_resolution),
+                },
+            )
 
     @parallel_root_only
     def _save_light_cone_solution(self, filename="light_cone.dat"):
@@ -398,35 +464,47 @@ class LightCone(CosmologySplice):
         f = open(filename, "w")
         f.write("# parameter_filename = %s\n" % self.parameter_filename)
         f.write("\n")
-        f.write("# Slice    Dataset    Redshift    depth/box    " + \
-                "width/degree    axis    center\n")
+        f.write(
+            "# Slice    Dataset    Redshift    depth/box    "
+            + "width/degree    axis    center\n"
+        )
         for q, output in enumerate(self.light_cone_solution):
-            f.write(("%04d %s %f %f %f %d %f %f %f\n") %
-                    (q, output["filename"], output["redshift"],
-                     output["box_depth_fraction"], output["box_width_per_angle"],
-                     output["projection_axis"], output["projection_center"][0],
-                     output["projection_center"][1], output["projection_center"][2]))
+            f.write(
+                ("%04d %s %f %f %f %d %f %f %f\n")
+                % (
+                    q,
+                    output["filename"],
+                    output["redshift"],
+                    output["box_depth_fraction"],
+                    output["box_width_per_angle"],
+                    output["projection_axis"],
+                    output["projection_center"][0],
+                    output["projection_center"][1],
+                    output["projection_center"][2],
+                )
+            )
         f.close()
 
     @parallel_root_only
-    def _save_light_cone_stack(self, field, weight_field,
-                               pstack, wstack,
-                               filename=None, attrs=None):
+    def _save_light_cone_stack(
+        self, field, weight_field, pstack, wstack, filename=None, attrs=None
+    ):
         "Save the light cone projection stack as a 3d array in and hdf5 file."
 
         if attrs is None:
             attrs = {}
-        
-        # Make list of redshifts to include as a dataset attribute.
-        redshift_list = np.array([my_slice["redshift"] \
-                                 for my_slice in self.light_cone_solution])
 
-        field_node = "%s_%s" % (field, weight_field)
+        # Make list of redshifts to include as a dataset attribute.
+        redshift_list = np.array(
+            [my_slice["redshift"] for my_slice in self.light_cone_solution]
+        )
+
+        field_node = f"{field}_{weight_field}"
         weight_field_node = "weight_field_%s" % weight_field
 
-        if (filename is None):
+        if filename is None:
             filename = os.path.join(self.output_dir, "%s_data" % self.output_prefix)
-        if not(filename.endswith(".h5")):
+        if not (filename.endswith(".h5")):
             filename += ".h5"
 
         if pstack.size == 0:
@@ -440,9 +518,8 @@ class LightCone(CosmologySplice):
         if field_node in fh:
             del fh[field_node]
 
-        mylog.info("Saving %s to %s." % (field_node, filename))
-        dataset = fh.create_dataset(field_node,
-                                          data=pstack)
+        mylog.info(f"Saving {field_node} to {filename}.")
+        dataset = fh.create_dataset(field_node, data=pstack)
         dataset.attrs["units"] = str(pstack.units)
         dataset.attrs["redshifts"] = redshift_list
         dataset.attrs["observer_redshift"] = np.float(self.observer_redshift)
@@ -453,9 +530,8 @@ class LightCone(CosmologySplice):
             if weight_field_node in fh:
                 del fh[weight_field_node]
 
-            mylog.info("Saving %s to %s." % (weight_field_node, filename))
-            dataset = fh.create_dataset(weight_field_node,
-                                        data=wstack)
+            mylog.info(f"Saving {weight_field_node} to {filename}.")
+            dataset = fh.create_dataset(weight_field_node, data=wstack)
             dataset.attrs["units"] = str(wstack.units)
             dataset.attrs["redshifts"] = redshift_list
             dataset.attrs["observer_redshift"] = np.float(self.observer_redshift)

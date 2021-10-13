@@ -5,32 +5,23 @@ HaloCatalog callbacks
 
 """
 
-from yt.utilities.on_demand_imports import _h5py as h5py
-import numpy as np
 import os
 
-from yt.data_objects.profiles import \
-    create_profile
-from yt.frontends.ytdata.utilities import \
-    _hdf5_yt_array, \
-    _yt_array_hdf5
-from yt.units.yt_array import \
-    YTArray
-from yt.utilities.exceptions import \
-    YTSphereTooSmall
-from yt.utilities.logger import ytLogger as mylog
-from yt.utilities.parallel_tools.parallel_analysis_interface import \
-    parallel_root_only
-from yt.visualization.profile_plotter import \
-    PhasePlot
-
+import numpy as np
 from more_itertools import always_iterable
 
-from yt_astro_analysis.halo_analysis.halo_catalog.analysis_operators import \
-    add_callback
+from yt.data_objects.profiles import create_profile
+from yt.frontends.ytdata.utilities import _hdf5_yt_array, _yt_array_hdf5
+from yt.units.yt_array import YTArray
+from yt.utilities.exceptions import YTSphereTooSmall
+from yt.utilities.logger import ytLogger as mylog
+from yt.utilities.on_demand_imports import _h5py as h5py
+from yt.utilities.parallel_tools.parallel_analysis_interface import parallel_root_only
+from yt.visualization.profile_plotter import PhasePlot
+from yt_astro_analysis.halo_analysis.halo_catalog.analysis_operators import add_callback
 
-def halo_sphere(halo, radius_field="virial_radius", factor=1.0, 
-                field_parameters=None):
+
+def halo_sphere(halo, radius_field="virial_radius", factor=1.0, field_parameters=None):
     r"""
     Create a sphere data container to associate with a halo.
 
@@ -39,22 +30,21 @@ def halo_sphere(halo, radius_field="virial_radius", factor=1.0,
     halo : Halo object
         The Halo object to be provided by the HaloCatalog.
     radius_field : string
-        Field to be retrieved from the quantities dictionary as 
+        Field to be retrieved from the quantities dictionary as
         the basis of the halo radius.
         Default: "virial_radius".
     factor : float
-        Factor to be multiplied by the base radius for defining 
+        Factor to be multiplied by the base radius for defining
         the radius of the sphere.
         Default: 1.0.
     field_parameters : dict
-        Dictionary of field parameters to be set with the sphere 
+        Dictionary of field parameters to be set with the sphere
         created.
-        
+
     """
 
     dds = halo.halo_catalog.data_ds
-    center = dds.arr([halo.quantities["particle_position_%s" % axis] \
-                      for axis in "xyz"])
+    center = dds.arr([halo.quantities["particle_position_%s" % axis] for axis in "xyz"])
     radius = factor * halo.quantities[radius_field]
     if radius <= 0.0:
         halo.data_object = None
@@ -73,7 +63,9 @@ def halo_sphere(halo, radius_field="virial_radius", factor=1.0,
             sphere.set_field_parameter(field, value)
     halo.data_object = sphere
 
+
 add_callback("sphere", halo_sphere)
+
 
 def sphere_field_max_recenter(halo, field):
     r"""
@@ -88,21 +80,28 @@ def sphere_field_max_recenter(halo, field):
 
     """
 
-    if halo.data_object is None: return
+    if halo.data_object is None:
+        return
     s_ds = halo.data_object.ds
     old_sphere = halo.data_object
     max_vals = old_sphere.quantities.max_location(field)
     new_center = s_ds.arr(max_vals[1:])
-    new_sphere = s_ds.sphere(new_center.in_units("code_length"),
-                               old_sphere.radius.in_units("code_length"))
-    mylog.info("Moving sphere center from %s to %s." % (old_sphere.center,
-                                                        new_sphere.center))
+    new_sphere = s_ds.sphere(
+        new_center.in_units("code_length"), old_sphere.radius.in_units("code_length")
+    )
+    mylog.info(
+        "Moving sphere center from {} to {}.".format(
+            old_sphere.center, new_sphere.center
+        )
+    )
     for par, value in old_sphere.field_parameters.items():
         if par not in new_sphere.field_parameters:
             new_sphere.set_field_parameter(par, value)
     halo.data_object = new_sphere
 
+
 add_callback("sphere_field_max_recenter", sphere_field_max_recenter)
+
 
 def sphere_bulk_velocity(halo):
     r"""
@@ -115,14 +114,28 @@ def sphere_bulk_velocity(halo):
 
     """
 
-    halo.data_object.set_field_parameter("bulk_velocity",
-        halo.data_object.quantities.bulk_velocity(use_particles=True))
+    halo.data_object.set_field_parameter(
+        "bulk_velocity", halo.data_object.quantities.bulk_velocity(use_particles=True)
+    )
+
 
 add_callback("sphere_bulk_velocity", sphere_bulk_velocity)
 
-def profile(halo, bin_fields, profile_fields, n_bins=32, extrema=None, logs=None, units=None,
-            weight_field="cell_mass", accumulation=False, fractional=False,
-            storage="profiles", output_dir="."):
+
+def profile(
+    halo,
+    bin_fields,
+    profile_fields,
+    n_bins=32,
+    extrema=None,
+    logs=None,
+    units=None,
+    weight_field="cell_mass",
+    accumulation=False,
+    fractional=False,
+    storage="profiles",
+    output_dir=".",
+):
     r"""
     Create 1, 2, or 3D profiles of a halo.
 
@@ -174,8 +187,9 @@ def profile(halo, bin_fields, profile_fields, n_bins=32, extrema=None, logs=None
 
     """
 
-    mylog.info("Calculating 1D profile for halo %d." % 
-               halo.quantities["particle_identifier"])
+    mylog.info(
+        "Calculating 1D profile for halo %d." % halo.quantities["particle_identifier"]
+    )
 
     dds = halo.halo_catalog.data_ds
 
@@ -186,21 +200,31 @@ def profile(halo, bin_fields, profile_fields, n_bins=32, extrema=None, logs=None
         raise RuntimeError("Profile callback requires a data container.")
 
     if halo.data_object is None:
-        mylog.info("Skipping halo %d since data_object is None." %
-                   halo.quantities["particle_identifier"])
+        mylog.info(
+            "Skipping halo %d since data_object is None."
+            % halo.quantities["particle_identifier"]
+        )
         return
 
     if output_dir is None:
         output_dir = storage
     output_dir = os.path.join(halo.halo_catalog.output_dir, output_dir)
-    
+
     bin_fields = list(always_iterable(bin_fields))
-    my_profile = create_profile(halo.data_object, bin_fields, profile_fields, n_bins=n_bins,
-                                extrema=extrema, logs=logs, units=units, weight_field=weight_field,
-                                accumulation=accumulation, fractional=fractional)
-                  
-    prof_store = dict([(field, my_profile[field]) \
-                       for field in my_profile.field_data])
+    my_profile = create_profile(
+        halo.data_object,
+        bin_fields,
+        profile_fields,
+        n_bins=n_bins,
+        extrema=extrema,
+        logs=logs,
+        units=units,
+        weight_field=weight_field,
+        accumulation=accumulation,
+        fractional=fractional,
+    )
+
+    prof_store = {field: my_profile[field] for field in my_profile.field_data}
     prof_store[my_profile.x_field] = my_profile.x
     if len(bin_fields) > 1:
         prof_store[my_profile.y_field] = my_profile.y
@@ -216,8 +240,10 @@ def profile(halo, bin_fields, profile_fields, n_bins=32, extrema=None, logs=None
     halo_store.update(prof_store)
 
     if my_profile.standard_deviation is not None:
-        variance_store = dict([(field, my_profile.standard_deviation[field]) \
-                               for field in my_profile.standard_deviation])
+        variance_store = {
+            field: my_profile.standard_deviation[field]
+            for field in my_profile.standard_deviation
+        }
         variance_storage = "%s_variance" % storage
         if hasattr(halo, variance_storage):
             halo_variance_store = getattr(halo, variance_storage)
@@ -226,11 +252,12 @@ def profile(halo, bin_fields, profile_fields, n_bins=32, extrema=None, logs=None
             setattr(halo, variance_storage, halo_variance_store)
         halo_variance_store.update(variance_store)
 
+
 add_callback("profile", profile)
 
+
 @parallel_root_only
-def save_profiles(halo, storage="profiles", filename=None,
-                  output_dir="."):
+def save_profiles(halo, storage="profiles", filename=None, output_dir="."):
     r"""
     Save profile data to disk.
 
@@ -242,27 +269,31 @@ def save_profiles(halo, storage="profiles", filename=None,
         Name of the dictionary attribute containing the profile data to be written.
         Default: "profiles"
     filename : string
-        The name of the file to be written.  The final filename will be 
-        "<filename>_<id>.h5".  If None, filename is set to the value given 
+        The name of the file to be written.  The final filename will be
+        "<filename>_<id>.h5".  If None, filename is set to the value given
         by the storage keyword.
         Default: None
     output_dir : string
         Name of directory where profile data will be written.  The full path will be
         the output_dir of the halo catalog concatenated with this directory.
         Default : "."
-    
+
     """
 
     if not hasattr(halo, storage):
         return
-    
+
     if filename is None:
         filename = storage
-    output_file = os.path.join(halo.halo_catalog.output_dir, output_dir,
-                               "%s_%06d.h5" % (filename, 
-                                               halo.quantities["particle_identifier"]))
-    mylog.info("Saving halo %d profile data to %s." %
-               (halo.quantities["particle_identifier"], output_file))
+    output_file = os.path.join(
+        halo.halo_catalog.output_dir,
+        output_dir,
+        "%s_%06d.h5" % (filename, halo.quantities["particle_identifier"]),
+    )
+    mylog.info(
+        "Saving halo %d profile data to %s."
+        % (halo.quantities["particle_identifier"], output_file)
+    )
 
     fh = h5py.File(output_file, mode="w")
     my_profile = getattr(halo, storage)
@@ -283,10 +314,11 @@ def save_profiles(halo, storage="profiles", filename=None,
             _yt_array_hdf5(variance_group, str(field), my_profile[field])
     fh.close()
 
+
 add_callback("save_profiles", save_profiles)
 
-def load_profiles(halo, storage="profiles", fields=None,
-                  filename=None, output_dir="."):
+
+def load_profiles(halo, storage="profiles", fields=None, filename=None, output_dir="."):
     r"""
     Load profile data from disk.
 
@@ -301,26 +333,30 @@ def load_profiles(halo, storage="profiles", fields=None,
         The fields to be loaded.  If None, all fields present will be loaded.
         Default : None
     filename : string
-        The name of the file to be loaded.  The final filename will be 
-        "<filename>_<id>.h5".  If None, filename is set to the value given 
+        The name of the file to be loaded.  The final filename will be
+        "<filename>_<id>.h5".  If None, filename is set to the value given
         by the storage keyword.
         Default: None
     output_dir : string
         Name of directory where profile data will be read.  The full path will be
         the output_dir of the halo catalog concatenated with this directory.
         Default : "."
-    
+
     """
 
     if filename is None:
         filename = storage
-    output_file = os.path.join(halo.halo_catalog.output_dir, output_dir,
-                               "%s_%06d.h5" % (filename, 
-                                               halo.quantities["particle_identifier"]))
+    output_file = os.path.join(
+        halo.halo_catalog.output_dir,
+        output_dir,
+        "%s_%06d.h5" % (filename, halo.quantities["particle_identifier"]),
+    )
     if not os.path.exists(output_file):
         raise RuntimeError("Profile file not found: %s." % output_file)
-    mylog.info("Loading halo %d profile data from %s." %
-               (halo.quantities["particle_identifier"], output_file))
+    mylog.info(
+        "Loading halo %d profile data from %s."
+        % (halo.quantities["particle_identifier"], output_file)
+    )
 
     fh = h5py.File(output_file, mode="r")
     if fields is None:
@@ -331,11 +367,12 @@ def load_profiles(halo, storage="profiles", fields=None,
     my_group = fh["profiles"]
     for field in profile_fields:
         if field not in my_group:
-            raise RuntimeError("%s field not present in %s." % (field, output_file))
-        my_profile[field] = _hdf5_yt_array(my_group, field,
-                                           ds=halo.halo_catalog.halos_ds)
+            raise RuntimeError(f"{field} field not present in {output_file}.")
+        my_profile[field] = _hdf5_yt_array(
+            my_group, field, ds=halo.halo_catalog.halos_ds
+        )
     setattr(halo, storage, my_profile)
-    
+
     if "variance" in fh:
         my_variance = {}
         my_group = fh["variance"]
@@ -343,55 +380,67 @@ def load_profiles(halo, storage="profiles", fields=None,
             profile_fields = my_group.keys()
         for field in profile_fields:
             if field not in my_group:
-                raise RuntimeError("%s field not present in %s." % (field, output_file))
-            my_variance[field] = _hdf5_yt_array(my_group, field,
-                                                ds=halo.halo_catalog.halos_ds)
+                raise RuntimeError(f"{field} field not present in {output_file}.")
+            my_variance[field] = _hdf5_yt_array(
+                my_group, field, ds=halo.halo_catalog.halos_ds
+            )
         setattr(halo, "%s_variance" % storage, my_variance)
-        
+
     fh.close()
+
 
 add_callback("load_profiles", load_profiles)
 
-def virial_quantities(halo, fields, 
-                      overdensity_field=("gas", "overdensity"),
-                      critical_overdensity=200,
-                      profile_storage="profiles"):
+
+def virial_quantities(
+    halo,
+    fields,
+    overdensity_field=("gas", "overdensity"),
+    critical_overdensity=200,
+    profile_storage="profiles",
+):
     r"""
-    Calculate the value of the given fields at the virial radius defined at 
+    Calculate the value of the given fields at the virial radius defined at
     the given critical density by interpolating from radial profiles.
 
     Parameters
-    ----------    
+    ----------
     halo : Halo object
         The Halo object to be provided by the HaloCatalog.
     fields : string or list of strings
         The fields whose virial values are to be calculated.
     overdensity_field : string or tuple of strings
-        The field used as the overdensity from which interpolation is done to 
+        The field used as the overdensity from which interpolation is done to
         calculate virial quantities.
         Default: ("gas", "overdensity")
     critical_overdensity : float
-        The value of the overdensity at which to evaluate the virial quantities.  
+        The value of the overdensity at which to evaluate the virial quantities.
         Overdensity is with respect to the critical density.
         Default: 200
     profile_storage : string
         Name of the halo attribute that holds the profiles to be used.
         Default: "profiles"
-    
+
     """
 
-    mylog.info("Calculating virial quantities for halo %d." %
-               halo.quantities["particle_identifier"])
+    mylog.info(
+        "Calculating virial quantities for halo %d."
+        % halo.quantities["particle_identifier"]
+    )
 
-    fields = [halo.data_object._determine_fields(field)[0]
-              for field in always_iterable(fields)]
-    
+    fields = [
+        halo.data_object._determine_fields(field)[0]
+        for field in always_iterable(fields)
+    ]
+
     dds = halo.halo_catalog.data_ds
     profile_data = getattr(halo, profile_storage)
 
     if overdensity_field not in profile_data:
-      raise RuntimeError("virial_quantities callback requires profile of %s." %
-                         str(overdensity_field))
+        raise RuntimeError(
+            "virial_quantities callback requires profile of %s."
+            % str(overdensity_field)
+        )
 
     overdensity = profile_data[overdensity_field]
     dfilter = np.isfinite(overdensity) & profile_data["used"] & (overdensity > 0)
@@ -406,9 +455,13 @@ def virial_quantities(halo, fields,
         v_field = "%s_%d" % (my_field, critical_overdensity)
         if v_field not in halo.halo_catalog.quantities:
             halo.halo_catalog.quantities.append(v_field)
-    vquantities = dict([("%s_%d" % (v_fields[field], critical_overdensity),
-                         dds.quan(0, profile_data[field].units)) \
-                        for field in fields])
+    vquantities = {
+        "%s_%d"
+        % (v_fields[field], critical_overdensity): dds.quan(
+            0, profile_data[field].units
+        )
+        for field in fields
+    }
 
     if dfilter.sum() < 2:
         halo.quantities.update(vquantities)
@@ -428,28 +481,33 @@ def virial_quantities(halo, fields,
             index = 0
         else:
             halo.quantities.update(vquantities)
-            return            
+            return
     else:
         # take first instance of downward intersection with critical value
-        intersections = (vod[:-1] >= critical_overdensity) & \
-            (vod[1:] < critical_overdensity)
+        intersections = (vod[:-1] >= critical_overdensity) & (
+            vod[1:] < critical_overdensity
+        )
         if not intersections.any():
             halo.quantities.update(vquantities)
-            return            
+            return
         index = np.where(intersections)[0][0]
 
     for field in fields:
         v_prof = profile_data[field][dfilter].to_ndarray()
-        slope = np.log(v_prof[index + 1] / v_prof[index]) / \
-          np.log(vod[index + 1] / vod[index])
-        value = dds.quan(np.exp(slope * np.log(critical_overdensity / 
-                                               vod[index])) * v_prof[index],
-                         profile_data[field].units)
+        slope = np.log(v_prof[index + 1] / v_prof[index]) / np.log(
+            vod[index + 1] / vod[index]
+        )
+        value = dds.quan(
+            np.exp(slope * np.log(critical_overdensity / vod[index])) * v_prof[index],
+            profile_data[field].units,
+        )
         vquantities["%s_%d" % (v_fields[field], critical_overdensity)] = value
 
     halo.quantities.update(vquantities)
 
+
 add_callback("virial_quantities", virial_quantities)
+
 
 def phase_plot(halo, output_dir=".", phase_args=None, phase_kwargs=None):
     r"""
@@ -477,12 +535,19 @@ def phase_plot(halo, output_dir=".", phase_args=None, phase_kwargs=None):
 
     try:
         plot = PhasePlot(halo.data_object, *phase_args, **phase_kwargs)
-        plot.save(os.path.join(halo.halo_catalog.output_dir, output_dir,
-                               "halo_%06d" % halo.quantities["particle_identifier"]))
+        plot.save(
+            os.path.join(
+                halo.halo_catalog.output_dir,
+                output_dir,
+                "halo_%06d" % halo.quantities["particle_identifier"],
+            )
+        )
     except ValueError:
         return
 
+
 add_callback("phase_plot", phase_plot)
+
 
 def delete_attribute(halo, attribute):
     r"""
@@ -500,12 +565,20 @@ def delete_attribute(halo, attribute):
     if hasattr(halo, attribute):
         delattr(halo, attribute)
 
+
 add_callback("delete_attribute", delete_attribute)
 
-def iterative_center_of_mass(halo, radius_field="virial_radius",
-                             inner_ratio=0.1, outer_radius=1.0, step_ratio=0.9, units="pc"):
+
+def iterative_center_of_mass(
+    halo,
+    radius_field="virial_radius",
+    inner_ratio=0.1,
+    outer_radius=1.0,
+    step_ratio=0.9,
+    units="pc",
+):
     r"""
-    Adjust halo position by iteratively recalculating the center of mass while 
+    Adjust halo position by iteratively recalculating the center of mass while
     decreasing the radius.
 
     Parameters
@@ -516,8 +589,8 @@ def iterative_center_of_mass(halo, radius_field="virial_radius",
         The halo quantity to be used as the radius for the sphere.
         Default: "virial_radius"
     inner_ratio : float
-        The ratio of the smallest sphere radius used for calculating the center of 
-        mass to the initial radius.  The sphere radius is reduced and center of mass 
+        The ratio of the smallest sphere radius used for calculating the center of
+        mass to the initial radius.  The sphere radius is reduced and center of mass
         recalculated until the sphere has reached this size.
         Default: 0.1
     outer_radius : float
@@ -526,40 +599,51 @@ def iterative_center_of_mass(halo, radius_field="virial_radius",
         sometimes the iterative algorithm wanders into a different halo.
         Default: 1.0
     step_ratio : float
-        The multiplicative factor used to reduce the radius of the sphere after the 
+        The multiplicative factor used to reduce the radius of the sphere after the
         center of mass is calculated.
         Default: 0.9
     units : str
         The units for printing out the distance between the initial and final centers.
         Default : "pc"
-        
+
     """
     if inner_ratio <= 0.0 or inner_ratio >= 1.0:
-        raise RuntimeError("iterative_center_of_mass: inner_ratio must be between 0 and 1.")
+        raise RuntimeError(
+            "iterative_center_of_mass: inner_ratio must be between 0 and 1."
+        )
     if step_ratio <= 0.0 or step_ratio >= 1.0:
-        raise RuntimeError("iterative_center_of_mass: step_ratio must be between 0 and 1.")
+        raise RuntimeError(
+            "iterative_center_of_mass: step_ratio must be between 0 and 1."
+        )
 
-    center_orig = halo.halo_catalog.data_ds.arr([halo.quantities["particle_position_%s" % axis]
-                                                 for axis in "xyz"])
-    sphere = halo.halo_catalog.data_ds.sphere(center_orig,
-                                              outer_radius * halo.quantities[radius_field])
+    center_orig = halo.halo_catalog.data_ds.arr(
+        [halo.quantities["particle_position_%s" % axis] for axis in "xyz"]
+    )
+    sphere = halo.halo_catalog.data_ds.sphere(
+        center_orig, outer_radius * halo.quantities[radius_field]
+    )
 
     while sphere.radius > inner_ratio * halo.quantities[radius_field]:
         new_center = sphere.quantities.center_of_mass(use_gas=True, use_particles=True)
         sphere = sphere.ds.sphere(new_center, step_ratio * sphere.radius)
 
-    distance = periodic_distance(center_orig.in_units("code_length").to_ndarray(),
-                                 new_center.in_units("code_length").to_ndarray())
+    distance = periodic_distance(
+        center_orig.in_units("code_length").to_ndarray(),
+        new_center.in_units("code_length").to_ndarray(),
+    )
     distance = halo.halo_catalog.data_ds.quan(distance, "code_length")
-    mylog.info("Recentering halo %d %f %s away." %
-               (halo.quantities["particle_identifier"],
-                distance.in_units(units), units))
+    mylog.info(
+        "Recentering halo %d %f %s away."
+        % (halo.quantities["particle_identifier"], distance.in_units(units), units)
+    )
 
     for i, axis in enumerate("xyz"):
         halo.quantities["particle_position_%s" % axis] = sphere.center[i]
     del sphere
-    
+
+
 add_callback("iterative_center_of_mass", iterative_center_of_mass)
+
 
 def periodic_distance(coord1, coord2):
     """
@@ -569,11 +653,12 @@ def periodic_distance(coord1, coord2):
     """
     dif = coord1 - coord2
 
-    dim = np.ones(coord1.shape,dtype=int)
+    dim = np.ones(coord1.shape, dtype=int)
+
     def periodic_bind(num):
         pos = np.abs(num % dim)
         neg = np.abs(num % -dim)
-        return np.min([pos,neg],axis=0)
+        return np.min([pos, neg], axis=0)
 
     dif = periodic_bind(dif)
     return np.sqrt((dif * dif).sum(axis=-1))

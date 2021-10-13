@@ -84,7 +84,7 @@ int convert_particle_arrays(
     return num_particles;
 
 }
-    
+
 
 static PyObject *
 Py_EnzoHop(PyObject *obj, PyObject *args)
@@ -130,7 +130,7 @@ Py_EnzoHop(PyObject *obj, PyObject *args)
     fprintf(stderr, "failed allocating particles.\n");
     goto _fail;
   }
-  
+
  	/* Copy positions into kd structure. */
     particle_density = (PyArrayObject *)
             PyArray_SimpleNewFromDescr(1, PyArray_DIMS(xpos),
@@ -164,12 +164,12 @@ Py_EnzoHop(PyObject *obj, PyObject *args)
     // Additionally, note that we don't really need to tie the index
     // back to the ID in this code, as we can do that back in the python code.
     // All we need to do is provide density and group information.
-    
+
     // Tags (as per writetagsf77) are in gl.s->ntag+1 and there are gl.s->numlist of them.
     particle_group_id = (PyArrayObject *)
             PyArray_SimpleNewFromDescr(1, PyArray_DIMS(xpos),
                     PyArray_DescrFromType(NPY_INT32));
-    
+
     for (i = 0; i < num_particles; i++) {
       // tag is in gl.s->ntag[i+1]
       *(npy_int32*)(PyArray_GETPTR1(particle_group_id, i)) =
@@ -243,7 +243,7 @@ kDTreeType_init(kDTreeType *self, PyObject *args, PyObject *kwds)
     self->xpos=self->ypos=self->zpos=self->mass=NULL;
 
 
-    if (! PyArg_ParseTupleAndKeywords(args, kwds, "OOOO|if", kwlist, 
+    if (! PyArg_ParseTupleAndKeywords(args, kwds, "OOOO|if", kwlist,
                            &oxpos, &oypos, &ozpos, &omass,
                            &nBuckets, &normalize_to))
         return -1;  /* Should this give an error? */
@@ -375,7 +375,7 @@ kDTreeType_methods[] = {
    { "median_jst",    (PyCFunction) kDTreeType_median_jst, METH_VARARGS,
                "Use the JST Median algorithm on two points along a dimension."},
    // typically there would be more here...
-   
+
    { NULL }
 };
 
@@ -427,7 +427,7 @@ PyMODINIT_FUNC
 #define _RETVAL m
 PyInit_EnzoHop(void)
 #else
-#define _RETVAL 
+#define _RETVAL
 initEnzoHop(void)
 #endif
 {
@@ -444,7 +444,7 @@ initEnzoHop(void)
         NULL,                /* m_clear */
         NULL,                /* m_free */
     };
-    m = PyModule_Create(&moduledef); 
+    m = PyModule_Create(&moduledef);
 #else
     m = Py_InitModule("EnzoHop", _HOPMethods);
 #endif

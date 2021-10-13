@@ -5,14 +5,19 @@ HaloCatalog recipes
 
 """
 
-from yt_astro_analysis.halo_analysis.halo_catalog.analysis_operators import \
-    add_recipe
+from yt_astro_analysis.halo_analysis.halo_catalog.analysis_operators import add_recipe
 
-def calculate_virial_quantities(pipeline, fields,
-                                weight_field=None, accumulation=True,
-                                radius_field="virial_radius", factor=2.0,
-                                overdensity_field=("gas", "overdensity"),
-                                critical_overdensity=200):
+
+def calculate_virial_quantities(
+    pipeline,
+    fields,
+    weight_field=None,
+    accumulation=True,
+    radius_field="virial_radius",
+    factor=2.0,
+    overdensity_field=("gas", "overdensity"),
+    critical_overdensity=200,
+):
     r"""
     Calculate virial quantities with the following procedure:
     1. Create a sphere data container.
@@ -60,18 +65,31 @@ def calculate_virial_quantities(pipeline, fields,
 
     pipeline.add_callback("sphere", factor=factor)
     if pfields:
-        pipeline.add_callback("profile", ["radius"], pfields,
-                              weight_field=weight_field,
-                              accumulation=accumulation,
-                              storage=storage)
-    pipeline.add_callback("profile", ["radius"], [overdensity_field],
-                          weight_field="cell_volume", accumulation=True,
-                          storage=storage)
-    pipeline.add_callback("virial_quantities", fields,
-                          overdensity_field=overdensity_field,
-                          critical_overdensity=critical_overdensity,
-                          profile_storage=storage)
+        pipeline.add_callback(
+            "profile",
+            ["radius"],
+            pfields,
+            weight_field=weight_field,
+            accumulation=accumulation,
+            storage=storage,
+        )
+    pipeline.add_callback(
+        "profile",
+        ["radius"],
+        [overdensity_field],
+        weight_field="cell_volume",
+        accumulation=True,
+        storage=storage,
+    )
+    pipeline.add_callback(
+        "virial_quantities",
+        fields,
+        overdensity_field=overdensity_field,
+        critical_overdensity=critical_overdensity,
+        profile_storage=storage,
+    )
     pipeline.add_callback("delete_attribute", storage)
     pipeline.add_callback("delete_attribute", "data_object")
+
 
 add_recipe("calculate_virial_quantities", calculate_virial_quantities)

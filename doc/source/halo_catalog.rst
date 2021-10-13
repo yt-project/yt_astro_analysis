@@ -17,8 +17,9 @@ the
 
    import yt
    from yt.extensions.astro_analysis.halo_analysis import HaloCatalog
-   halos_ds = yt.load('rockstar_halos/halos_0.0.bin')
-   data_ds = yt.load('Enzo_64/RD0006/RedshiftOutput0006')
+
+   halos_ds = yt.load("rockstar_halos/halos_0.0.bin")
+   data_ds = yt.load("Enzo_64/RD0006/RedshiftOutput0006")
    hc = HaloCatalog(data_ds=data_ds, halos_ds=halos_ds)
 
 A data object can also be supplied via the keyword ``data_source``,
@@ -60,7 +61,7 @@ An example of adding a filter:
 
 .. code-block:: python
 
-   hc.add_filter('quantity_value', 'particle_mass', '>', 1E13, 'Msun')
+   hc.add_filter("quantity_value", "particle_mass", ">", 1e13, "Msun")
 
 The two available filters are
 :func:`~yt_astro_analysis.halo_analysis.halo_catalog.halo_filters.quantity_value`
@@ -83,6 +84,7 @@ An example of defining your own filter:
 
        # Return a boolean value
        return filter_value
+
 
    # Add your filter to the filter registry
    add_filter("my_filter", my_filter_function)
@@ -118,7 +120,7 @@ An example of adding a quantity:
 
 .. code-block:: python
 
-   hc.add_quantity('center_of_mass')
+   hc.add_quantity("center_of_mass")
 
 An example of defining your own quantity:
 
@@ -130,8 +132,9 @@ An example of defining your own quantity:
 
        return quantity
 
+
    # Add your filter to the filter registry
-   add_quantity('my_quantity', my_quantity_function)
+   add_quantity("my_quantity", my_quantity_function)
 
 
    # ... Later on in your script
@@ -144,6 +147,8 @@ This quantity will then be accessible for functions called later via the
 
    def my_new_function(halo):
        print(halo.quantities["my_quantity"])
+
+
    add_callback("print_quantity", my_new_function)
 
    # ... Anywhere after "my_quantity" has been called
@@ -182,8 +187,9 @@ An example of defining your own callback:
        x = 2
        halo.x_val = x
 
+
    # Add the callback to the callback registry
-   add_callback('my_callback', my_callback_function)
+   add_callback("my_callback", my_callback_function)
 
 
    # ...  Later on in your script
@@ -218,18 +224,17 @@ created in the following manner:
        # create a sphere
        halo_catalog.add_callback("sphere")
        # make profiles
-       halo_catalog.add_callback("profile", ["radius"], fields,
-                                 weight_field=weight_field)
+       halo_catalog.add_callback("profile", ["radius"], fields, weight_field=weight_field)
        # save the profile data
        halo_catalog.add_callback("save_profiles", output_dir="profiles")
+
 
    # add recipe to the registry of recipes
    add_recipe("profile_and_save", my_recipe)
 
 
    # ...  Later on in your script
-   hc.add_recipe("profile_and_save", ["density", "temperature"],
-                 weight_field="cell_mass")
+   hc.add_recipe("profile_and_save", ["density", "temperature"], weight_field="cell_mass")
 
 Note, that unlike callback, filter, and quantity functions that take a ``Halo``
 object as the first argument, recipe functions should take a ``HaloCatalog``
@@ -274,11 +279,12 @@ script and running with `mpirun`.
 .. code-block:: python
 
    import yt
+
    yt.enable_parallelism()
    from yt.extensions.astro_analysis.halo_analysis import HaloCatalog
 
-   halos_ds = yt.load('rockstar_halos/halos_0.0.bin')
-   data_ds = yt.load('Enzo_64/RD0006/RedshiftOutput0006')
+   halos_ds = yt.load("rockstar_halos/halos_0.0.bin")
+   data_ds = yt.load("Enzo_64/RD0006/RedshiftOutput0006")
    hc = HaloCatalog(data_ds=data_ds, halos_ds=halos_ds)
    hc.create(njobs="auto")
 

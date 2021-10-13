@@ -3,16 +3,16 @@
 the University of Washington Department of Astronomy as part of
 the SMOOTH program, v2.0.1.
 URL: http://www-hpcc.astro.washington.edu/tools/SMOOTH */
- 
+
 /* DJE--I have removed unneeded subroutines, notably those having
 to do with velocity field reconstructions (because they refer to
 particle data that I chose not to store) and output routines
 (because I wanted binary output).  Also, the density subroutine
 was slightly customized to reduce memory consumption in
 the case of equal mass particles. */
- 
+
 /* HOP Version 1.0 (12/15/97) -- Original Release */
- 
+
 #include <stdio.h>
 #include <stdlib.h>
 #ifdef _WIN32
@@ -26,11 +26,11 @@ the case of equal mass particles. */
 
 #define ISYM "d"
 #define GSYM "g"
- 
+
 //#include "macros_and_parameters.h"
- 
+
 #define IMARK 1		/* All particles are marked to be included */
- 
+
 int smInit(SMX *psmx,KD kd,int nSmooth,float *fPeriod)
 {
 	SMX smx;
@@ -41,7 +41,7 @@ int smInit(SMX *psmx,KD kd,int nSmooth,float *fPeriod)
 	smx = (SMX)malloc(sizeof(struct smContext));
 	assert(smx != NULL);
     smx->kd = NULL;
-    
+
 	smx->kd = kd;
 	smx->nSmooth = nSmooth;
 	smx->pq = (PQ *)malloc(nSmooth*sizeof(PQ));
@@ -67,11 +67,11 @@ int smInit(SMX *psmx,KD kd,int nSmooth,float *fPeriod)
         NP_DENS(smx->kd, pi) = 0.0;
 		smx->kd->p[pi].iHop = 0;
 		}
-	*psmx = smx;	
+	*psmx = smx;
 	return(1);
 	}
- 
- 
+
+
 void smFinish(SMX smx)
 {
 	free(smx->pfBall2);
@@ -79,8 +79,8 @@ void smFinish(SMX smx)
 	free(smx->pq);
 	free(smx);
 	}
- 
- 
+
+
 void smBallSearch(SMX smx,float fBall2,float *ri)
 {
 	KDN *c;
@@ -89,7 +89,7 @@ void smBallSearch(SMX smx,float fBall2,float *ri)
 	float fDist2,dx,dy,dz,lx,ly,lz,sx,sy,sz,x,y,z;
 	PQ *pq;
 	PQ_STATIC;
- 
+
 	c = smx->kd->kdNodes;
 	p = smx->kd->p;
 	pq = smx->pqHead;
@@ -170,15 +170,15 @@ void smBallSearch(SMX smx,float fBall2,float *ri)
 		}
 	smx->pqHead = pq;
 	}
- 
- 
+
+
 int smBallGather(SMX smx,float fBall2,float *ri)
 {
 	KDN *c;
 	PARTICLE *p;
 	int pj,nCnt,cp,nSplit;
 	float dx,dy,dz,x,y,z,lx,ly,lz,sx,sy,sz,fDist2;
- 
+
 	c = smx->kd->kdNodes;
 	p = smx->kd->p;
 	nSplit = smx->kd->nSplit;
@@ -222,8 +222,8 @@ int smBallGather(SMX smx,float fBall2,float *ri)
 	assert(nCnt <= smx->nListSize);
 	return(nCnt);
 	}
- 
- 
+
+
 void smSmooth(SMX smx,void (*fncSmooth)(SMX,int,int,int *,float *))
 {
 	KDN *c;
@@ -234,8 +234,8 @@ void smSmooth(SMX smx,void (*fncSmooth)(SMX,int,int,int *,float *))
 	int pi,pin,pj,pNext,nCnt,nSmooth;
 	float dx,dy,dz,x,y,z,h2,ax,ay,az;
     float temp_ri[3];
- 
- 
+
+
 	for (pi=0;pi<smx->kd->nActive;++pi) {
 		if (IMARK) smx->pfBall2[pi] = -1.0;
 		else smx->pfBall2[pi] = 1.0;	/* pretend it is already done! */
@@ -366,14 +366,14 @@ void smSmooth(SMX smx,void (*fncSmooth)(SMX,int,int,int *,float *))
 		(*fncSmooth)(smx,pi,nCnt,smx->pList,smx->fList);
 		}
 	}
- 
- 
+
+
 void smReSmooth(SMX smx,void (*fncSmooth)(SMX,int,int,int *,float *))
 {
 	PARTICLE *p;
 	int pi,nSmooth;
     float temp_ri[3];
- 
+
 	p = smx->kd->p;
 	for (pi=0;pi<smx->kd->nActive;++pi) {
 		if (IMARK == 0) continue;
@@ -388,13 +388,13 @@ void smReSmooth(SMX smx,void (*fncSmooth)(SMX,int,int,int *,float *))
 		(*fncSmooth)(smx,pi,nSmooth,smx->pList,smx->fList);
 		}
  	}
- 
- 
+
+
 void smDensity(SMX smx,int pi,int nSmooth,int *pList,float *fList)
 {
 	float ih2,r2,rs,fDensity;
 	int i,pj;
- 
+
 	ih2 = 4.0/smx->pfBall2[pi];
 	fDensity = 0.0;
 	for (i=0;i<nSmooth;++i) {
@@ -411,13 +411,13 @@ void smDensity(SMX smx,int pi,int nSmooth,int *pList,float *fList)
 		}
     NP_DENS(smx->kd, pi) = M_1_PI*sqrt(ih2)*ih2*fDensity;
 	}
- 
- 
+
+
 void smDensitySym(SMX smx,int pi,int nSmooth,int *pList,float *fList)
 {
 	float fNorm,ih2,r2,rs;
 	int i,pj;
- 
+
 	ih2 = 4.0/smx->pfBall2[pi];
 	fNorm = 0.5*M_1_PI*sqrt(ih2)*ih2;
 	for (i=0;i<nSmooth;++i) {
@@ -436,11 +436,11 @@ void smDensitySym(SMX smx,int pi,int nSmooth,int *pList,float *fList)
 #endif
 		}
 	}
- 
+
 /* I'm not using the following function, but I left it here in case someone
 wants the densities outputted in Tipsy format.  But you're probably better
 off just fetching the smooth() program from the HPCC web site... */
- 
+
 void smOutDensity(SMX smx,FILE *fp)
 {
   int i,iCnt;
@@ -475,5 +475,3 @@ void smOutDensity(SMX smx,FILE *fp)
     else fprintf(fp,"0\n");
   }
 }
-
-
