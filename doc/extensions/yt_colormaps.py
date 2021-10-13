@@ -33,7 +33,6 @@ class ColormapScript(Directive):
         rst_dir = os.path.abspath(os.path.dirname(rst_file))
         script_fn = directives.path(self.arguments[0])
         script_bn = os.path.basename(script_fn)
-        script_name = os.path.basename(self.arguments[0]).split(".")[0]
 
         # This magic is from matplotlib
         dest_dir = os.path.abspath(
