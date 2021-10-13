@@ -144,6 +144,11 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
     particle_type : str
         This is the "particle type" that can be found in the data.  This can be
         a filtered particle or an inherent type.
+    mass_field : optional, str
+        The field to be used for the particle masses. The sampled field will be
+        (<particle_type>, <mass_field>). This can be used to provide alternative
+        particle masses for halo finding.
+        Default: "particle_mass"
     star_types : str list/array
         The types (as returned by data((particle_type, particle_type)) to be
         recognized as star particles.
@@ -178,11 +183,14 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
         change and this will save some disk access time. If left unspecified,
         it will be calculated automatically. Default: ``None``.
     particle_mass : optional, None, float, tuple, or :class:`~unyt.array.unyt_quantity`
-        If supplied, use this as the mass of all particles supplied to rockstar.
-        If None, particle masses are read from the dataset. If a float, units
+        If supplied, this mass will be used to calculate the average particle
+        spacing used in the friend-of-friends algorithm. The particle spacing
+        will be (particle_mass / omega_matter * rho_cr)^1/3. If None, the mass
+        is set as the minimum of all particles to be read. If a float, units
         are assumed to be in Msun/h. If a tuple, the format is assume to be
         (<value>, <units>). If a :class:`~unyt.array.unyt_quantity`, it must
-        be convertible to units of Msun/h.
+        be convertible to units of Msun/h. To modify the masses of particles
+        used for halo finding, see the mass_field keyword.
         Default: ``None``.
     restart : optional, bool
         Set to True to have rockstar restart from the first uncompleted
@@ -210,10 +218,10 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
 
     """
     def __init__(self, ts, num_readers = 1, num_writers = None,
-                 outbase="rockstar_halos", particle_type="all", star_types=None,
-                 force_res=None, initial_metric_scaling=1.0, non_dm_metric_scaling=10.0,
+                 outbase="rockstar_halos", particle_type="all", mass_field="particle_mass",
+                 star_types=None, force_res=None, initial_metric_scaling=1.0, non_dm_metric_scaling=10.0,
                  suppress_galaxies=1, total_particles=None, dm_only=False, particle_mass=None,
-                 mass_field="particle_mass", min_halo_size=25, restart=False):
+                 min_halo_size=25, restart=False):
 
         if is_root():
             mylog.info("The citation for the Rockstar halo finder can be found at")
