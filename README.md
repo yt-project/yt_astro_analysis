@@ -1,15 +1,19 @@
 # The yt Astro Analysis Extension
 
-[![Users' Mailing List](https://img.shields.io/badge/Users-List-lightgrey.svg)](https://mail.python.org/archives/list/yt-users@python.org//)
-[![Devel Mailing List](https://img.shields.io/badge/Devel-List-lightgrey.svg)](https://mail.python.org/archives/list/yt-dev@python.org//)
-[![CircleCI](https://circleci.com/gh/yt-project/yt_astro_analysis.svg?style=svg)](https://circleci.com/gh/yt-project/yt_astro_analysis)
-[![codecov](https://codecov.io/gh/yt-project/yt_astro_analysis/branch/main/graph/badge.svg)](https://codecov.io/gh/yt-project/yt_astro_analysis)
-[![Documentation Status](https://readthedocs.org/projects/yt-astro-analysis/badge/?version=latest)](https://yt-astro-analysis.readthedocs.io/en/latest/?badge=latest)
+
 [![PyPI version](https://badge.fury.io/py/yt-astro-analysis.svg)](https://badge.fury.io/py/yt-astro-analysis)
 [![Conda Version](https://img.shields.io/conda/vn/conda-forge/yt_astro_analysis.svg)](https://anaconda.org/conda-forge/yt_astro_analysis)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1458961.svg)](https://doi.org/10.5281/zenodo.1458961)
-[![Data Hub](https://img.shields.io/badge/data-hub-orange.svg)](https://hub.yt/)
 [![Powered by NumFOCUS](https://img.shields.io/badge/powered%20by-NumFOCUS-orange.svg?style=flat&colorA=E1523D&colorB=007D8A)](https://numfocus.org)
+
+[![CircleCI](https://circleci.com/gh/yt-project/yt_astro_analysis.svg?style=svg)](https://circleci.com/gh/yt-project/yt_astro_analysis)
+[![codecov](https://codecov.io/gh/yt-project/yt_astro_analysis/branch/main/graph/badge.svg)](https://codecov.io/gh/yt-project/yt_astro_analysis)
+[![Documentation Status](https://readthedocs.org/projects/yt-astro-analysis/badge/?version=latest)](https://yt-astro-analysis.readthedocs.io/en/latest/?badge=latest)
+[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/yt-project/yt_astro_analysis/main.svg)](https://results.pre-commit.ci/latest/github/yt-project/yt_astro_analysis/main)
+
+[![yt-project](https://img.shields.io/static/v1?label="works%20with"&message="yt"&color="blueviolet")](https://yt-project.org)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
 
 This is yt_astro_analysis, the [yt](https://github.com/yt-project/yt) extension
 package for astrophysical analysis.  This is primarily machinery that used to be
