@@ -1,0 +1,33 @@
+[build-system]
+requires = [
+  "setuptools >= 19.6",
+  "wheel >= 0.36.2",
+  "Cython >= 0.29.21, < 3.0",
+  "oldest-supported-numpy",
+]
+
+[tool.black]
+line-length = 88
+target-version = [
+  'py36',
+  'py37',
+  'py38',
+]
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | build
+  | dist
+)/
+'''
+
+[tool.isort]
+profile = "black"
+combine_as_imports = true
