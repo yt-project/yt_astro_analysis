@@ -48,9 +48,7 @@ class PythonScriptDirective(Directive):
 
         start = time.time()
         subprocess.call(["python", "temp.py"])
-        print(
-            ">> The execution of the script %s took %f s" % (uid, time.time() - start)
-        )
+        print(f">> The execution of the script {uid} took {time.time() - start:f} s")
         text = ""
         for im in sorted(glob.glob("*.png")):
             text += get_image_tag(im, image_dir, image_rel_dir)

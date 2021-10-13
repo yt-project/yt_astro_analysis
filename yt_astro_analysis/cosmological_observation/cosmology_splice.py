@@ -389,7 +389,7 @@ class CosmologySplice:
             if iteration > max_Iterations:
                 mylog.error(
                     "deltaz_forward: Warning - max iterations "
-                    + "exceeded for z = %f (delta z = %f)." % (z, np.abs(z2 - z))
+                    + f"exceeded for z = {z:f} (delta z = {np.abs(z2 - z):f})."
                 )
                 break
         return np.abs(z2 - z)
