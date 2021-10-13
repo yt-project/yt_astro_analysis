@@ -1,10 +1,15 @@
+import os
+import sys
+
 import numpy as np
-import os, sys
-cimport numpy as np
+
 cimport cython
+cimport numpy as np
 from cython cimport floating
+
 #from cpython.mem cimport PyMem_Malloc
-from libc.stdlib cimport malloc, free
+from libc.stdlib cimport free, malloc
+
 import sys
 
 # Importing relevant rockstar data types particle, fof halo, halo
@@ -189,7 +194,7 @@ cdef import from "config_vars.h":
 
 
 cdef class RockstarGroupiesInterface:
-    
+
     cdef public object ds
     cdef public object fof
 
@@ -217,7 +222,7 @@ cdef class RockstarGroupiesInterface:
             FORCE_RES=np.float64(force_res)
 
         OVERLAP_LENGTH = 0.0
-        
+
         # Set to 0.0 if you plan on calculating spherical overdensity masses.
         # Otherwise filtering of halos in rockstar meta_io.c _should_print
         # will filter the wrong halos when halo mass is re-calculated before
@@ -225,24 +230,24 @@ cdef class RockstarGroupiesInterface:
         global UNBOUND_THRESHOLD
         if unbound_threshold is not None:
             UNBOUND_THRESHOLD = unbound_threshold
-        
+
         FILENAME = "inline.<block>"
         FILE_FORMAT = "GENERIC"
         OUTPUT_FORMAT = "BOTH"
         MIN_HALO_OUTPUT_SIZE=min_halo_size
-        
+
         ds = self.ds
 
         h0 = ds.hubble_constant
         Ol = ds.omega_lambda
         Om = ds.omega_matter
-        
+
         SCALE_NOW = 1.0/(ds.current_redshift+1.0)
-        
+
         if not outbase =='None'.decode('UTF-8'):
             #output directory. since we can't change the output filenames
             #workaround is to make a new directory
-            OUTBASE = outbase 
+            OUTBASE = outbase
 
         PARTICLE_MASS = particle_mass.in_units('Msun/h')
         PERIODIC = periodic
@@ -341,15 +346,15 @@ cdef class RockstarGroupiesInterface:
         cdef float bounds[6]
         if idoffset is None: idoffset = 0
         if bbox is None:
-            output_halos(idoffset, 0, 0, NULL) 
+            output_halos(idoffset, 0, 0, NULL)
         else:
             for i in range(3):
                 bounds[i] = bbox[i,0]
                 bounds[i+3] = bbox[i,1]
-            output_halos(idoffset, 0, 0, bounds) 
+            output_halos(idoffset, 0, 0, bounds)
 
     def output_config(self):
-        output_config(NULL) 
+        output_config(NULL)
 
     def return_halos(self):
         cdef haloflat[:] haloview = <haloflat[:num_halos]> (<haloflat*> halos)
@@ -399,7 +404,7 @@ cdef class RockstarGroupiesInterface:
         fof_obj.particles = <particle*> malloc(max_count * sizeof(particle))
         j = 0
         cdef int counter = 0, ndone = 0
-        cdef np.ndarray[np.int64_t, ndim=1] pcounts 
+        cdef np.ndarray[np.int64_t, ndim=1] pcounts
         pcounts = np.zeros(np.unique(fof_tags).size, dtype="int64")
         cdef np.int64_t frac = <np.int64_t> (pcounts.shape[0] / 20.0)
         free_halos()

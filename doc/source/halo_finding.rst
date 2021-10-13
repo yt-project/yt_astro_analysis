@@ -35,8 +35,8 @@ used.
    import yt
    from yt.extensions.astro_analysis.halo_analysis import HaloCatalog
 
-   data_ds = yt.load('Enzo_64/RD0006/RedshiftOutput0006')
-   hc = HaloCatalog(data_ds=data_ds, finder_method='hop')
+   data_ds = yt.load("Enzo_64/RD0006/RedshiftOutput0006")
+   hc = HaloCatalog(data_ds=data_ds, finder_method="hop")
    hc.create()
 
 .. _halo_finding_time_series:
@@ -58,9 +58,9 @@ Rockstar in this way.
    import yt
    from yt.extensions.astro_analysis.halo_analysis import HaloCatalog
 
-   my_sim = yt.load_simulation('enzo_tiny_cosmology/32Mpc_32.enzo', 'Enzo')
+   my_sim = yt.load_simulation("enzo_tiny_cosmology/32Mpc_32.enzo", "Enzo")
    my_sim.get_time_series()
-   hc = HaloCatalog(data_ds=my_sim, finder_method='hop')
+   hc = HaloCatalog(data_ds=my_sim, finder_method="hop")
    hc.create()
 
 Halo Finder Options
@@ -76,10 +76,12 @@ of a dictionary using the ``finder_kwargs`` keyword.
    import yt
    from yt.extensions.astro_analysis.halo_analysis import HaloCatalog
 
-   data_ds = yt.load('Enzo_64/RD0006/RedshiftOutput0006')
-   hc = HaloCatalog(data_ds=data_ds, finder_method='fof',
-                    finder_kwargs={"ptype": "stars",
-                                   "padding": 0.02})
+   data_ds = yt.load("Enzo_64/RD0006/RedshiftOutput0006")
+   hc = HaloCatalog(
+       data_ds=data_ds,
+       finder_method="fof",
+       finder_kwargs={"ptype": "stars", "padding": 0.02},
+   )
    hc.create()
 
 For a full list of options for each halo finder, see:
@@ -166,13 +168,17 @@ processors. Rockstar processes are divided into three groups:
 .. code-block:: python
 
    import yt
+
    yt.enable_parallelism()
    from yt.extensions.astro_analysis.halo_analysis import HaloCatalog
 
-   my_sim = yt.load_simulation('enzo_tiny_cosmology/32Mpc_32.enzo', 'Enzo')
+   my_sim = yt.load_simulation("enzo_tiny_cosmology/32Mpc_32.enzo", "Enzo")
    my_sim.get_time_series()
-   hc = HaloCatalog(data_ds=my_sim, finder_method='rockstar',
-                    finder_kwargs={"num_readers": 1, "num_writers": 1})
+   hc = HaloCatalog(
+       data_ds=my_sim,
+       finder_method="rockstar",
+       finder_kwargs={"num_readers": 1, "num_writers": 1},
+   )
    hc.create()
 
 .. warning:: Running Rockstar from yt on multiple compute nodes
@@ -207,13 +213,16 @@ needs to provided to `mpirun` (e.g., `mpirun -np 8` to run on 8 processors).
 .. code-block:: python
 
    import yt
+
    yt.enable_parallelism()
    from yt.extensions.astro_analysis.halo_analysis import HaloCatalog
 
-   data_ds = yt.load('Enzo_64/RD0006/RedshiftOutput0006')
-   hc = HaloCatalog(data_ds=data_ds, finder_method='fof',
-                    finder_kwargs={"ptype": "stars",
-                                   "padding": 0.02})
+   data_ds = yt.load("Enzo_64/RD0006/RedshiftOutput0006")
+   hc = HaloCatalog(
+       data_ds=data_ds,
+       finder_method="fof",
+       finder_kwargs={"ptype": "stars", "padding": 0.02},
+   )
    hc.create()
 
 For more information on running ``yt`` in parallel, see

@@ -13,7 +13,7 @@ the particle data from the HDF5 datasets. newhop uses plain HDF5 C++ calls
 to extract the data, which is then fed into the hop mechanism. As far as I
 know, this version is fine with 64 bit integers/floats, which enzohop isn't.
 
-There are a few versions of newhop which build on datastar just fine. I 
+There are a few versions of newhop which build on datastar just fine. I
 haven't tested it on other machines. The default build 'newhop' is for
 packed datasets and will include both stars and dm in the grouping.
 THe other versions are for non-packed datasets, or if you want to only

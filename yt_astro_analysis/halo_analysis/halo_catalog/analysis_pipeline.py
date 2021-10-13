@@ -7,14 +7,14 @@ AnalysisPipeline class and member functions
 
 import os
 
-from yt.funcs import \
-    ensure_dir
+from yt.funcs import ensure_dir
+from yt_astro_analysis.halo_analysis.halo_catalog.analysis_operators import (
+    callback_registry,
+    filter_registry,
+    quantity_registry,
+    recipe_registry,
+)
 
-from yt_astro_analysis.halo_analysis.halo_catalog.analysis_operators import \
-     callback_registry, \
-     filter_registry, \
-     quantity_registry, \
-     recipe_registry
 
 class AnalysisPipeline:
     def __init__(self, output_dir=None):
@@ -57,13 +57,14 @@ class AnalysisPipeline:
         "Create callback output directories."
 
         for action_type, action in self.actions:
-            if action_type != 'callback':
+            if action_type != "callback":
                 continue
-            my_output_dir = action.kwargs.get('output_dir')
+            my_output_dir = action.kwargs.get("output_dir")
             if my_output_dir is not None:
                 new_output_dir = ensure_dir(
-                    os.path.join(self.output_dir, my_output_dir))
-                action.kwargs['output_dir'] = new_output_dir
+                    os.path.join(self.output_dir, my_output_dir)
+                )
+                action.kwargs["output_dir"] = new_output_dir
 
     def _process_target(self, target):
         target_filter = True
@@ -81,7 +82,6 @@ class AnalysisPipeline:
                 else:
                     target._set_field_value(key, quantity)
             else:
-                raise RuntimeError(
-                    "Action must be a callback, filter, or quantity.")
+                raise RuntimeError("Action must be a callback, filter, or quantity.")
 
         return target_filter

@@ -1,8 +1,12 @@
 import numpy as np
-cimport numpy as np
+
 cimport cython
+cimport numpy as np
+
 from yt.utilities.physical_constants import kboltz
+
 from libc.math cimport exp, sqrt
+
 
 cdef double kb = kboltz.v
 cdef double pi = np.pi
@@ -26,5 +30,5 @@ def compute_weight(np.uint8_t thermal_broad,
     for i in range(n):
         v2_th = 2.*kb*T[i]/m_part
         w[i] = dv*exp(-v[i]*v[i]/v2_th)/sqrt(v2_th*pi)
-                
+
     return w

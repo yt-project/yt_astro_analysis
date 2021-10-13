@@ -2,39 +2,40 @@
 Unit test for the RADMC3D Exporter analysis module
 """
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Copyright (c) 2014, yt Development Team.
 #
 # Distributed under the terms of the Modified BSD License.
 #
 # The full license is in the file COPYING.txt, distributed with this software.
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+
+import os
+import shutil
+import tempfile
+
+import numpy as np
 
 import yt
 from yt.testing import assert_allclose
+from yt.utilities.answer_testing.framework import AnswerTestingTest, requires_ds
 from yt_astro_analysis.radmc3d_export.api import RadMC3DWriter
-from yt.utilities.answer_testing.framework import \
-    AnswerTestingTest, \
-    requires_ds
-import tempfile
-import numpy as np
-import os
-import shutil
 
 
 class RadMC3DValuesTest(AnswerTestingTest):
-    '''
+    """
 
-    This test writes out a "dust_density.inp" file, 
-    reads it back in, and checks the sum of the 
+    This test writes out a "dust_density.inp" file,
+    reads it back in, and checks the sum of the
     values for degradation.
 
-    '''
+    """
+
     _type_name = "RadMC3DValuesTest"
-    _attrs = ("field", )
+    _attrs = ("field",)
 
     def __init__(self, ds_fn, field, decimals=10):
-        super(RadMC3DValuesTest, self).__init__(ds_fn)
+        super().__init__(ds_fn)
         self.field = field
         self.decimals = decimals
 
@@ -52,7 +53,7 @@ class RadMC3DValuesTest(AnswerTestingTest):
 
         # compute the sum of the values in the resulting file
         total = 0.0
-        with open('dust_density.inp', 'r') as f:
+        with open("dust_density.inp") as f:
             for i, line in enumerate(f):
 
                 # skip header
@@ -69,11 +70,18 @@ class RadMC3DValuesTest(AnswerTestingTest):
         return total
 
     def compare(self, new_result, old_result):
-        err_msg = "Total value for %s not equal." % (self.field,)
-        assert_allclose(new_result, old_result, 10.**(-self.decimals),
-                        err_msg=err_msg, verbose=True)
+        err_msg = f"Total value for {self.field} not equal."
+        assert_allclose(
+            new_result,
+            old_result,
+            10.0 ** (-self.decimals),
+            err_msg=err_msg,
+            verbose=True,
+        )
+
 
 etiny = "enzo_tiny_cosmology/DD0046/DD0046"
+
 
 @requires_ds(etiny)
 def test_radmc3d_exporter_continuum():
@@ -87,9 +95,15 @@ def test_radmc3d_exporter_continuum():
 
     # Make up a dust density field where dust density is 1% of gas density
     dust_to_gas = 0.01
+
     def _DustDensity(field, data):
         return dust_to_gas * data["density"]
-    ds.add_field(("gas", "dust_density"), function=_DustDensity,
-                 sampling_type="cell", units="g/cm**3")
+
+    ds.add_field(
+        ("gas", "dust_density"),
+        function=_DustDensity,
+        sampling_type="cell",
+        units="g/cm**3",
+    )
 
     yield RadMC3DValuesTest(ds, ("gas", "dust_density"))

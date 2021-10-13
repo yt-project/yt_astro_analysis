@@ -3,17 +3,17 @@
 the University of Washington Department of Astronomy as part of
 the SMOOTH program, v2.0.1.
 URL: http://www-hpcc.astro.washington.edu/tools/SMOOTH */
- 
+
 /* DJE--I have removed all the subroutines not used by HOP, notably
 the input and output routines. */
- 
+
 /* HOP Version 1.0 (12/15/97) -- Original Release */
- 
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #ifdef _WIN32
-#include <windows.h> 
+#include <windows.h>
 #else
 #include <sys/time.h>
 #include <sys/resource.h>
@@ -23,11 +23,11 @@ the input and output routines. */
 #include "hop_numpy.h"
 //#include "macros_and_parameters.h"
 /* #include "tipsydefs.h" */ /* Don't need this, since I removed kdReadTipsy()*/
- 
- 
+
+
 #define MAX_ROOT_ITTR	32
- 
- 
+
+
 void kdTime(KD kd,int *puSecond,int *puMicro)
 {
 
@@ -36,7 +36,7 @@ void kdTime(KD kd,int *puSecond,int *puMicro)
         HANDLE hProcess = GetCurrentProcess();
 	FILETIME ftCreation, ftExit, ftKernel, ftUser;
 	SYSTEMTIME stUser;
-	GetProcessTimes(hProcess, &ftCreation, &ftExit, 
+	GetProcessTimes(hProcess, &ftCreation, &ftExit,
 			&ftKernel, &ftUser);
 	FileTimeToSystemTime(&ftUser, &stUser);
 	secs = (int)((double)stUser.wHour*3600.0 +
@@ -53,7 +53,7 @@ void kdTime(KD kd,int *puSecond,int *puMicro)
 	kd->uMicro = usecs;
 #else
 	struct rusage ru;
- 
+
 	getrusage(0,&ru);
 	*puMicro = ru.ru_utime.tv_usec - kd->uMicro;
 	*puSecond = ru.ru_utime.tv_sec - kd->uSecond;
@@ -69,7 +69,7 @@ void kdTime(KD kd,int *puSecond,int *puMicro)
 int kdInit(KD *pkd,int nBucket)
 {
 	KD kd;
- 
+
 	kd = (KD)malloc(sizeof(struct kdContext));
 	assert(kd != NULL);
 	kd->nBucket = nBucket;
@@ -77,7 +77,7 @@ int kdInit(KD *pkd,int nBucket)
 	*pkd = kd;
 	return(1);
 	}
- 
+
 /*
  ** JST's Median Algorithm
  */
@@ -86,7 +86,7 @@ int kdMedianJst(KD kd,int d,int l,int u)
 	npy_float64 fm;
     int i,k,m;
     PARTICLE *p,t;
- 
+
 	p = kd->p;
     k = (l+u)/2;
 	m = k;
@@ -118,12 +118,12 @@ int kdMedianJst(KD kd,int d,int l,int u)
         }
     return(m);
     }
- 
- 
+
+
 void kdCombine(KDN *p1,KDN *p2,KDN *pOut)
 {
 	int j;
- 
+
 	/*
 	 ** Combine the bounds.
 	 */
@@ -138,13 +138,13 @@ void kdCombine(KDN *p1,KDN *p2,KDN *pOut)
 			pOut->bnd.fMax[j] = p1->bnd.fMax[j];
 		}
 	}
- 
- 
+
+
 void kdUpPass(KD kd,int iCell)
 {
 	KDN *c;
 	int l,u,pj,j;
- 
+
 	c = kd->kdNodes;
 	if (c[iCell].iDim != -1) {
 		l = LOWER(iCell);
@@ -170,12 +170,12 @@ void kdUpPass(KD kd,int iCell)
 			}
 		}
 	}
- 
+
 int kdBuildTree(KD kd)
 {
 	int l,n,i,d,m,j,ct;
 	KDN *c;
- 
+
 	n = kd->nActive;
 	kd->nLevels = 1;
 	l = 1;
@@ -227,25 +227,24 @@ int kdBuildTree(KD kd)
 	kdUpPass(kd,ROOT);
 	return(1);
 	}
- 
- 
+
+
 int cmpParticles(const void *v1,const void *v2)
 {
 	PARTICLE *p1=(PARTICLE *)v1,*p2=(PARTICLE *)v2;
-	
+
 	return(p1->iOrder - p2->iOrder);
 	}
- 
- 
+
+
 void kdOrder(KD kd)
 {
 	qsort(kd->p,kd->nActive,sizeof(PARTICLE),cmpParticles);
 	}
- 
+
 void kdFinish(KD kd)
 {
 	if(kd->p!=NULL)free(kd->p);
 	if(kd->kdNodes!=NULL)free(kd->kdNodes);
 	free(kd);
 	}
- 

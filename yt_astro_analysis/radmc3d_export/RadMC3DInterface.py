@@ -5,28 +5,29 @@ Code to export from yt to RadMC3D
 
 """
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Copyright (c) 2013, yt Development Team.
 #
 # Distributed under the terms of the Modified BSD License.
 #
 # The full license is in the file COPYING.txt, distributed with this software.
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 import numpy as np
-from yt.utilities.lib.write_array import \
-    write_3D_array, write_3D_vector_array
+
+from yt.utilities.lib.write_array import write_3D_array, write_3D_vector_array
 
 
 class RadMC3DLayer:
-    '''
+    """
 
     This class represents an AMR "layer" of the style described in
     the radmc3d manual. Unlike yt grids, layers may not have more
     than one parent, so level L grids will need to be split up
     if they straddle two or more level L - 1 grids.
 
-    '''
+    """
+
     def __init__(self, level, parent, unique_id, LE, RE, dim):
         self.level = level
         self.parent = parent
@@ -36,23 +37,23 @@ class RadMC3DLayer:
         self.id = unique_id
 
     def get_overlap_with(self, grid):
-        '''
+        """
 
         Returns the overlapping region between two Layers,
         or a layer and a grid. RE < LE means in any direction
         means no overlap.
 
-        '''
-        LE = np.maximum(self.LeftEdge,  grid.LeftEdge)
+        """
+        LE = np.maximum(self.LeftEdge, grid.LeftEdge)
         RE = np.minimum(self.RightEdge, grid.RightEdge)
         return LE, RE
 
     def overlaps(self, grid):
-        '''
+        """
 
         Returns whether or not this layer overlaps a given grid
 
-        '''
+        """
         LE, RE = self.get_overlap_with(grid)
         if np.any(RE <= LE):
             return False
@@ -61,7 +62,7 @@ class RadMC3DLayer:
 
 
 class RadMC3DWriter:
-    '''
+    """
 
     This class provides a mechanism for writing out data files in a format
     readable by radmc3d. Currently, only the ASCII, "Layer" style file format
@@ -125,7 +126,7 @@ class RadMC3DWriter:
     >>> velocity_fields = ["velocity_x", "velocity_y", "velocity_z"]
     >>> writer.write_line_file(velocity_fields, "gas_velocity.inp")
 
-    '''
+    """
 
     def __init__(self, ds, max_level=2):
         self.max_level = max_level
@@ -137,10 +138,14 @@ class RadMC3DWriter:
         self.grid_filename = "amr_grid.inp"
         self.ds = ds
 
-        base_layer = RadMC3DLayer(0, None, 0,
-                                  self.domain_left_edge,
-                                  self.domain_right_edge,
-                                  self.domain_dimensions)
+        base_layer = RadMC3DLayer(
+            0,
+            None,
+            0,
+            self.domain_left_edge,
+            self.domain_right_edge,
+            self.domain_dimensions,
+        )
 
         self.layers.append(base_layer)
         self.cell_count += np.product(ds.domain_dimensions)
@@ -164,79 +169,77 @@ class RadMC3DWriter:
             LE, RE = parent.get_overlap_with(grid)
             N = (RE - LE) / grid.dds
             N = np.array([int(n + 0.5) for n in N])
-            new_layer = RadMC3DLayer(grid.Level, parent.id,
-                                     len(self.layers),
-                                     LE, RE, N)
+            new_layer = RadMC3DLayer(grid.Level, parent.id, len(self.layers), LE, RE, N)
             self.layers.append(new_layer)
             self.cell_count += np.product(N)
 
     def write_amr_grid(self):
-        '''
+        """
         This routine writes the "amr_grid.inp" file that describes the mesh
         radmc3d will use.
 
-        '''
+        """
         dims = self.domain_dimensions
         LE = self.domain_left_edge
         RE = self.domain_right_edge
 
         # RadMC-3D wants the cell wall positions in cgs. Convert here:
-        LE_cgs = LE.in_units('cm').d  # don't write the units, though
-        RE_cgs = RE.in_units('cm').d
+        LE_cgs = LE.in_units("cm").d  # don't write the units, though
+        RE_cgs = RE.in_units("cm").d
 
         # calculate cell wall positions
-        xs = [str(x) for x in np.linspace(LE_cgs[0], RE_cgs[0], dims[0]+1)]
-        ys = [str(y) for y in np.linspace(LE_cgs[1], RE_cgs[1], dims[1]+1)]
-        zs = [str(z) for z in np.linspace(LE_cgs[2], RE_cgs[2], dims[2]+1)]
+        xs = [str(x) for x in np.linspace(LE_cgs[0], RE_cgs[0], dims[0] + 1)]
+        ys = [str(y) for y in np.linspace(LE_cgs[1], RE_cgs[1], dims[1] + 1)]
+        zs = [str(z) for z in np.linspace(LE_cgs[2], RE_cgs[2], dims[2] + 1)]
 
         # writer file header
-        grid_file = open(self.grid_filename, 'w')
-        grid_file.write('1 \n')  # iformat is always 1
+        grid_file = open(self.grid_filename, "w")
+        grid_file.write("1 \n")  # iformat is always 1
         if self.max_level == 0:
-            grid_file.write('0 \n')
+            grid_file.write("0 \n")
         else:
-            grid_file.write('10 \n')  # only layer-style files are supported
-        grid_file.write('1 \n')  # only cartesian coordinates are supported
-        grid_file.write('0 \n')
-        grid_file.write('{}    {}    {} \n'.format(1, 1, 1))  # assume 3D
-        grid_file.write('{}    {}    {} \n'.format(dims[0], dims[1], dims[2]))
+            grid_file.write("10 \n")  # only layer-style files are supported
+        grid_file.write("1 \n")  # only cartesian coordinates are supported
+        grid_file.write("0 \n")
+        grid_file.write(f"{1}    {1}    {1} \n")  # assume 3D
+        grid_file.write(f"{dims[0]}    {dims[1]}    {dims[2]} \n")
         if self.max_level != 0:
-            s = str(self.max_level) + '    ' + str(len(self.layers)-1) + '\n'
+            s = str(self.max_level) + "    " + str(len(self.layers) - 1) + "\n"
             grid_file.write(s)
 
         # write base grid cell wall positions
         for x in xs:
-            grid_file.write(x + '    ')
-        grid_file.write('\n')
+            grid_file.write(x + "    ")
+        grid_file.write("\n")
 
         for y in ys:
-            grid_file.write(y + '    ')
-        grid_file.write('\n')
+            grid_file.write(y + "    ")
+        grid_file.write("\n")
 
         for z in zs:
-            grid_file.write(z + '    ')
-        grid_file.write('\n')
+            grid_file.write(z + "    ")
+        grid_file.write("\n")
 
         # write information about fine layers, skipping the base layer:
         for layer in self.layers[1:]:
             p = layer.parent
             dds = (layer.RightEdge - layer.LeftEdge) / (layer.ActiveDimensions)
             if p == 0:
-                ind = (layer.LeftEdge - LE) / (2.0*dds) + 1
+                ind = (layer.LeftEdge - LE) / (2.0 * dds) + 1
             else:
                 parent_LE = np.zeros(3)
                 for potential_parent in self.layers:
                     if potential_parent.id == p:
                         parent_LE = potential_parent.LeftEdge
-                ind = (layer.LeftEdge - parent_LE) / (2.0*dds) + 1
-            ix = int(ind[0]+0.5)
-            iy = int(ind[1]+0.5)
-            iz = int(ind[2]+0.5)
+                ind = (layer.LeftEdge - parent_LE) / (2.0 * dds) + 1
+            ix = int(ind[0] + 0.5)
+            iy = int(ind[1] + 0.5)
+            iz = int(ind[2] + 0.5)
             nx, ny, nz = layer.ActiveDimensions / 2
             nx = int(nx)
             ny = int(ny)
             nz = int(nz)
-            s = '{}    {}    {}    {}    {}    {}    {} \n'
+            s = "{}    {}    {}    {}    {}    {}    {} \n"
             s = s.format(p, ix, iy, iz, nx, ny, nz)
             grid_file.write(s)
 
@@ -254,7 +257,7 @@ class RadMC3DWriter:
             write_3D_array(data, fhandle)
 
     def write_dust_file(self, field, filename):
-        '''
+        """
         This method writes out fields in the format radmc3d needs to compute
         thermal dust emission. In particular, if you have a field called
         "DustDensity", you can write out a dust_density.inp file.
@@ -269,13 +272,13 @@ class RadMC3DWriter:
             expects for its various modes of operations are described in the
             radmc3d manual.
 
-        '''
-        fhandle = open(filename, 'w')
+        """
+        fhandle = open(filename, "w")
 
         # write header
-        fhandle.write('1 \n')
-        fhandle.write(str(self.cell_count) + ' \n')
-        fhandle.write('1 \n')
+        fhandle.write("1 \n")
+        fhandle.write(str(self.cell_count) + " \n")
+        fhandle.write("1 \n")
 
         # now write fine layers:
         for layer in self.layers:
@@ -292,7 +295,7 @@ class RadMC3DWriter:
         fhandle.close()
 
     def write_line_file(self, field, filename):
-        '''
+        """
         This method writes out fields in the format radmc3d needs to compute
         line emission.
 
@@ -307,12 +310,12 @@ class RadMC3DWriter:
             expects for its various modes of operation are described in the
             radmc3d manual.
 
-        '''
-        fhandle = open(filename, 'w')
+        """
+        fhandle = open(filename, "w")
 
         # write header
-        fhandle.write('1 \n')
-        fhandle.write(str(self.cell_count) + ' \n')
+        fhandle.write("1 \n")
+        fhandle.write(str(self.cell_count) + " \n")
 
         # now write fine layers:
         for layer in self.layers:
@@ -329,7 +332,7 @@ class RadMC3DWriter:
         fhandle.close()
 
     def write_source_files(self, sources, wavelengths):
-        '''
+        """
 
         This function creates the stars.inp and wavelength_micron.inp
         files that RadMC3D uses for its dust continuum calculations.
@@ -344,59 +347,60 @@ class RadMC3DWriter:
             An array listing the wavelength points you would like to
             use the radiative transfer calculation
 
-        '''
+        """
 
         nstars = len(sources)
         nlam = len(wavelengths)
 
-        filename = 'stars.inp'
-        fhandle = open(filename, 'w')
+        filename = "stars.inp"
+        fhandle = open(filename, "w")
 
         # write header
-        fhandle.write('2 \n')  # a format flag that should always be 2
-        fhandle.write('%d    %d \n' % (nstars, nlam))
+        fhandle.write("2 \n")  # a format flag that should always be 2
+        fhandle.write("%d    %d \n" % (nstars, nlam))
 
         # write source information
         for source in sources:
-            fhandle.write(str(source.radius) + ' ')
-            fhandle.write(str(source.mass) + ' ')
-            fhandle.write('%f %f %f' %(source.position[0], \
-                                       source.position[1], \
-                                       source.position[2]))
-            fhandle.write('\n')
+            fhandle.write(str(source.radius) + " ")
+            fhandle.write(str(source.mass) + " ")
+            fhandle.write(
+                "%f %f %f"
+                % (source.position[0], source.position[1], source.position[2])
+            )
+            fhandle.write("\n")
 
         # write wavelength information
         for wavelength in wavelengths:
-            fhandle.write('%f \n' % wavelength)
+            fhandle.write("%f \n" % wavelength)
 
         # finally write blackbody temperature for each source
         for source in sources:
             # the negative sign is a flag used internally
             # by RadMC3D to indicate that this is a blackbody
             # source
-            fhandle.write('%f \n' % -source.temperature)
+            fhandle.write("%f \n" % -source.temperature)
 
         # done with stars.inp
         fhandle.close()
 
         # now do the wavelength_micron.inp file
-        filename = 'wavelength_micron.inp'
-        fhandle = open(filename, 'w')
+        filename = "wavelength_micron.inp"
+        fhandle = open(filename, "w")
 
-        fhandle.write('%d \n' % nlam)
+        fhandle.write("%d \n" % nlam)
         for wavelength in wavelengths:
-            fhandle.write('%f \n' % wavelength)
+            fhandle.write("%f \n" % wavelength)
 
         # done with both
         fhandle.close()
 
 
 class RadMC3DSource:
-    '''
+    """
 
     A class that contains the data associated with a single RadMC3D photon source.
-    This is designed to help export data about the stars in a dataset into a format 
-    that can be read in by RadMC3D. Although RadMC3D can handle non-blackbody 
+    This is designed to help export data about the stars in a dataset into a format
+    that can be read in by RadMC3D. Although RadMC3D can handle non-blackbody
     sources, here we assume that the source is a blackbody with a given temperature.
 
     Parameters
@@ -404,14 +408,14 @@ class RadMC3DSource:
 
     radius: float
         The size of the source in cm
-    mass: float 
+    mass: float
         The mass of the source in g
     position: list of floats
         The x, y, and z coordinates of the source, in cm
     temperature: float
         The blackbody temperature of the source, in K
 
-    '''
+    """
 
     def __init__(self, radius, mass, position, temperature):
         self.radius = radius
@@ -420,7 +424,7 @@ class RadMC3DSource:
         self.temperature = temperature
 
         # some basic sanity checks
-        assert(self.radius > 0.0)
-        assert(self.mass > 0.0)
-        assert(self.temperature > 0)
-        assert(len(self.position) == 3)  # 3D only, please
+        assert self.radius > 0.0
+        assert self.mass > 0.0
+        assert self.temperature > 0
+        assert len(self.position) == 3  # 3D only, please

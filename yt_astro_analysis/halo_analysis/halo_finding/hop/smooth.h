@@ -135,6 +135,3 @@ void smOutMach(SMX,FILE *);
 void smOutSpeed(SMX,FILE *);
 
 #endif
-
-
-

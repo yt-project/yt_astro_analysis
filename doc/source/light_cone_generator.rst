@@ -30,11 +30,9 @@ nearest redshift, and the furthest redshift of the light cone.
 
 .. code-block:: python
 
-  from yt.extensions.astro_analysis.cosmological_observation.api import \
-       LightCone
+  from yt.extensions.astro_analysis.cosmological_observation.api import LightCone
 
-  lc = LightCone('enzo_tiny_cosmology/32Mpc_32.enzo',
-                 'Enzo', 0., 0.1)
+  lc = LightCone("enzo_tiny_cosmology/32Mpc_32.enzo", "Enzo", 0.0, 0.1)
 
 The additional keyword arguments are:
 
@@ -80,7 +78,7 @@ function:
 
 .. code-block:: python
 
-  lc.calculate_light_cone_solution(seed=123456789, filename='lightcone.dat')
+  lc.calculate_light_cone_solution(seed=123456789, filename="lightcone.dat")
 
 The keyword argument are:
 
@@ -99,13 +97,17 @@ view and resolution can be made of any available field:
 
 .. code-block:: python
 
-  field = 'density'
+  field = "density"
   field_of_view = (600.0, "arcmin")
   resolution = (60.0, "arcsec")
-  lc.project_light_cone(field_of_vew, resolution,
-                        field , weight_field=None,
-                        save_stack=True,
-                        save_slice_images=True)
+  lc.project_light_cone(
+      field_of_vew,
+      resolution,
+      field,
+      weight_field=None,
+      save_stack=True,
+      save_slice_images=True,
+  )
 
 The field of view and resolution can be specified either as a tuple of
 value and unit string or as a unitful ``YTQuantity``.

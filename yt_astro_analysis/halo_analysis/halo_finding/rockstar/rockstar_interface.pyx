@@ -13,15 +13,18 @@ Particle operations for Lagrangian Volume
 # The full license is in the file COPYING.txt, distributed with this software.
 #-----------------------------------------------------------------------------
 
+import os
+import sys
+
 import numpy as np
-import os, sys
-cimport numpy as np
+
 cimport cython
+cimport numpy as np
 from libc.stdlib cimport malloc
-from yt.utilities.parallel_tools.parallel_analysis_interface import \
-    parallel_objects
 
 from yt.config import ytcfg
+from yt.utilities.parallel_tools.parallel_analysis_interface import parallel_objects
+
 
 cdef import from "particle.h":
     struct particle:
@@ -373,4 +376,3 @@ cdef class RockstarInterface:
     def start_writer(self):
         cdef np.int64_t in_type = np.int64(WRITER_TYPE)
         client(in_type)
-

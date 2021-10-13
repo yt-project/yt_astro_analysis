@@ -59,8 +59,12 @@ assume a constant dust-to-gas mass ratio of 0.01:
 .. code-block:: python
 
     dust_to_gas = 0.01
+
+
     def _DustDensity(field, data):
         return dust_to_gas * data["density"]
+
+
     ds.add_field(("gas", "dust_density"), function=_DustDensity, units="g/cm**3")
 
 We save this information into a file called "dust_density.inp".
@@ -144,27 +148,28 @@ and an np.array containing the image values. To plot this image in pyplot, you c
    import matplotlib.pyplot as plt
    import numpy as np
    from yt.extensions.astro_analysis.radmc3d_export.api import read_radmc3d_image
+
    header, image = read_radmc3d_image("image.out")
 
-   Nx = header['Nx']
-   Ny = header['Ny']
+   Nx = header["Nx"]
+   Ny = header["Ny"]
 
-   x_hi = 0.5*header["pixel_size_cm_x"]*Nx
+   x_hi = 0.5 * header["pixel_size_cm_x"] * Nx
    x_lo = -x_hi
-   y_hi = 0.5*header["pixel_size_cm_y"]*Ny
+   y_hi = 0.5 * header["pixel_size_cm_y"] * Ny
    y_lo = -y_hi
 
    X = np.linspace(x_lo, x_hi, Nx)
    Y = np.linspace(y_lo, y_hi, Ny)
 
-   plt.pcolormesh(X, Y, np.log10(image), cmap='hot')
+   plt.pcolormesh(X, Y, np.log10(image), cmap="hot")
    cbar = plt.colorbar()
    plt.axis((x_lo, x_hi, y_lo, y_hi))
    ax = plt.gca()
    ax.set_xlabel(r"$x$ (cm)")
    ax.set_ylabel(r"$y$ (cm)")
    cbar.set_label(r"Log Intensity (erg cm$^{-2}$ s$^{-1}$ Hz$^{-1}$ ster$^{-1}$)")
-   plt.savefig('dust_continuum.png')
+   plt.savefig("dust_continuum.png")
 
 The resulting image should look like:
 
@@ -189,9 +194,13 @@ doppler broadening.
     from yt.extensions.astro_analysis.radmc3d_export.api import RadMC3DWriter
 
     x_co = 1.0e-4
-    mu_h = yt.YTQuantity(2.34e-24, 'g')
+    mu_h = yt.YTQuantity(2.34e-24, "g")
+
+
     def _NumberDensityCO(field, data):
-        return (x_co/mu_h)*data["density"]
+        return (x_co / mu_h) * data["density"]
+
+
     yt.add_field(("gas", "number_density_CO"), function=_NumberDensityCO, units="cm**-3")
 
     ds = yt.load("IsolatedGalaxy/galaxy0030/galaxy0030")

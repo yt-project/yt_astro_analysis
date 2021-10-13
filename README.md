@@ -22,7 +22,7 @@ schedule.
 Full installation documentation can also be found
 [here](https://yt-astro-analysis.readthedocs.io/en/latest/Installation.html).
 
-To install yt_astro_analysis, you will first need to 
+To install yt_astro_analysis, you will first need to
 [install yt](https://github.com/yt-project/yt#installation). Then do,
 
 ```

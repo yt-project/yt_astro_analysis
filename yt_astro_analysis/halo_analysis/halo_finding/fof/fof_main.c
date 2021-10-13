@@ -29,7 +29,7 @@ void main(int argc,char **argv)
 	int nMembers,nGroup,bVerbose;
 	int sec,usec;
 	char *p;
-	
+
    	nBucket = 16;
 	nMembers = 8;
 	bDark = 1;
@@ -127,8 +127,3 @@ void main(int argc,char **argv)
 	kdOutGroupFoF(kd,ach);
 	kdFinishFoF(kd);
 	}
-
-
-
-
-

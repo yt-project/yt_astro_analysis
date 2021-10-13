@@ -81,17 +81,17 @@ Py_EnzoFOF(PyObject *obj, PyObject *args)
     }
 
     /* let's get started with the FOF stuff */
-	
+
 	/* linking length */
 	fprintf(stdout, "Link length is %f\n", link);
 	fEps = link;
-	
+
 	nBucket = 16;
 
     /* initialize the kd FOF structure */
 
 	kdInitFoF(&kd,nBucket,fPeriod);
-	
+
 	/* kdReadTipsyFoF(kd,stdin,bDark,bGas,bStar); */
 
  	/* Copy positions into kd structure. */
@@ -106,7 +106,7 @@ Py_EnzoFOF(PyObject *obj, PyObject *args)
 	  kd->p[i].r[1] = (float)(*(npy_float64*) PyArray_GETPTR1(ypos, i));
 	  kd->p[i].r[2] = (float)(*(npy_float64*) PyArray_GETPTR1(zpos, i));
 	}
-	
+
 	kdBuildTreeFoF(kd);
 	kdTimeFoF(kd,&sec,&usec);
 	nGroup = kdFoF(kd,fEps);
@@ -120,18 +120,18 @@ Py_EnzoFOF(PyObject *obj, PyObject *args)
 	kdOrderFoF(kd);
 
 	/* kdOutGroupFoF(kd,ach); */
-	
+
     // Now we need to get the groupID, realID.
     // This will give us the index into the original array.
     // Additionally, note that we don't really need to tie the index
     // back to the ID in this code, as we can do that back in the python code.
     // All we need to do is group information.
-    
+
     // Tags are in kd->p[i].iGroup
     particle_group_id = (PyArrayObject *)
             PyArray_SimpleNewFromDescr(1, PyArray_DIMS(xpos),
                     PyArray_DescrFromType(NPY_INT32));
-    
+
     for (i = 0; i < num_particles; i++) {
       // group tag is in kd->p[i].iGroup
       *(npy_int32*)(PyArray_GETPTR1(particle_group_id, i)) =
@@ -180,7 +180,7 @@ PyMODINIT_FUNC
 #define _RETVAL m
 PyInit_EnzoFOF(void)
 #else
-#define _RETVAL 
+#define _RETVAL
 initEnzoFOF(void)
 #endif
 {
@@ -197,7 +197,7 @@ initEnzoFOF(void)
         NULL,                /* m_clear */
         NULL,                /* m_free */
     };
-    m = PyModule_Create(&moduledef); 
+    m = PyModule_Create(&moduledef);
 #else
     m = Py_InitModule("EnzoFOF", _FOFMethods);
 #endif

@@ -5,24 +5,24 @@ testing utilities
 
 """
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Copyright (c) 2017, yt Development Team.
 #
 # Distributed under the terms of the Modified BSD License.
 #
 # The full license is in the file COPYING.txt, distributed with this software.
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 import os
 import shutil
 import tempfile
-from unittest import \
-    TestCase
+from unittest import TestCase
 
 from yt.config import ytcfg
 from yt.data_objects.time_series import SimulationTimeSeries
 from yt.loaders import load_simulation
 from yt.utilities.answer_testing.framework import AnswerTestingTest
+
 
 class TempDirTest(TestCase):
     """
@@ -38,6 +38,7 @@ class TempDirTest(TestCase):
     def tearDown(self):
         os.chdir(self.curdir)
         shutil.rmtree(self.tmpdir)
+
 
 def requires_sim(sim_fn, sim_type, file_check=False):
     from functools import wraps
@@ -58,6 +59,7 @@ def requires_sim(sim_fn, sim_type, file_check=False):
         return ffalse
     else:
         return ftrue
+
 
 def can_run_sim(sim_fn, sim_type, file_check=False):
     result_storage = AnswerTestingTest.result_storage

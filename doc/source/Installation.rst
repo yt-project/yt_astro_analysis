@@ -18,7 +18,7 @@ from conda-forge:
 .. code-block:: bash
 
    $ conda install -c conda-forge yt_astro_analysis
-   
+
 Installing from source
 ----------------------
 
@@ -56,8 +56,8 @@ John Wise.
 
 .. code-block:: python
 
-   >>> ds = yt.load(...)
-   >>> ds.parameters['format_revision'] = 2
+   ds = yt.load(...)
+   ds.parameters["format_revision"] = 2
 
 To install ``rockstar-galaxies``, do the following:
 

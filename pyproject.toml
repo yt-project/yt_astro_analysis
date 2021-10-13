@@ -1,0 +1,62 @@
+[build-system]
+requires = [
+  "setuptools>=19.6",
+  # see https://github.com/numpy/numpy/pull/18389
+  "wheel>=0.36.2",
+
+  # cython version is imposed by that of numpy, see release notes
+  # https://github.com/numpy/numpy/releases/tag/v1.19.2
+  # Cython 3.0 is the next version after 0.29, and a major change,
+  # we forbid it until we can properly test against it
+  "Cython>=0.26.1,<3.0; python_version=='3.6'",
+  "Cython>=0.29.21,<3.0; python_version>='3.7'",
+  "oldest-supported-numpy",
+]
+
+[tool.black]
+line-length = 88
+target-version = [
+  'py36',
+  'py37',
+  'py38',
+  'py39',
+]
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+)/
+'''
+
+
+[tool.isort]
+profile = "black"
+combine_as_imports = true
+skip =  ["venv", "benchmarks"]
+known_third_party = [
+  "IPython",
+  "nose",
+  "numpy",
+  "sympy",
+  "matplotlib",
+  "unyt",
+  "git",
+  "yaml",
+  "dateutil",
+  "requests",
+  "coverage",
+  "pytest",
+  "pyx",
+  "glue",
+]
+known_first_party = ["yt", "yt_astro_analysis"]
+sections = ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
