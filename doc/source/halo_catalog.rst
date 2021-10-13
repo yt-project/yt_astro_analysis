@@ -251,7 +251,7 @@ analysis begins with a call to
 
    hc.create()
 
-The `save_halos` keyword determines whether the actual Halo objects
+The ``save_halos`` keyword determines whether the actual Halo objects
 are saved after analysis on them has completed or whether just the
 contents of their quantities dicts will be retained for creating the
 final catalog. The looping over halos uses a call to parallel_objects
@@ -274,7 +274,7 @@ Parallelism
 Halo analysis using the
 :class:`~yt_astro_analysis.halo_analysis.halo_catalog.halo_catalog.HaloCatalog`
 can be parallelized by adding ``yt.enable_parallelism()`` to the top of the
-script and running with `mpirun`.
+script and running with ``mpirun``.
 
 .. code-block:: python
 
@@ -290,17 +290,17 @@ script and running with `mpirun`.
 
 The nature of the parallelism can be configured with two keywords provided to the
 :meth:`~yt_astro_analysis.halo_analysis.halo_catalog.halo_catalog.HaloCatalog.create`
-function: `njobs` and `dynamic`. If `dynamic` is set to False, halos will be
-distributed evenly over all processors. If `dynamic` is set to True, halos
-will be allocated to processors via a task queue. The `njobs` keyword determines
+function: ``njobs`` and ``dynamic``. If ``dynamic`` is set to False, halos will be
+distributed evenly over all processors. If ```dynamic`` is set to True, halos
+will be allocated to processors via a task queue. The ``njobs`` keyword determines
 the number of processor groups over which the analysis will be divided. The
-default value for `njobs` is "auto". In this mode, a single processor will be
-allocated to analyze a halo. The `dynamic` keyword is overridden to False if
+default value for ``njobs`` is "auto". In this mode, a single processor will be
+allocated to analyze a halo. The ``dynamic`` keyword is overridden to False if
 the number of processors being used is even and True (use a task queue) if odd.
-Set `njobs` to -1 to mandate a single processor to analyze a halo and to a positive
+Set ``njobs`` to -1 to mandate a single processor to analyze a halo and to a positive
 number to create that many processor groups for performing analysis. The number of
 processors used per halo will then be the total number of processors divided by
-`njobs`. For more information on running ``yt`` in parallel, see
+``njobs``. For more information on running ``yt`` in parallel, see
 :ref:`parallel-computation`.
 
 Loading Created Halo Catalogs

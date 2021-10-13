@@ -133,7 +133,7 @@ to a directory associated with the ``output_dir`` keyword provided to the
 :class:`~yt_astro_analysis.halo_analysis.halo_catalog.halo_catalog.HaloCatalog`.
 The number of files for each catalog is equal to the number of processors used. The
 catalog files have the naming convention
-`<dataset_name>/<dataset_name>.<processor_number>.h5`, where `dataset_name` refers
+``<dataset_name>/<dataset_name>.<processor_number>.h5``, where ``dataset_name`` refers
 to the name of the snapshot. For more information on loading these with yt, see
 :ref:`halocatalog`.
 
@@ -153,7 +153,7 @@ The ``yt_astro_analysis`` package works with the latest version of
 obtaining and installing ``rockstar-galaxies`` for use with
 ``yt_astro_analysis``.
 
-To run Rockstar, your script must be run with `mpirun` using a minimum of three
+To run Rockstar, your script must be run with ``mpirun`` using a minimum of three
 processors. Rockstar processes are divided into three groups:
 
 * readers: these read particle data from the snapshots. Set the number of readers
@@ -162,7 +162,7 @@ processors. Rockstar processes are divided into three groups:
   Set the number of writers with the ``num_writers`` keyword argument.
 * server: this process coordinates the activity of the readers and writers.
   There is only one server process. The total number of processes given with
-  `mpirun` must be equal to the number of readers plus writers plus one
+  ``mpirun`` must be equal to the number of readers plus writers plus one
   (for the server).
 
 .. code-block:: python
@@ -196,19 +196,19 @@ keyword provided to the
 :class:`~yt_astro_analysis.halo_analysis.halo_catalog.halo_catalog.HaloCatalog`.
 The number of files for each catalog is equal to the number of writers. The
 catalog files have the naming convention
-`halos_<catalog_number>.<processor_number>.bin`, where catalog number 0 is the
+``halos_<catalog_number>.<processor_number>.bin``, where catalog number 0 is the
 first halo catalog calculated. For more information on loading these with yt,
 see :ref:`rockstar`.
 
 Parallelism
 -----------
 
-All three halo finders can be run in parallel using `mpirun` and by adding
+All three halo finders can be run in parallel using ``mpirun`` and by adding
 ``yt.enable_parallelism()`` to the top of the script. The computational domain
 will be divided evenly among all processes (among the writers in the case of
 Rockstar) with a small amount of padding to ensure halos on sub-volume
 boundaries are not split. For FoF and HOP, the number of processors used only
-needs to provided to `mpirun` (e.g., `mpirun -np 8` to run on 8 processors).
+needs to provided to ``mpirun`` (e.g., ``mpirun -np 8`` to run on 8 processors).
 
 .. code-block:: python
 
@@ -238,6 +238,6 @@ belonging to each halo can be saved to the catalog when using either the
 :ref:`fof_finding` or :ref:`hop_finding` methods. The is enabled by default
 and can be disabled by setting ``save_particles`` to ``False`` in the
 ``finder_kwargs`` dictionary, as described above. Rockstar will also save
-halo particles to the `.bin` files. However, reading these is not currently
+halo particles to the ``.bin`` files. However, reading these is not currently
 supported in yt. See :ref:`halocatalog` for information on accessing halo
 particles for FoF and HOP catalogs.
