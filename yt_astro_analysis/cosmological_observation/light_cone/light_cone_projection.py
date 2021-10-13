@@ -35,8 +35,9 @@ def _light_cone_projection(
     # Likewise, only the box_depth_fraction needs to be considered.
 
     mylog.info(
-        "Making projection at z = %f from %s."
-        % (my_slice["redshift"], my_slice["filename"])
+        "Making projection at z = %f from %s.",
+        my_slice["redshift"],
+        my_slice["filename"],
     )
 
     region_center = [

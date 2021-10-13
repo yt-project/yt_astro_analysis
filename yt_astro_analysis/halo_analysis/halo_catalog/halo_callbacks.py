@@ -90,9 +90,7 @@ def sphere_field_max_recenter(halo, field):
         new_center.in_units("code_length"), old_sphere.radius.in_units("code_length")
     )
     mylog.info(
-        "Moving sphere center from {} to {}.".format(
-            old_sphere.center, new_sphere.center
-        )
+        "Moving sphere center from %s to %s.", old_sphere.center, new_sphere.center
     )
     for par, value in old_sphere.field_parameters.items():
         if par not in new_sphere.field_parameters:
@@ -188,7 +186,7 @@ def profile(
     """
 
     mylog.info(
-        "Calculating 1D profile for halo %d." % halo.quantities["particle_identifier"]
+        "Calculating 1D profile for halo %d.", halo.quantities["particle_identifier"]
     )
 
     dds = halo.halo_catalog.data_ds
@@ -201,8 +199,8 @@ def profile(
 
     if halo.data_object is None:
         mylog.info(
-            "Skipping halo %d since data_object is None."
-            % halo.quantities["particle_identifier"]
+            "Skipping halo %d since data_object is None.",
+            halo.quantities["particle_identifier"],
         )
         return
 
@@ -291,8 +289,9 @@ def save_profiles(halo, storage="profiles", filename=None, output_dir="."):
         "%s_%06d.h5" % (filename, halo.quantities["particle_identifier"]),
     )
     mylog.info(
-        "Saving halo %d profile data to %s."
-        % (halo.quantities["particle_identifier"], output_file)
+        "Saving halo %d profile data to %s.",
+        halo.quantities["particle_identifier"],
+        output_file,
     )
 
     fh = h5py.File(output_file, mode="w")
@@ -354,8 +353,9 @@ def load_profiles(halo, storage="profiles", fields=None, filename=None, output_d
     if not os.path.exists(output_file):
         raise RuntimeError("Profile file not found: %s." % output_file)
     mylog.info(
-        "Loading halo %d profile data from %s."
-        % (halo.quantities["particle_identifier"], output_file)
+        "Loading halo %d profile data from %s.",
+        halo.quantities["particle_identifier"],
+        output_file,
     )
 
     fh = h5py.File(output_file, mode="r")
@@ -424,8 +424,8 @@ def virial_quantities(
     """
 
     mylog.info(
-        "Calculating virial quantities for halo %d."
-        % halo.quantities["particle_identifier"]
+        "Calculating virial quantities for halo %d.",
+        halo.quantities["particle_identifier"],
     )
 
     fields = [
@@ -633,8 +633,10 @@ def iterative_center_of_mass(
     )
     distance = halo.halo_catalog.data_ds.quan(distance, "code_length")
     mylog.info(
-        "Recentering halo %d %f %s away."
-        % (halo.quantities["particle_identifier"], distance.in_units(units), units)
+        "Recentering halo %d %f %s away.",
+        halo.quantities["particle_identifier"],
+        distance.in_units(units),
+        units,
     )
 
     for i, axis in enumerate("xyz"):
