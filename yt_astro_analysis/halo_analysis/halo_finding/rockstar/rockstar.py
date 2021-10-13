@@ -13,6 +13,8 @@ Operations to run Rockstar
 # The full license is in the file COPYING.txt, distributed with this software.
 #-----------------------------------------------------------------------------
 
+from unyt import unyt_quantity
+
 from yt.config import ytcfg
 from yt.data_objects.static_output import Dataset
 from yt.data_objects.time_series import \
@@ -142,6 +144,11 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
     particle_type : str
         This is the "particle type" that can be found in the data.  This can be
         a filtered particle or an inherent type.
+    mass_field : optional, str
+        The field to be used for the particle masses. The sampled field will be
+        (<particle_type>, <mass_field>). This can be used to provide alternative
+        particle masses for halo finding.
+        Default: "particle_mass"
     star_types : str list/array
         The types (as returned by data((particle_type, particle_type)) to be
         recognized as star particles.
@@ -175,9 +182,15 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
         of snapshots where the number of dark matter particles should not
         change and this will save some disk access time. If left unspecified,
         it will be calculated automatically. Default: ``None``.
-    particle_mass : float
-        If supplied, use this as the particle mass supplied to rockstar.
-        Otherwise, particle masses are read from the dataset.
+    particle_mass : optional, None, float, tuple, or :class:`~unyt.array.unyt_quantity`
+        If supplied, this mass will be used to calculate the average particle
+        spacing used in the friend-of-friends algorithm. The particle spacing
+        will be (particle_mass / omega_matter * rho_cr)^1/3. If None, the mass
+        is set as the minimum of all particles to be read. If a float, units
+        are assumed to be in Msun/h. If a tuple, the format is assume to be
+        (<value>, <units>). If a :class:`~unyt.array.unyt_quantity`, it must
+        be convertible to units of Msun/h. To modify the masses of particles
+        used for halo finding, see the mass_field keyword.
         Default: ``None``.
     restart : optional, bool
         Set to True to have rockstar restart from the first uncompleted
@@ -205,8 +218,8 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
 
     """
     def __init__(self, ts, num_readers = 1, num_writers = None,
-                 outbase="rockstar_halos", particle_type="all", star_types=None,
-                 force_res=None, initial_metric_scaling=1.0, non_dm_metric_scaling=10.0,
+                 outbase="rockstar_halos", particle_type="all", mass_field="particle_mass",
+                 star_types=None, force_res=None, initial_metric_scaling=1.0, non_dm_metric_scaling=10.0,
                  suppress_galaxies=1, total_particles=None, dm_only=False, particle_mass=None,
                  min_halo_size=25, restart=False):
 
@@ -249,6 +262,7 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
         self.total_particles = total_particles
         self.dm_only = dm_only
         self.particle_mass = particle_mass
+        self.mass_field = mass_field
         # Setup pool and workgroups.
         self.pool, self.workgroup = self.runner.setup_pool()
         p = self._setup_parameters(ts)
@@ -270,8 +284,13 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
         particle_mass = self.particle_mass
         if particle_mass is None:
             pmass_min, pmass_max = dd.quantities.extrema(
-                (ptype, "particle_mass"), non_zero = True)
+                (ptype, self.mass_field), non_zero = True)
             particle_mass = pmass_min
+        elif isinstance(particle_mass, (tuple, list)) and len(particle_mass) == 2:
+            particle_mass = tds.quan(*particle_mass)
+        elif not isinstance(particle_mass, unyt_quantity):
+            particle_mass = tds.quan(particle_mass, "Msun / h")
+        particle_mass.convert_to_units("Msun / h")
 
         p = {}
         if self.total_particles is None:
@@ -283,7 +302,6 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
         p['right_edge'] = tds.domain_right_edge.in_units("Mpccm/h")
         p['center'] = tds.domain_center.in_units("Mpccm/h")
         p['particle_mass'] = self.particle_mass = particle_mass
-        p['particle_mass'].convert_to_units("Msun / h")
         del tds
         return p
 
@@ -352,6 +370,7 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
         self.handler.setup_rockstar(self.server_address, self.port,
                     num_outputs, self.total_particles, 
                     self.particle_type,
+                    self.mass_field,
                     star_types = self.star_types,
                     particle_mass = self.particle_mass,
                     parallel = self.comm.size > 1,
