@@ -20,7 +20,7 @@ methods = {"fof": {"ptype": "dark_matter"},
 
 @particle_filter("dark_matter", requires=["creation_time"])
 def _dm_filter(pfilter, data):
-    return data["creation_time"] <= 0.0
+    return data[pfilter.filtered_type, "creation_time"] <= 0.0
 
 def setup_ds(ds):
     ds.add_particle_filter("dark_matter")

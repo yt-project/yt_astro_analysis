@@ -1,17 +1,12 @@
 import os
 import glob
 import sys
-from sys import platform as _platform
 from setuptools import setup, find_packages
 from setuptools.extension import Extension
 from setuptools.command.build_ext import build_ext as _build_ext
 from setuptools.command.sdist import sdist as _sdist
-from setuptools.command.build_py import build_py as _build_py
 from setupext import \
-    check_for_openmp, check_for_pyembree, read_embree_location, \
-    in_conda_env
-from distutils.version import LooseVersion
-import pkg_resources
+    check_for_openmp
 
 def get_version(filename):
     """
@@ -26,19 +21,6 @@ def get_version(filename):
     raise RuntimeError(
         "Could not get version from %s." % filename)
 
-
-try:
-    distribute_ver = \
-        LooseVersion(pkg_resources.get_distribution("distribute").version)
-    if distribute_ver < LooseVersion("0.7.3"):
-        print("Distribute is a legacy package obsoleted by setuptools.")
-        print("We strongly recommend that you just uninstall it.")
-        print("If for some reason you cannot do it, you'll need to upgrade it")
-        print("to latest version before proceeding:")
-        print("    pip install -U distribute")
-        sys.exit(1)
-except pkg_resources.DistributionNotFound:
-    pass  # yay!
 
 VERSION = get_version("yt_astro_analysis/__init__.py")
 
@@ -169,7 +151,7 @@ setup(
         'h5py',
         'more_itertools',
         'numpy',
-        'setuptools>=19.6',
+        'setuptools>=19.6,<58',
         'sympy',
         'unyt',
         'yt>=4.0.1',

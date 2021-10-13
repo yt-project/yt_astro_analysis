@@ -38,7 +38,7 @@ def test_ppv():
 
     ds = load_uniform_grid(data, dims)
 
-    cube = PPVCube(ds, "z", "density", (-300., 300., 1024, "km/s"),
+    cube = PPVCube(ds, "z", ("stream", "density"), (-300., 300., 1024, "km/s"),
                    dims=8, thermal_broad=True)
 
     dv = cube.dv
@@ -74,7 +74,7 @@ def test_ppv_nothermalbroad():
 
     ds = load_uniform_grid(data, dims)
 
-    cube = PPVCube(ds, "z", "density", (-100., 100., 128, "km/s"),
+    cube = PPVCube(ds, "z", ("stream", "density"), (-100., 100., 128, "km/s"),
                    dims=16, thermal_broad=False)
 
     dv = cube.dv
