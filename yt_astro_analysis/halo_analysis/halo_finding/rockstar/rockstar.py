@@ -29,8 +29,8 @@ try:
 except ImportError:
     mylog.warning(
         "Cannot import the rockstar interface.  Rockstar will not run.\n"
-        + "If you need Rockstar, see the installation instructions at "
-        + "http://yt-astro-analysis.readthedocs.io/."
+        "If you need Rockstar, see the installation instructions at "
+        "http://yt-astro-analysis.readthedocs.io/."
     )
     rockstar_interface = None
 

@@ -105,15 +105,15 @@ def check_for_openmp():
             if len(output) == nthreads:
                 using_openmp = True
             else:
-                log.warn(
+                log.warn(  # noqa: G010
                     "Unexpected number of lines from output of test "
-                    "OpenMP program (output was {})".format(output)
+                    "OpenMP program (output was %s)",
+                    output,
                 )
                 using_openmp = False
         else:
-            log.warn(
-                "Unexpected output from test OpenMP "
-                "program (output was {})".format(output)
+            log.warn(  # noqa: G010
+                "Unexpected output from test OpenMP " "program (output was %s)", output
             )
             using_openmp = False
 
@@ -123,9 +123,9 @@ def check_for_openmp():
         os.chdir(start_dir)
 
     if using_openmp:
-        log.warn("Using OpenMP to compile parallel extensions")
+        log.warn("Using OpenMP to compile parallel extensions")  # noqa: G010
     else:
-        log.warn(
+        log.warn(  # noqa: G010
             "Unable to compile OpenMP test program so Cython\n"
             "extensions will be compiled without parallel support"
         )

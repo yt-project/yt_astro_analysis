@@ -155,8 +155,7 @@ class LightCone(CosmologySplice):
         # Don"t use box coherence with maximum projection depths.
         if self.use_minimum_datasets and self.minimum_coherent_box_fraction > 0:
             mylog.info(
-                "Setting minimum_coherent_box_fraction to 0 with "
-                + "minimal light cone."
+                "Setting minimum_coherent_box_fraction to 0 with minimal light cone."
             )
             self.minimum_coherent_box_fraction = 0
 
@@ -202,22 +201,15 @@ class LightCone(CosmologySplice):
             # is never required.
             if self.light_cone_solution[q]["box_depth_fraction"] > 1.0:
                 mylog.error(
-                    (
-                        "Warning: box fraction required to go from "
-                        + "z = %f to %f is %f"
-                    )
-                    % (
-                        self.light_cone_solution[q]["redshift"],
-                        z_next,
-                        self.light_cone_solution[q]["box_depth_fraction"],
-                    )
+                    "Warning: box fraction required to go from z = %f to %f is %f",
+                    self.light_cone_solution[q]["redshift"],
+                    z_next,
+                    self.light_cone_solution[q]["box_depth_fraction"],
                 )
                 mylog.error(
-                    ("Full box delta z is %f, but it is %f to the " + "next data dump.")
-                    % (
-                        self.light_cone_solution[q]["dz_max"],
-                        self.light_cone_solution[q]["redshift"] - z_next,
-                    )
+                    "Full box delta z is %f, but it is %f to the next data dump.",
+                    self.light_cone_solution[q]["dz_max"],
+                    self.light_cone_solution[q]["redshift"] - z_next,
                 )
 
             # Get projection axis and center.
@@ -384,7 +376,7 @@ class LightCone(CosmologySplice):
                 proper_box_size = self.simulation.box_size / (1.0 + output["redshift"])
                 pixel_area = (proper_box_size.in_cgs() / pixels) ** 2  # in proper cm^2
                 factor = pixel_area / (4.0 * np.pi * dL.in_cgs() ** 2)
-                mylog.info("Distance to slice = %s" % dL)
+                mylog.info("Distance to slice = %s", dL)
                 frb["field"] *= factor  # in erg/s/cm^2/Hz on observer's image plane.
 
             my_storage.result = frb
@@ -459,7 +451,7 @@ class LightCone(CosmologySplice):
     def _save_light_cone_solution(self, filename="light_cone.dat"):
         "Write out a text file with information on light cone solution."
 
-        mylog.info("Saving light cone solution to %s." % filename)
+        mylog.info("Saving light cone solution to %s.", filename)
 
         f = open(filename, "w")
         f.write("# parameter_filename = %s\n" % self.parameter_filename)
@@ -511,14 +503,14 @@ class LightCone(CosmologySplice):
             mylog.info("save_light_cone_stack: light cone projection is empty.")
             return
 
-        mylog.info("Writing light cone data to %s." % filename)
+        mylog.info("Writing light cone data to %s.", filename)
 
         fh = h5py.File(filename, mode="a")
 
         if field_node in fh:
             del fh[field_node]
 
-        mylog.info(f"Saving {field_node} to {filename}.")
+        mylog.info("Saving %s to %s.", field_node, filename)
         dataset = fh.create_dataset(field_node, data=pstack)
         dataset.attrs["units"] = str(pstack.units)
         dataset.attrs["redshifts"] = redshift_list
@@ -530,7 +522,7 @@ class LightCone(CosmologySplice):
             if weight_field_node in fh:
                 del fh[weight_field_node]
 
-            mylog.info(f"Saving {weight_field_node} to {filename}.")
+            mylog.info("Saving %s to %s.", weight_field_node, filename)
             dataset = fh.create_dataset(weight_field_node, data=wstack)
             dataset.attrs["units"] = str(wstack.units)
             dataset.attrs["redshifts"] = redshift_list

@@ -149,8 +149,9 @@ class CosmologySplice:
                 }
             )
             mylog.info(
-                "create_cosmology_splice: Using %s for z = %f ."
-                % (cosmology_splice[0]["filename"], near_redshift)
+                "create_cosmology_splice: Using %s for z = %f .",
+                cosmology_splice[0]["filename"],
+                near_redshift,
             )
             return cosmology_splice
 
@@ -236,8 +237,10 @@ class CosmologySplice:
                 )
 
         mylog.info(
-            "create_cosmology_splice: Used %d data dumps to get from z = %f to %f."
-            % (len(cosmology_splice), far_redshift, near_redshift)
+            "create_cosmology_splice: Used %d data dumps to get from z = %f to %f.",
+            len(cosmology_splice),
+            far_redshift,
+            near_redshift,
         )
 
         # change the 'next' and 'previous' pointers to point to the correct outputs
@@ -329,8 +332,10 @@ class CosmologySplice:
             z -= deltaz_max
 
         mylog.info(
-            "%d data dumps will be needed to get from z = %f to %f."
-            % (len(outputs), near_redshift, far_redshift)
+            "%d data dumps will be needed to get from z = %f to %f.",
+            len(outputs),
+            near_redshift,
+            far_redshift,
         )
 
         if filename is not None:
@@ -388,8 +393,9 @@ class CosmologySplice:
             iteration += 1
             if iteration > max_Iterations:
                 mylog.error(
-                    "deltaz_forward: Warning - max iterations "
-                    + f"exceeded for z = {z:f} (delta z = {np.abs(z2 - z):f})."
+                    "deltaz_forward: Warning - max iterations exceeded for z = %f  (delta z = %f).",
+                    z,
+                    np.abs(z2 - z),
                 )
                 break
         return np.abs(z2 - z)

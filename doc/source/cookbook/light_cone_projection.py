@@ -1,3 +1,6 @@
+import glob
+import shutil
+
 from yt.extensions.astro_analysis.cosmological_observation.api import LightCone
 
 # Create a LightCone object extending from z = 0 to z = 0.1.
@@ -35,12 +38,10 @@ lc.project_light_cone(
     njobs=-1,
 )
 
-import glob
-
 # By default, the light cone projections are kept in the LC directory,
 # but this moves them back to the current directory so that they're rendered
 # in our cookbook.
-import shutil
+
 
 for file in glob.glob("LC/*png"):
     shutil.move(file, ".")

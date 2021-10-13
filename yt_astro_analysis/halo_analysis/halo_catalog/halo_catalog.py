@@ -156,7 +156,7 @@ class HaloCatalog(ParallelAnalysisInterface):
             field_name = (field_type, field)
             if field_name not in self.halos_ds.derived_field_list:
                 mylog.warning(
-                    f"Halo dataset {self.halos_ds} has no field {field_name}."
+                    "Halo dataset %s has no field %s.", self.halos_ds, field_name
                 )
                 continue
             self.add_quantity(field, from_data_source=True, field_type=field_type)
@@ -285,7 +285,7 @@ class HaloCatalog(ParallelAnalysisInterface):
         else:
             n_halos = data[self._id_field].size
 
-        mylog.info(f"Saving {n_halos} halos: {filename}.")
+        mylog.info("Saving %d halos: %s.", n_halos, filename)
 
         if field_types is None:
             field_types = {key: "." for key in self.quantities}
