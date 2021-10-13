@@ -1,0 +1,37 @@
+name: Run tests
+
+on: [push, pull_request]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.7, 3.8]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        sudo apt install libgl1-mesa-dri libegl1-mesa libgbm1 libosmesa6 libosmesa6-dev
+        python -m pip install --upgrade pip
+        python -m pip install flake8 pytest
+        if [ -f tests/test_requirements.txt ]; then python -m pip install -r tests/test_requirements.txt; fi
+        python -m pip install --upgrade numpy PyOpenGL_accelerate
+    - name: Setup yt_astro_analysis
+      run: |
+        python -m pip install -e .
+    - name: Run Tests
+      env:
+          PYOPENGL_PLATFORM: osmesa
+      run: pytest --html=report.html --self-contained-html
+    - uses: actions/upload-artifact@v2
+      name: Upload pytest report
+      with:
+        name: pytest-report
+        path: report.html
