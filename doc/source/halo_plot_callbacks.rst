@@ -48,4 +48,3 @@ the following line must be added to your script.
 
 .. image:: _images/annotate_halos.png
    :width: 500
-

@@ -5,8 +5,8 @@ import numpy as np
 from yt.data_objects.data_containers import YTDataContainer
 from yt.data_objects.static_output import Dataset
 from yt.visualization.plot_modifications import PlotCallback
-
 from yt_astro_analysis.halo_analysis.halo_catalog.halo_catalog import HaloCatalog
+
 
 class HaloCatalogCallback(PlotCallback):
     """
