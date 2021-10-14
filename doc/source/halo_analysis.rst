@@ -13,4 +13,5 @@ If you already have halo catalogs and simply want to load them into yt, see
 
    halo_finding
    halo_catalog
+   halo_plot_callbacks
    halo_merger_tree

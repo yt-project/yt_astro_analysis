@@ -16,8 +16,9 @@ class HaloCatalogCallback(PlotCallback):
 
     Parameters
     ----------
-    halo_catalog : Dataset, DataContainer,
-                   or ~yt_astro_analysis.halo_analysis.halo_catalog.halo_catalog.HaloCatalog
+    halo_catalog : :class:`~yt.data_objects.static_output.Dataset`,
+        :class:`~yt.data_objects.data_containers.YTDataContainer`, or
+        :class:`~yt_astro_analysis.halo_analysis.halo_catalog.halo_catalog.HaloCatalog`
         The object containing halos to be overplotted. This can
         be a HaloCatalog object, a loaded halo catalog dataset,
         or a data container from a halo catalog dataset.
