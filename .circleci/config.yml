@@ -158,13 +158,13 @@ jobs:
 
       - restore_cache:
           name: "Restore dependencies cache."
-          key: python-<< parameters.tag >>-dependencies-2021-23-03
+          key: python-<< parameters.tag >>-dependencies-2021-22-10
 
       - install-with-yt-dev
 
       - save_cache:
           name: "Save dependencies cache"
-          key: python-<< parameters.tag >>-dependencies-2021-23-03
+          key: python-<< parameters.tag >>-dependencies-2021-22-10
           paths:
             - ~/.cache/pip
             - ~/venv
@@ -187,13 +187,13 @@ jobs:
 
       - restore_cache:
           name: "Restore test answers."
-          key: python-<< parameters.tag >>-test-answers-2021-23-03
+          key: python-<< parameters.tag >>-test-answers-2021-22-10
 
       - build-and-test
 
       - save_cache:
           name: "Save test answers cache."
-          key: python-<< parameters.tag >>-test-answers-2021-23-03
+          key: python-<< parameters.tag >>-test-answers-2021-22-10
           paths:
             - ~/test_results
 
@@ -214,13 +214,13 @@ jobs:
 
       - restore_cache:
           name: "Restore dependencies cache."
-          key: python-<< parameters.tag >>-dependencies-2021-23-03
+          key: python-<< parameters.tag >>-dependencies-2021-22-10
 
       - install-with-yt-dev
 
       - save_cache:
           name: "Save dependencies cache"
-          key: python-<< parameters.tag >>-dependencies-2021-23-03
+          key: python-<< parameters.tag >>-dependencies-2021-22-10
           paths:
             - ~/.cache/pip
             - ~/venv
@@ -236,15 +236,15 @@ workflows:
      jobs:
        - run-tests:
            name: "Python 3.7 tests"
-           tag: "3.7.9"
+           tag: "3.7.12"
 
        - run-tests:
            name: "Python 3.9 tests"
-           tag: "3.9.2"
+           tag: "3.9.7"
 
        - docs-test:
            name: "Test docs build"
-           tag: "3.9.2"
+           tag: "3.9.7"
 
    weekly:
      triggers:
@@ -257,16 +257,16 @@ workflows:
      jobs:
        - run-tests:
            name: "Python 3.7 tests"
-           tag: "3.7.9"
+           tag: "3.7.12"
 
        - run-tests:
            name: "Python 3.8 tests"
-           tag: "3.8.8"
+           tag: "3.8.9"
 
        - run-tests:
            name: "Python 3.9 tests"
-           tag: "3.9.2"
+           tag: "3.9.7"
 
        - docs-test:
            name: "Test docs build"
-           tag: "3.9.2"
+           tag: "3.9.7"
