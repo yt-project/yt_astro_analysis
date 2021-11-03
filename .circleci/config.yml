@@ -61,6 +61,7 @@ commands:
             pip install -e .
             popd
             # install rockstar
+            sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 100
             if [ ! -f $ROCKSTAR_DIR/VERSION ]; then
                 git clone https://bitbucket.org/pbehroozi/rockstar-galaxies $ROCKSTAR_DIR
                 pushd $ROCKSTAR_DIR
