@@ -43,7 +43,7 @@ commands:
             sudo apt update
             sudo apt upgrade
             sudo apt install -y dvipng texlive-latex-extra
-            sudo apt install -y libopenmpi-dev openmpi-bin
+            sudo apt install -y libopenmpi-dev openmpi-bin gcc-9
             python3 -m venv $HOME/venv
             source $HOME/venv/bin/activate
             pip install --upgrade pip
