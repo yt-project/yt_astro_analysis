@@ -32,6 +32,7 @@ on cosmological halos.  It is also the primary interface for halo finding.
    ~yt_astro_analysis.halo_analysis.halo_catalog.halo_filters.not_subhalo
    ~yt_astro_analysis.halo_analysis.halo_catalog.halo_filters.quantity_value
    ~yt_astro_analysis.halo_analysis.halo_catalog.halo_recipes.calculate_virial_quantities
+   ~yt_astro_analysis.halo_analysis.halo_catalog.plot_modifications.HaloCatalogCallback
 
 Halo Finders
 ------------
