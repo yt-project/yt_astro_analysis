@@ -236,7 +236,10 @@ cdef void rh_read_particles(char *filename, particle **p, np.int64_t *num_p):
         # earr = chunk[rh.particle_type, "particle_"].to("").astype("float64")
         # sarr = chunk[rh.particle_type, "particle_"].to("").astype("float64")
         # mtarr= chunk[rh.particle_type, "particle_"].to("").astype("float64")
-        tarr = np.asarray(chunk[rh.particle_type, "particle_type"], dtype="int32")
+        if (rh.particle_type, "particle_type") in ds.derived_field_list:
+            tarr = np.asarray(chunk[rh.particle_type, "particle_type"], dtype="int32")
+        else:
+            tarr = np.zeros(arri.size, dtype="int32")
         npart = arri.size
         for i in range(npart):
             p[0][i+pi].id = <np.int64_t> arri[i]
