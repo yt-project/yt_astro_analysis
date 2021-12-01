@@ -240,8 +240,8 @@ workflows:
            tag: "3.7.12"
 
        - run-tests:
-           name: "Python 3.9 tests"
-           tag: "3.9.7"
+           name: "Python 3.10 tests"
+           tag: "3.10.0"
 
        - docs-test:
            name: "Test docs build"
@@ -267,6 +267,10 @@ workflows:
        - run-tests:
            name: "Python 3.9 tests"
            tag: "3.9.7"
+
+       - run-tests:
+           name: "Python 3.10 tests"
+           tag: "3.10.0"
 
        - docs-test:
            name: "Test docs build"
