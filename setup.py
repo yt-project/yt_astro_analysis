@@ -64,22 +64,6 @@ extensions = [
     ),
 ]
 
-dev_requirements = [
-    "astropy",
-    "codecov",
-    "flake8",
-    "girder-client",
-    "gitpython",
-    "nose",
-    "nose-timer",
-    "pytest",
-    "scipy",
-    "sphinx",
-    "sphinx_bootstrap_theme",
-    "twine",
-    "wheel",
-]
-
 # ROCKSTAR
 if os.path.exists("rockstar.cfg"):
     try:
@@ -147,8 +131,5 @@ setup(
     long_description=long_description,
     cmdclass={"sdist": sdist, "build_ext": build_ext},
     ext_modules=cython_extensions + extensions,
-    extras_require={
-        "dev": dev_requirements,
-    },
     packages=find_packages(),
 )
