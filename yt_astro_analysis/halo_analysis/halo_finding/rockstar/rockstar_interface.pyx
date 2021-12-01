@@ -210,6 +210,9 @@ cdef void rh_read_particles(char *filename, particle **p, np.int64_t *num_p):
     if rh.particle_type not in ds.particle_types and rh.particle_type != 'all':
         ds.add_particle_filter(rh.particle_type)
 
+    use_ptype = len(rh.star_types) > 0 and \
+        (rh.particle_type, "particle_type") in ds.derived_field_list
+
     # First we need to find out how many this reader is going to read in
     # if the number of readers > 1.
     dd = ds.all_data()
@@ -236,10 +239,8 @@ cdef void rh_read_particles(char *filename, particle **p, np.int64_t *num_p):
         # earr = chunk[rh.particle_type, "particle_"].to("").astype("float64")
         # sarr = chunk[rh.particle_type, "particle_"].to("").astype("float64")
         # mtarr= chunk[rh.particle_type, "particle_"].to("").astype("float64")
-        if (rh.particle_type, "particle_type") in ds.derived_field_list:
+        if use_ptype:
             tarr = np.asarray(chunk[rh.particle_type, "particle_type"], dtype="int32")
-        else:
-            tarr = np.zeros(arri.size, dtype="int32")
         npart = arri.size
         for i in range(npart):
             p[0][i+pi].id = <np.int64_t> arri[i]
@@ -247,7 +248,7 @@ cdef void rh_read_particles(char *filename, particle **p, np.int64_t *num_p):
             # p[0][i+pi].energy = <np.float64_t> earr[i]
             # p[0][i+pi].softening = <np.float64_t> sarr[i]
             # p[0][i+pi].metallicity = <np.float64_t> mtarr[i]
-            if tarr[i] in rh.star_types:
+            if use_ptype and tarr[i] in rh.star_types:
                 type = 2
             else:
                 type = 0
