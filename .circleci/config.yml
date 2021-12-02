@@ -28,10 +28,7 @@ commands:
             python3 -m venv $HOME/venv
             source $HOME/venv/bin/activate
             pip install --upgrade pip
-            pip install --upgrade wheel
-            pip install --upgrade setuptools
-            pip install Cython numpy
-            pip install -e .[dev]
+            pip install .[dev]
 
   install-with-yt-dev:
     description: "Install dependencies with yt from source."
@@ -47,9 +44,7 @@ commands:
             python3 -m venv $HOME/venv
             source $HOME/venv/bin/activate
             pip install --upgrade pip
-            pip install --upgrade wheel
-            pip install --upgrade setuptools
-            pip install Cython mpi4py numpy
+            pip install mpi4py
             export MAX_BUILD_CORES=2
             # install yt from source
             if [ ! -f $YT_DIR/README.md ]; then
@@ -58,7 +53,7 @@ commands:
             pushd $YT_DIR
             git pull origin main
             git checkout main
-            pip install -e .
+            pip install .
             popd
             # install rockstar
             sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 100
@@ -70,7 +65,7 @@ commands:
             fi
             echo $ROCKSTAR_DIR > rockstar.cfg
             # install yt_astro_analysis with extra dev dependencies
-            pip install -e .[dev]
+            pip install .[dev]
             # configure yt
             yt config set --global yt suppress_stream_logging True
             yt config set --global yt test_data_dir $YT_DATA
