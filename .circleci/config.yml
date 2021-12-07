@@ -84,18 +84,8 @@ commands:
                 girder-cli --api-url https://girder.hub.yt/api/v1 download 577c09480d7c6b0001ad5be2 $YT_DATA/enzo_tiny_cosmology
             fi
 
-  lint:
-    description: "Lint."
-    steps:
-      - run:
-          name: "Lint."
-          command: |
-            source $BASH_ENV
-            source $HOME/venv/bin/activate
-            flake8 yt_astro_analysis
-
-  build-and-test:
-    description: "Build yt_astro_analysis and run tests."
+  build-and-test-nose:
+    description: "Build yt_astro_analysis and run tests (nose)."
     steps:
       - run:
           name: "Build yt_astro_analysis and run tests."
@@ -116,6 +106,17 @@ commands:
             coverage run `which nosetests` $TEST_FLAGS
             # code coverage report
             codecov
+
+  build-and-test-pytest:
+    description: "Build yt_astro_analysis and run tests (pytest)."
+    steps:
+      - run:
+          name: "Build yt_astro_analysis and run tests."
+          command: |
+            source $BASH_ENV
+            source $HOME/venv/bin/activate
+            pip install -e .
+            pytest
 
   build-docs:
     description: "Test the docs build."
@@ -179,17 +180,71 @@ jobs:
           paths:
             - ~/yt_test
 
-      - lint
-
       - restore_cache:
           name: "Restore test answers."
           key: python-<< parameters.tag >>-test-answers-2021-22-10
 
-      - build-and-test
+      - build-and-test-nose
 
       - save_cache:
           name: "Save test answers cache."
           key: python-<< parameters.tag >>-test-answers-2021-22-10
+          paths:
+            - ~/test_results
+
+  run-tests-pytest:
+    # Run a subset of the test suite (yield-based tests are not supported by pytest)
+    # this is necessary to test in Python 3.10 because it's not compatible with nose
+    parameters:
+      tag:
+        type: string
+        default: latest
+    executor:
+      name: python
+      tag: << parameters.tag >>
+
+    working_directory: ~/yt_astro_analysis
+
+    steps:
+      - checkout
+      - set-env
+
+      - restore_cache:
+          name: "Restore dependencies cache."
+          key: python-<< parameters.tag >>-dependencies-2021-22-10
+
+      - install-with-yt-dev
+
+      - save_cache:
+          name: "Save dependencies cache"
+          key: python-<< parameters.tag >>-dependencies-2021-22-10
+          paths:
+            - ~/.cache/pip
+            - ~/venv
+            - ~/yt-git
+            - ~/rockstar-galaxies
+
+      - restore_cache:
+          name: "Restore test data cache."
+          key: test-data-2021-23-03
+
+      - download-test-data
+
+      - save_cache:
+          name: "Save test data cache."
+          key: test-data-2021-23-03
+          paths:
+            - ~/yt_test
+
+      - restore_cache:
+          name: "Restore test answers."
+          key: python-<< parameters.tag >>-test-answers-2021-22-10-pytest
+
+      - build-and-test-pytest
+
+      - save_cache:
+          name: "Save test answers cache."
+          key: python-<< parameters.tag >>-test-answers-2021-22-10-pytest
           paths:
             - ~/test_results
 
@@ -237,6 +292,10 @@ workflows:
        - run-tests:
            name: "Python 3.9 tests"
            tag: "3.9.7"
+
+       - run-tests-pytest:
+           name: "Python 3.10 tests"
+           tag: "3.10.0"
 
        - docs-test:
            name: "Test docs build"
