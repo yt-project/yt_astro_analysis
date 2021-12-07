@@ -94,7 +94,7 @@ class StandardRunner(ParallelAnalysisInterface):
             raise RuntimeError(
                 "The number of MPI processes (%i) does not equal the "
                 "number of readers (%i) plus the number of writers "
-                "(%i) plus 1 server" % (self.num_readers, self.num_writers, psize)
+                "(%i) plus 1 server" % (psize, self.num_readers, self.num_writers)
             )
 
     def run(self, handler, wg):
