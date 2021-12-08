@@ -9,7 +9,7 @@ Contributors
 ------------
 
 The `CREDITS file
-<https://github.com/yt-project/yt_astro_analysis/blob/master/CREDITS>`__
+<https://github.com/yt-project/yt_astro_analysis/blob/main/CREDITS>`__
 contains the most up-to-date list of everyone who has contributed to the
 yt_astro_analysis source code.
 
@@ -22,40 +22,40 @@ New Features
 ^^^^^^^^^^^^
 
  * The HaloCatalog has been significantly refactored
-   https://github.com/yt-project/yt_astro_analysis/pull/58, https://github.com/yt-project/yt_astro_analysis/pull/62 with
+   `PR #58 <https://github.com/yt-project/yt_astro_analysis/pull/58>`__, `PR #62 <https://github.com/yt-project/yt_astro_analysis/pull/62>`__ with
    the following additional improvements:
 
-     * the interface to the Rockstar halo finder is now compatible with the latest version of Rockstar Galaxies https://github.com/yt-project/yt_astro_analysis/pull/55
+     * the interface to the Rockstar halo finder is now compatible with the latest version of Rockstar Galaxies `PR #55 <https://github.com/yt-project/yt_astro_analysis/pull/55>`__
      * all halo finders now support being run with time-series of datasets
-     * halo particle ids now savable with FoF and HOP halo finders https://github.com/yt-project/yt_astro_analysis/pull/52
+     * halo particle ids now savable with FoF and HOP halo finders `PR #52 <https://github.com/yt-project/yt_astro_analysis/pull/52>`__
      * looping over halos is done with io chunks instead of ds.all_data for a significant speedup and reduction in memory
-     * Allow more flexibility for specifying rockstar particle mass https://github.com/yt-project/yt_astro_analysis/pull/84
-     * Add restart option for rockstar https://github.com/yt-project/yt_astro_analysis/pull/82
-     * Adding an outer_radius parameter to the iterative COM callback https://github.com/yt-project/yt_astro_analysis/pull/34
+     * Allow more flexibility for specifying rockstar particle mass `PR #84 <https://github.com/yt-project/yt_astro_analysis/pull/84>`__
+     * Add restart option for rockstar `PR #82 <https://github.com/yt-project/yt_astro_analysis/pull/82>`__
+     * Adding an outer_radius parameter to the iterative COM callback `PR #34 <https://github.com/yt-project/yt_astro_analysis/pull/34>`__
 
- * Remove the sunyaev_zeldovich analysis module. This is now [pyxsim](http://hea-www.cfa.harvard.edu/~jzuhone/pyxsim/). https://github.com/yt-project/yt_astro_analysis/pull/79
- * Drop support for python 3.6 https://github.com/yt-project/yt_astro_analysis/pull/100, https://github.com/yt-project/yt_astro_analysis/pull/101
+ * Remove the sunyaev_zeldovich analysis module. This is now `pyxsim <http://hea-www.cfa.harvard.edu/~jzuhone/pyxsim/>`__. `PR #79 <https://github.com/yt-project/yt_astro_analysis/pull/79>`__
+ * Drop support for python 3.6 `PR #100 <https://github.com/yt-project/yt_astro_analysis/pull/100>`__, `PR #101 <https://github.com/yt-project/yt_astro_analysis/pull/101>`__
 
 Minor Enhancements and Bugfixes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
- * significant project management and ci improvements https://github.com/yt-project/yt_astro_analysis/pull/89, https://github.com/yt-project/yt_astro_analysis/pull/90, https://github.com/yt-project/yt_astro_analysis/pull/91, https://github.com/yt-project/yt_astro_analysis/pull/92, https://github.com/yt-project/yt_astro_analysis/pull/96, https://github.com/yt-project/yt_astro_analysis/pull/95, https://github.com/yt-project/yt_astro_analysis/pull/97, https://github.com/yt-project/yt_astro_analysis/pull/108, https://github.com/yt-project/yt_astro_analysis/pull/109
- * Add annotate_halos function https://github.com/yt-project/yt_astro_analysis/pull/98
- * only access particle_type field in rockstar if it exists and is needed https://github.com/yt-project/yt_astro_analysis/pull/111
- * fix light cone projections with weight fields https://github.com/yt-project/yt_astro_analysis/pull/37
- * Fix HaloCatalog progress bar https://github.com/yt-project/yt_astro_analysis/pull/40
- * clarify rockstar error message about using the wrong number of MPI processes https://github.com/yt-project/yt_astro_analysis/pull/42, https://github.com/yt-project/yt_astro_analysis/pull/113
- * check derived_field_list for base fields https://github.com/yt-project/yt_astro_analysis/pull/43
- * allow cosmology splice from a single dataset https://github.com/yt-project/yt_astro_analysis/pull/49
- * Fix iterator https://github.com/yt-project/yt_astro_analysis/pull/68
- * Support new config file format https://github.com/yt-project/yt_astro_analysis/pull/65
- * Enable circleci testing https://github.com/yt-project/yt_astro_analysis/pull/44
- * Add max_box_fraction to plan_cosmology_splice https://github.com/yt-project/yt_astro_analysis/pull/76
- * Fix HaloCatalog output_dir https://github.com/yt-project/yt_astro_analysis/pull/81
- * remove deprecated dm_only keyword from halo finder https://github.com/yt-project/yt_astro_analysis/pull/57
- * update amr_grid.inp https://github.com/yt-project/yt_astro_analysis/pull/77
+ * significant project management and ci improvements `PR #89 <https://github.com/yt-project/yt_astro_analysis/pull/89>`__, `PR #90 <https://github.com/yt-project/yt_astro_analysis/pull/90>`__, `PR #91 <https://github.com/yt-project/yt_astro_analysis/pull/91>`__, `PR #92 <https://github.com/yt-project/yt_astro_analysis/pull/92>`__, `PR #96 <https://github.com/yt-project/yt_astro_analysis/pull/96>`__, `PR #95 <https://github.com/yt-project/yt_astro_analysis/pull/95>`__, `PR #97 <https://github.com/yt-project/yt_astro_analysis/pull/97>`__, `PR #108 <https://github.com/yt-project/yt_astro_analysis/pull/108>`__, `PR #109 <https://github.com/yt-project/yt_astro_analysis/pull/109>`__
+ * Add annotate_halos function `PR #98 <https://github.com/yt-project/yt_astro_analysis/pull/98>`__
+ * only access particle_type field in rockstar if it exists and is needed `PR #111 <https://github.com/yt-project/yt_astro_analysis/pull/111>`__
+ * fix light cone projections with weight fields `PR #37 <https://github.com/yt-project/yt_astro_analysis/pull/37>`__
+ * Fix HaloCatalog progress bar `PR #40 <https://github.com/yt-project/yt_astro_analysis/pull/40>`__
+ * clarify rockstar error message about using the wrong number of MPI processes `PR #42 <https://github.com/yt-project/yt_astro_analysis/pull/42>`__, `PR #113 <https://github.com/yt-project/yt_astro_analysis/pull/113>`__
+ * check derived_field_list for base fields `PR #43 <https://github.com/yt-project/yt_astro_analysis/pull/43>`__
+ * allow cosmology splice from a single dataset `PR #49 <https://github.com/yt-project/yt_astro_analysis/pull/49>`__
+ * Fix iterator `PR #68 <https://github.com/yt-project/yt_astro_analysis/pull/68>`__
+ * Support new config file format `PR #65 <https://github.com/yt-project/yt_astro_analysis/pull/65>`__
+ * Enable circleci testing `PR #44 <https://github.com/yt-project/yt_astro_analysis/pull/44>`__
+ * Add max_box_fraction to plan_cosmology_splice `PR #76 <https://github.com/yt-project/yt_astro_analysis/pull/76>`__
+ * Fix HaloCatalog output_dir `PR #81 <https://github.com/yt-project/yt_astro_analysis/pull/81>`__
+ * remove deprecated dm_only keyword from halo finder `PR #57 <https://github.com/yt-project/yt_astro_analysis/pull/57>`__
+ * update amr_grid.inp `PR #77 <https://github.com/yt-project/yt_astro_analysis/pull/77>`__
 
-**Full Changelog**: https://github.com/yt-project/yt_astro_analysis/compare/yt_astro_analysis-1.0.0...yt_astro_analysis-1.1.0
+`Full Changelog <https://github.com/yt-project/yt_astro_analysis/compare/yt_astro_analysis-1.0.0...yt_astro_analysis-1.1.0>`__
 
 Version 1.0
 -----------
