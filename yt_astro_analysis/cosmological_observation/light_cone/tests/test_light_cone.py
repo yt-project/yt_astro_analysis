@@ -19,7 +19,7 @@ import tempfile
 
 import numpy as np
 
-from yt.testing import assert_equal, requires_module
+from yt.testing import assert_equal
 from yt.units.yt_array import YTQuantity
 from yt.utilities.answer_testing.framework import AnswerTestingTest
 from yt.utilities.on_demand_imports import _h5py as h5py
@@ -34,7 +34,6 @@ _funits = {
 }
 
 
-@requires_module("h5py")
 class LightConeProjectionTest(AnswerTestingTest):
     _type_name = "LightConeProjection"
     _attrs = ()

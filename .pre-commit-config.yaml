@@ -10,13 +10,13 @@ repos:
     rev: v1.20.0
     hooks:
     -   id: setup-cfg-fmt
-        args: [--max-py-version, '3.9']
 -   repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.0.1
     hooks:
     - id: trailing-whitespace
     - id: end-of-file-fixer
     - id: no-commit-to-branch
+    - id: check-yaml
 -   repo: https://github.com/asottile/pyupgrade
     rev: v2.29.1
     hooks:
