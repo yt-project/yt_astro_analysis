@@ -26,6 +26,8 @@ jobs:
 
       - name: Build wheels for CPython
         uses: pypa/cibuildwheel@v2.3.0
+        with:
+          output-dir: dist
         env:
           CIBW_BUILD: "cp37-* cp38-* cp39-* cp310-*"
           CIBW_SKIP: "*-musllinux_*"  #  numpy doesn't have wheels for musllinux so we can't build some quickly and without bloating
@@ -38,7 +40,7 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: wheels
-          path: ./wheelhouse/*.whl
+          path: ./dist/*.whl
 
   build_sdist:
     name: Build source distribution
