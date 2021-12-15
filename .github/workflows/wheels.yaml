@@ -53,6 +53,7 @@ jobs:
 
       - uses: actions/upload-artifact@v2
         with:
+          name: tarball
           path: dist/*.tar.gz
 
   upload_pypi:
@@ -63,7 +64,12 @@ jobs:
     steps:
       - uses: actions/download-artifact@v2
         with:
-          name: artifact
+          name: tarball
+          path: dist
+
+      - uses: actions/download-artifact@v2
+        with:
+          name: wheels
           path: dist
 
       - uses: pypa/gh-action-pypi-publish@v1.4.2
