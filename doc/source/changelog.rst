@@ -33,7 +33,7 @@ New Features
      * Add restart option for rockstar `PR #82 <https://github.com/yt-project/yt_astro_analysis/pull/82>`__
      * Adding an outer_radius parameter to the iterative COM callback `PR #34 <https://github.com/yt-project/yt_astro_analysis/pull/34>`__
 
- * Remove the sunyaev_zeldovich analysis module. This is now `pyxsim <http://hea-www.cfa.harvard.edu/~jzuhone/pyxsim/>`__. `PR #79 <https://github.com/yt-project/yt_astro_analysis/pull/79>`__
+ * Remove the sunyaev_zeldovich analysis module. This is now `ytsz <https://github.com/jzuhone/ytsz>`__. `PR #79 <https://github.com/yt-project/yt_astro_analysis/pull/79>`__
  * Drop support for python 3.6 `PR #100 <https://github.com/yt-project/yt_astro_analysis/pull/100>`__, `PR #101 <https://github.com/yt-project/yt_astro_analysis/pull/101>`__
 
 Minor Enhancements and Bugfixes
