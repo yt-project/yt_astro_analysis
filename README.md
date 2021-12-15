@@ -26,32 +26,34 @@ schedule.
 Full installation documentation can also be found
 [here](https://yt-astro-analysis.readthedocs.io/en/latest/Installation.html).
 
-To install yt_astro_analysis, you will first need to
-[install yt](https://github.com/yt-project/yt#installation). Then do,
+### Stable
 
-```
-$ pip install yt_astro_analysis
-```
-
-If you use conda, do,
-
-```
-$ conda install -c conda-forge yt_astro_analysis
+Get the latest release via pip as
+```shell
+python -m pip install yt_astro_analysis
 ```
 
-If you would like to build `yt_astro_analysis` from source, clone the git
-repository and install like this:
-
+Or with conda, as
+```shell
+conda install -c conda-forge yt_astro_analysis
 ```
+
+### From source
+
+To build `yt_astro_analysis` from source, clone the git repository and install
+as
+
+```shell
 git clone https://github.com/yt-project/yt_astro_analysis
 cd yt_astro_analysis
-pip install -e .
+python -m pip install -e .
 ```
 
 ### Installing with Rockstar support
 
-In order to run the Rockstar halo finder from within yt_astro_analysis, you will
-need to install ``rockstar-galaxies`` from either
+In order to run the Rockstar halo finder from within yt_astro_analysis, it is
+necessary to install yt_astro_analysis from source.
+You will need to install `rockstar-galaxies` from either
 [John Wise's
 repository](https://bitbucket.org/jwise77/rockstar-galaxies) or [Peter
 Behroozi's
@@ -71,7 +73,7 @@ yt_astro_analysis.
 ```
 cd yt_astro_analysis
 echo <path_to_rockstar> > rockstar.cfg
-pip install -e .
+python -m pip install -e .
 ```
 
 Finally, you'll need to make sure that the location of
@@ -87,11 +89,11 @@ For every module that was moved from yt's analysis_modules to yt_astro_analysis,
 all imports can be changed simply by substituting ``yt.analysis_modules`` with
 ``yt.extensions.astro_analysis``.  For example, the following
 
-```
+```python
 from yt.analysis_modules.ppv_cube.api import PPVCube
 ```
 becomes
-```
+```python
 from yt.extensions.astro_analysis.ppv_cube.api import PPVCube
 ```
 
