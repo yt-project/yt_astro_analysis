@@ -16,10 +16,19 @@
 [![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
 
 This is yt_astro_analysis, the [yt](https://github.com/yt-project/yt) extension
-package for astrophysical analysis.  This is primarily machinery that used to be
-in yt's analysis_modules.  These were made into a separate package to allow yt to
-become less astro-specifc and to allow these modules to be developed on their own
-schedule.
+package for astrophysical analysis. This package contains
+functionality for:
+
+ * Halo finding and analysis
+ * Lightcones
+ * Planning cosmological simulations for making lightcones and lightrays
+ * Exporting to the RADMC-3D radiation transport code
+ * Creating PPV FITS cubes
+
+This is primarily machinery that used to be in yt's
+analysis_modules. These were made into a separate package to allow yt
+to become less astro-specifc and to allow these modules to be
+developed on their own schedule.
 
 ## Installation
 
