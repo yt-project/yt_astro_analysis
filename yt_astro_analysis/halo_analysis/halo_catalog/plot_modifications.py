@@ -5,7 +5,6 @@ import numpy as np
 from yt.data_objects.data_containers import YTDataContainer
 from yt.data_objects.static_output import Dataset
 from yt.visualization.plot_modifications import PlotCallback
-from yt_astro_analysis.halo_analysis.halo_catalog.halo_catalog import HaloCatalog
 
 
 class HaloCatalogCallback(PlotCallback):
@@ -131,16 +130,21 @@ class HaloCatalogCallback(PlotCallback):
             self.halo_data = halo_catalog
         elif isinstance(halo_catalog, Dataset):
             self.halo_data = halo_catalog.all_data()
-        elif isinstance(halo_catalog, HaloCatalog):
-            if halo_catalog.data_source.ds == halo_catalog.halos_ds:
-                self.halo_data = halo_catalog.data_source
-            else:
-                self.halo_data = halo_catalog.halos_ds.all_data()
         else:
-            raise RuntimeError(
-                "halo_catalog argument must be a HaloCatalog object, "
-                + "a dataset, or a data container."
-            )
+            # assuming halo_catalog is a HaloCatalog instance
+            # but do so with a EAFP pattern instead of LBYL to workaround
+            # conflicting namespaces, see https://github.com/yt-project/yt_astro_analysis/issues/131
+            try:
+                if halo_catalog.data_source.ds == halo_catalog.halos_ds:
+                    self.halo_data = halo_catalog.data_source
+                else:
+                    self.halo_data = halo_catalog.halos_ds.all_data()
+            except AttributeError as exc:
+                raise TypeError(
+                    "halo_catalog argument must be a HaloCatalog object, "
+                    "a dataset, or a data container. "
+                    f"Received {halo_catalog} with type {type(halo_catalog)}"
+                ) from exc
 
         self.width = width
         self.radius_field = radius_field
