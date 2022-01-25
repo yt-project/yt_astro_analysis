@@ -283,7 +283,7 @@ cdef class RockstarInterface:
     cdef public object particle_type
     cdef public object mass_field
     cdef public object star_types
-    cdef public int total_particles
+    cdef public np.int64_t total_particles
     cdef public object callbacks
 
     def __cinit__(self, ts):
@@ -291,7 +291,7 @@ cdef class RockstarInterface:
         self.tsl = iter(ts)  # timeseries generator used by read
 
     def setup_rockstar(self, char *server_address, char *server_port,
-                       int num_snaps, int total_particles,
+                       int num_snaps, np.int64_t total_particles,
                        particle_type, mass_field, star_types,
                        np.float64_t particle_mass,
                        int parallel = False, int num_readers = 1,
