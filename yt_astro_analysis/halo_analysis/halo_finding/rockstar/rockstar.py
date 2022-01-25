@@ -297,6 +297,7 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
         if self.workgroup.name != "readers":
             return None
         tds = ts[0]
+        tds.index
         ptype = self.particle_type
         if ptype not in tds.particle_types and ptype != "all":
             has_particle_filter = tds.add_particle_filter(ptype)
