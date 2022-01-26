@@ -115,7 +115,7 @@ class HaloCatalog(ParallelAnalysisInterface):
         halo_field_type="all",
         finder_method=None,
         finder_kwargs=None,
-        output_dir="halo_catalogs",
+        output_dir=None,
     ):
 
         super().__init__()
@@ -133,6 +133,12 @@ class HaloCatalog(ParallelAnalysisInterface):
         if data_source is None and halos_ds is not None:
             data_source = halos_ds.all_data()
         self.data_source = data_source
+
+        if output_dir is None:
+            if finder_method == "rockstar":
+                output_dir = finder_kwargs.get("outbase", "rockstar_halos")
+            else:
+                output_dir = "halo_catalogs"
 
         self.output_basedir = ensure_dir(output_dir)
         self.pipeline = AnalysisPipeline(output_dir=self.output_dir)
