@@ -395,7 +395,7 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
             self.server_address,
             self.port,
             num_outputs,
-            self.total_particles,
+            np.int64(self.total_particles),
             self.particle_type,
             self.mass_field,
             star_types=self.star_types,
