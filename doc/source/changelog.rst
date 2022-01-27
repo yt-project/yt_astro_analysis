@@ -13,6 +13,21 @@ The `CREDITS file
 contains the most up-to-date list of everyone who has contributed to the
 yt_astro_analysis source code.
 
+Version 1.1.1
+-------------
+
+Release date: *January 27, 2022*
+
+Bugfixes
+^^^^^^^^
+
+ * Make sure to initialize index before checking particle types `PR #127 <https://github.com/yt-project/yt_astro_analysis/pull/127>`__
+ * Fix broken example with halo plotting `PR #132 <https://github.com/yt-project/yt_astro_analysis/pull/132>`__
+ * Make total particles a 64 bit integer `PR #133 <https://github.com/yt-project/yt_astro_analysis/pull/133>`__
+ * Set output directory properly for rockstar halo finder `PR #134 <https://github.com/yt-project/yt_astro_analysis/pull/134>`__
+
+**Full Changelog**: https://github.com/yt-project/yt_astro_analysis/compare/yt_astro_analysis-1.1.0...yt_astro_analysis-1.1.1
+
 Version 1.1
 -----------
 
