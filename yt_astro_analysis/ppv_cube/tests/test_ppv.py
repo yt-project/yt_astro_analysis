@@ -57,7 +57,7 @@ def test_ppv():
     )
 
     dv = cube.dv
-    v_th = np.sqrt(2.0 * kboltz * T_0 / (56.0 * mh) + 2.0 * sigma_v ** 2).in_units(
+    v_th = np.sqrt(2.0 * kboltz * T_0 / (56.0 * mh) + 2.0 * sigma_v**2).in_units(
         "km/s"
     )
     a = cube.data.mean(axis=(0, 1)).v

@@ -239,7 +239,7 @@ class Halo:
         vx = (self["particle_velocity_x"] - bv[0]) * pm / sm
         vy = (self["particle_velocity_y"] - bv[1]) * pm / sm
         vz = (self["particle_velocity_z"] - bv[2]) * pm / sm
-        s = vx ** 2.0 + vy ** 2.0 + vz ** 2.0
+        s = vx**2.0 + vy**2.0 + vz**2.0
         ms = np.mean(s)
         return np.sqrt(ms) * pm.size
 
@@ -418,7 +418,7 @@ class Halo:
         z = self.ds.current_redshift
         period = self.ds.domain_right_edge - self.ds.domain_left_edge
         thissize = self.get_size()
-        rho_crit = rho_crit_g_cm3_h2 * h ** 2.0 * Om_matter  # g cm^-3
+        rho_crit = rho_crit_g_cm3_h2 * h**2.0 * Om_matter  # g cm^-3
         Msun2g = mass_sun_cgs
         rho_crit = rho_crit * ((1.0 + z) ** 3.0)
         # Get some pertinent information about the halo.
@@ -509,11 +509,11 @@ class Halo:
         tC_vector = np.cross(e0_vector_copy, rr)
         te2 = tC_vector.copy()
         for dim in range(3):
-            te2[:, dim] *= np.sum(tC_vector ** 2.0, axis=1) ** (-0.5)
+            te2[:, dim] *= np.sum(tC_vector**2.0, axis=1) ** (-0.5)
         te1 = np.cross(te2, e0_vector_copy)
         length = np.abs(
             -np.sum(rr * te1, axis=1)
-            * (1.0 - np.sum(rr * e0_vector_copy, axis=1) ** 2.0 * mag_A ** -2.0)
+            * (1.0 - np.sum(rr * e0_vector_copy, axis=1) ** 2.0 * mag_A**-2.0)
             ** (-0.5)
         )
         # This problem apparently happens sometimes, that the NaNs are turned
@@ -534,8 +534,8 @@ class Halo:
             np.sum(rr * temp_e2, axis=1)
             * (
                 1
-                - np.sum(rr * temp_e0, axis=1) ** 2.0 * mag_A ** -2.0
-                - np.sum(rr * temp_e1, axis=1) ** 2.0 * mag_B ** -2.0
+                - np.sum(rr * temp_e0, axis=1) ** 2.0 * mag_A**-2.0
+                - np.sum(rr * temp_e1, axis=1) ** 2.0 * mag_B**-2.0
             )
             ** (-0.5)
         )
