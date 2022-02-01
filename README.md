@@ -2,7 +2,7 @@
 
 
 [![PyPI version](https://badge.fury.io/py/yt-astro-analysis.svg)](https://badge.fury.io/py/yt-astro-analysis)
-[![Conda Version](https://img.shields.io/conda/vn/conda-forge/yt_astro_analysis.svg)](https://anaconda.org/conda-forge/yt_astro_analysis)
+[![Anaconda-Server Badge](https://anaconda.org/conda-forge/yt-astro-analysis/badges/version.svg)](https://anaconda.org/conda-forge/yt-astro-analysis)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1458961.svg)](https://doi.org/10.5281/zenodo.1458961)
 [![Powered by NumFOCUS](https://img.shields.io/badge/powered%20by-NumFOCUS-orange.svg?style=flat&colorA=E1523D&colorB=007D8A)](https://numfocus.org)
 
@@ -39,13 +39,18 @@ Full installation documentation can also be found
 
 Get the latest release via pip as
 ```shell
-python -m pip install yt_astro_analysis
+python -m pip install yt-astro-analysis
 ```
 
 Or with conda, as
 ```shell
-conda install -c conda-forge yt_astro_analysis
+conda install -c conda-forge yt-astro-analysis
 ```
+
+Note, the package name is spelled with hyphens (`yt-astro-analysis`)
+when installing from pip or conda. With pip, the package name can be
+spelled with either hyphens or underscores, but with conda it must
+always be hyphens.
 
 ### From source
 
