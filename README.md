@@ -48,7 +48,9 @@ conda install -c conda-forge yt-astro-analysis
 ```
 
 Note, the package name is spelled with hyphens (`yt-astro-analysis`)
-when installing from pip or conda.
+when installing from pip or conda. With pip, the package name can be
+spelled with either hyphens or underscores, but with conda it must
+always be hyphens.
 
 ### From source
 
