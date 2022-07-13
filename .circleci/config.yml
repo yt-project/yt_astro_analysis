@@ -67,6 +67,7 @@ commands:
             # install yt_astro_analysis with extra dev dependencies
             pip install .[dev]
             # configure yt
+            mkdir -p $HOME/.config/yt # avoid a warning from yt
             yt config set --global yt suppress_stream_logging True
             yt config set --global yt test_data_dir $YT_DATA
             yt config set --global yt log_level 30
