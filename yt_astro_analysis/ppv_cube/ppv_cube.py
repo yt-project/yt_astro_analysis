@@ -132,7 +132,6 @@ class PPVCube:
         """
 
         self.ds = ds
-        self.field = field
         self.width = width
         self.particle_mass = atomic_weight * mh
         self.thermal_broad = thermal_broad
@@ -166,6 +165,7 @@ class PPVCube:
 
         dd = ds.all_data()
         fd = dd._determine_fields(field)[0]
+        self.field = fd
         ftype = fd[0]
         self.field_units = ds._get_field_info(fd).units
 
@@ -314,8 +314,8 @@ class PPVCube:
 
         Notes
         -----
-        Additional keyword arguments are passed to
-        :meth:`~astropy.io.fits.HDUList.writeto`.
+        All other optional arguments are passed to
+        :meth:`~yt.visualization.fits_image.FITSImageData.create_sky_wcs`.
 
         Examples
         --------
@@ -345,8 +345,8 @@ class PPVCube:
 
         fib = FITSImageData(self.data, fields=self.field, wcs=w)
         if sky_scale is not None and sky_center is not None:
-            fib.create_sky_wcs(sky_center, sky_scale)
-        fib.writeto(filename, overwrite=overwrite, **kwargs)
+            fib.create_sky_wcs(sky_center, sky_scale, **kwargs)
+        fib.writeto(filename, overwrite=overwrite)
 
     def __repr__(self):
         return "PPVCube [%d %d %d] (%s < %s < %s)" % (
