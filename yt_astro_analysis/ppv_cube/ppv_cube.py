@@ -30,32 +30,6 @@ from yt.visualization.volume_rendering.off_axis_projection import off_axis_proje
 from . import ppv_utils
 
 
-def create_vlos(normal, no_shifting):
-    if no_shifting:
-
-        def _v_los(field, data):
-            return data.ds.arr(data["index", "zeros"], "cm/s")
-
-    elif isinstance(normal, str):
-
-        def _v_los(field, data):
-            return -data["gas", "velocity_%s" % normal]
-
-    else:
-        orient = Orientation(normal)
-        los_vec = orient.unit_vectors[2]
-
-        def _v_los(field, data):
-            vz = (
-                data["gas", "velocity_x"] * los_vec[0]
-                + data["gas", "velocity_y"] * los_vec[1]
-                + data["gas", "velocity_z"] * los_vec[2]
-            )
-            return -vz
-
-    return _v_los
-
-
 fits_info = {
     "velocity": ("m/s", "VOPT", "v"),
     "frequency": ("Hz", "FREQ", "f"),
@@ -192,6 +166,7 @@ class PPVCube:
 
         dd = ds.all_data()
         fd = dd._determine_fields(field)[0]
+        ftype = fd[0]
         self.field_units = ds._get_field_info(fd).units
 
         self.vbins = ds.arr(
@@ -207,17 +182,17 @@ class PPVCube:
 
         self.current_v = 0.0
 
-        _vlos = create_vlos(normal, self.no_shifting)
-        self.ds.add_field(
-            ("gas", "v_los"), function=_vlos, units="cm/s", sampling_type="cell"
-        )
+        if self.no_shifting:
+            self.velocity_field = (ftype, "zeros")
+        else:
+            self.velocity_field = (ftype, "velocity_los")
 
-        _intensity = self._create_intensity()
+        _intensity = self._create_intensity(ftype=ftype)
         self.ds.add_field(
-            ("gas", "intensity"),
+            (ftype, "intensity"),
             function=_intensity,
             units=self.field_units,
-            sampling_type="cell",
+            sampling_type="local",
         )
 
         if method == "integrate" and weight_field is None:
@@ -231,7 +206,7 @@ class PPVCube:
             self.current_v = self.vmid_cgs[i]
             if isinstance(normal, str):
                 prj = ds.proj(
-                    "intensity",
+                    (ftype, "intensity"),
                     ds.coordinates.axis_id[normal],
                     method=method,
                     weight_field=weight_field,
@@ -249,7 +224,7 @@ class PPVCube:
                     normal,
                     width,
                     (self.nx, self.ny),
-                    "intensity",
+                    (ftype, "intensity"),
                     north_vector=north_vector,
                     no_ghost=no_ghost,
                     method=method,
@@ -273,8 +248,7 @@ class PPVCube:
         elif not isinstance(self.width, YTQuantity):
             self.width = ds.quan(self.width, "code_length")
 
-        self.ds.field_info.pop(("gas", "intensity"))
-        self.ds.field_info.pop(("gas", "v_los"))
+        self.ds.field_info.pop((ftype, "intensity"))
 
     def transform_spectral_axis(self, rest_value, units):
         """
@@ -389,12 +363,12 @@ class PPVCube:
     def __getitem__(self, item):
         return self.data[item]
 
-    def _create_intensity(self):
+    def _create_intensity(self, ftype="gas"):
         if self.thermal_broad:
 
             def _intensity(field, data):
-                v = self.current_v - data["gas", "v_los"].in_cgs().v
-                T = data["gas", "temperature"].in_cgs().v
+                v = self.current_v - data[self.velocity_field].in_cgs().v
+                T = data[ftype, "temperature"].in_cgs().v
                 w = ppv_utils.compute_weight(
                     self.thermal_broad,
                     self.dv_cgs,
@@ -410,7 +384,7 @@ class PPVCube:
             def _intensity(field, data):
                 w = (
                     1.0
-                    - np.fabs(self.current_v - data["gas", "v_los"].in_cgs().v)
+                    - np.fabs(self.current_v - data[self.velocity_field].in_cgs().v)
                     / self.dv_cgs
                 )
                 w[w < 0.0] = 0.0
