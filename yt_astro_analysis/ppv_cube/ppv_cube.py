@@ -77,7 +77,6 @@ class PPVCube:
         thermal_broad=False,
         atomic_weight=56.0,
         depth=(1.0, "unitary"),
-        depth_res=256,
         method="integrate",
         weight_field=None,
         no_shifting=False,
@@ -127,9 +126,6 @@ class PPVCube:
             A tuple containing the depth to project through and the string
             key of the unit: (width, 'unit').  If set to a float, code units
             are assumed. Only for off-axis cubes.
-        depth_res : integer, optional
-            Deprecated, this is still in the function signature for API
-            compatibility
         method : string, optional
             Set the projection method to be used.
             "integrate" : line of sight integration over the line element.
