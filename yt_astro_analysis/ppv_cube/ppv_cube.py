@@ -197,7 +197,7 @@ class PPVCube:
 
         if method == "integrate" and weight_field is None:
             self.proj_units = str(ds.quan(1.0, self.field_units + "*cm").units)
-        elif method == "sum":
+        else:
             self.proj_units = self.field_units
 
         storage = {}
