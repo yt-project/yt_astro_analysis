@@ -10,7 +10,6 @@ commands:
             echo 'export GOLD_STANDARD=HEAD' >> $BASH_ENV
             echo 'export ROCKSTAR_DIR=$HOME/rockstar-galaxies' >> $BASH_ENV
             echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ROCKSTAR_DIR' >> $BASH_ENV
-            echo 'export YT_DIR=$HOME/yt-git' >> $BASH_ENV
             echo 'export YT_DATA=$HOME/yt_test' >> $BASH_ENV
             echo 'export TEST_DIR=$HOME/test_results' >> $BASH_ENV
             echo 'export TEST_NAME=astro_analysis' >> $BASH_ENV
@@ -46,15 +45,8 @@ commands:
             pip install --upgrade pip
             pip install mpi4py
             export MAX_BUILD_CORES=2
-            # install yt from source
-            if [ ! -f $YT_DIR/README.md ]; then
-                git clone --branch=main https://github.com/yt-project/yt $YT_DIR
-            fi
-            pushd $YT_DIR
-            git pull origin main
-            git checkout main
-            pip install .
-            popd
+            python -m pip install git+https://github.com/yt-project/yt
+
             # install rockstar
             sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 100
             if [ ! -f $ROCKSTAR_DIR/VERSION ]; then
