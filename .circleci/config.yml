@@ -188,7 +188,7 @@ jobs:
 
   run-tests-pytest:
     # Run a subset of the test suite (yield-based tests are not supported by pytest)
-    # this is necessary to test in Python 3.10 because it's not compatible with nose
+    # this is necessary to test in Python 3.10+ because it's not compatible with nose
     parameters:
       tag:
         type: string
@@ -290,6 +290,10 @@ workflows:
        - run-tests-pytest:
            name: "Python 3.10 tests"
            tag: "3.10.0"
+
+       - run-tests-pytest:
+           name: "Python 3.11 tests"
+           tag: "3.11.1"
 
        - docs-test:
            name: "Test docs build"
