@@ -46,7 +46,7 @@ int convert_particle_arrays(
 
     *xpos    = (PyArrayObject *) PyArray_FromAny(oxpos,
                     PyArray_DescrFromType(NPY_FLOAT64), 1, 1,
-                    NPY_ARRAY_INOUT_ARRAY | NPY_ARRAY_UPDATEIFCOPY, NULL);
+                    NPY_ARRAY_INOUT_ARRAY | NPY_ARRAY_WRITEBACKIFCOPY, NULL);
     if(!*xpos){
     PyErr_Format(_HOPerror,
              "EnzoHop: xpos didn't work.");
@@ -56,7 +56,7 @@ int convert_particle_arrays(
 
     *ypos    = (PyArrayObject *) PyArray_FromAny(oypos,
                     PyArray_DescrFromType(NPY_FLOAT64), 1, 1,
-                    NPY_ARRAY_INOUT_ARRAY | NPY_ARRAY_UPDATEIFCOPY, NULL);
+                    NPY_ARRAY_INOUT_ARRAY | NPY_ARRAY_WRITEBACKIFCOPY, NULL);
     if((!*ypos)||(PyArray_SIZE(*ypos) != num_particles)) {
     PyErr_Format(_HOPerror,
              "EnzoHop: xpos and ypos must be the same length.");
@@ -65,7 +65,7 @@ int convert_particle_arrays(
 
     *zpos    = (PyArrayObject *) PyArray_FromAny(ozpos,
                     PyArray_DescrFromType(NPY_FLOAT64), 1, 1,
-                    NPY_ARRAY_INOUT_ARRAY | NPY_ARRAY_UPDATEIFCOPY, NULL);
+                    NPY_ARRAY_INOUT_ARRAY | NPY_ARRAY_WRITEBACKIFCOPY, NULL);
     if((!*zpos)||(PyArray_SIZE(*zpos) != num_particles)) {
     PyErr_Format(_HOPerror,
              "EnzoHop: xpos and zpos must be the same length.");
@@ -74,7 +74,7 @@ int convert_particle_arrays(
 
     *mass    = (PyArrayObject *) PyArray_FromAny(omass,
                     PyArray_DescrFromType(NPY_FLOAT64), 1, 1,
-                    NPY_ARRAY_INOUT_ARRAY | NPY_ARRAY_UPDATEIFCOPY, NULL);
+                    NPY_ARRAY_INOUT_ARRAY | NPY_ARRAY_WRITEBACKIFCOPY, NULL);
     if((!*mass)||(PyArray_SIZE(*mass) != num_particles)) {
     PyErr_Format(_HOPerror,
              "EnzoHop: xpos and mass must be the same length.");
