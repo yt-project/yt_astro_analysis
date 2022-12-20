@@ -47,11 +47,16 @@ commands:
             export MAX_BUILD_CORES=2
             python -m pip install git+https://github.com/yt-project/yt
 
+            export YT_ASTRO_DIR=$(pwd)
             # install rockstar
             sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 100
             if [ ! -f $ROCKSTAR_DIR/VERSION ]; then
                 git clone https://bitbucket.org/pbehroozi/rockstar-galaxies $ROCKSTAR_DIR
                 pushd $ROCKSTAR_DIR
+
+                # apply patches necessary for compat with Ubuntu 22.04
+                git apply $YT_ASTRO_DIR/rockstar-patches/cflags.patch --whitespace=fix
+
                 make lib
                 popd
             fi
