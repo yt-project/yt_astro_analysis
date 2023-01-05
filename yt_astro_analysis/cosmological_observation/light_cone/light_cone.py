@@ -514,7 +514,7 @@ class LightCone(CosmologySplice):
         dataset = fh.create_dataset(field_node, data=pstack)
         dataset.attrs["units"] = str(pstack.units)
         dataset.attrs["redshifts"] = redshift_list
-        dataset.attrs["observer_redshift"] = np.float(self.observer_redshift)
+        dataset.attrs["observer_redshift"] = float(self.observer_redshift)
         for key, value in attrs.items():
             dataset.attrs[key] = value
 
@@ -526,7 +526,7 @@ class LightCone(CosmologySplice):
             dataset = fh.create_dataset(weight_field_node, data=wstack)
             dataset.attrs["units"] = str(wstack.units)
             dataset.attrs["redshifts"] = redshift_list
-            dataset.attrs["observer_redshift"] = np.float(self.observer_redshift)
+            dataset.attrs["observer_redshift"] = float(self.observer_redshift)
             for key, value in attrs.items():
                 dataset.attrs[key] = value
 
