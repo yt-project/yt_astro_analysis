@@ -61,6 +61,10 @@ commands:
                 popd
             fi
             echo $ROCKSTAR_DIR > rockstar.cfg
+
+            # never attempt to build h5py from source
+            pip install h5py --only-binary h5py
+
             # install yt_astro_analysis with extra dev dependencies
             pip install .[dev]
             # configure yt
