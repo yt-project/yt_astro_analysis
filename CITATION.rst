@@ -32,7 +32,7 @@ BbTeX entries are provided below:
                     Ben Keller and
                     Mark Richardson and
                     Clément Robert},
-    title        = {yt_astro_analysis version 1.1.1},
+    title        = {yt_astro_analysis version 1.1.2},
     month        = jan,
     year         = 2022,
     doi          = {10.5281/zenodo.5911048},
