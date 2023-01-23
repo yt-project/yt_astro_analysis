@@ -1,0 +1,24 @@
+diff --git a/Makefile b/Makefile
+index 66f7e17..debd222 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1,7 +1,7 @@
+-CFLAGS=-m64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -D_BSD_SOURCE -D_POSIX_SOURCE -D_POSIX_C_SOURCE=200809L -D_SVID_SOURCE -D_DARWIN_C_SOURCE -Wall -fno-math-errno -fPIC
++CFLAGS=-m64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -D_POSIX_SOURCE -D_POSIX_C_SOURCE=200809L -D_DEFAULT_SOURCE -D_DARWIN_C_SOURCE -Wall -fno-math-errno -fPIC -I/usr/include/tirpc
+ LDFLAGS=-shared
+ OFLAGS = -lm -O3 -std=c99
+-DEBUGFLAGS = -lm -g -O3 -std=c99 #-Dinline=
++DEBUGFLAGS = -lm -g -O3 -std=c99 #-Dinline=
+ PROFFLAGS = -lm -g -pg -O2 -std=c99
+ CC = gcc
+ CFILES = rockstar.c check_syscalls.c fof.c groupies.c subhalo_metric.c potential.c nfw.c jacobi.c fun_times.c interleaving.c universe_time.c hubble.c integrate.c distance.c config_vars.c config.c bounds.c inthash.c io/read_config.c client.c server.c merger.c inet/socket.c inet/rsocket.c inet/address.c io/meta_io.c io/io_internal.c io/io_ascii.c io/stringparse.c io/io_gadget.c io/io_generic.c io/io_art.c io/io_nchilada.c io/io_tipsy.c io/io_bgc2.c io/io_util.c io/io_arepo.c io/io_hdf5.c io/io_enzo.c
+diff --git a/examples/Makefile b/examples/Makefile
+index caf2322..a192fe5 100644
+--- a/examples/Makefile
++++ b/examples/Makefile
+@@ -1,4 +1,4 @@
+-CFLAGS=-m64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -D_BSD_SOURCE -D_POSIX_SOURCE -D_POSIX_C_SOURCE=200809L -D_SVID_SOURCE -D_DARWIN_C_SOURCE -lm -fno-math-errno -Wall
++CFLAGS=-m64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -D_POSIX_SOURCE -D_POSIX_C_SOURCE=200809L -D_DEFAULT_SOURCE -D_DARWIN_C_SOURCE -lm -fno-math-errno -Wall
+ OFLAGS = -O3 -std=c99
+ DEBUGFLAGS = -g -O3 -std=c99
+ PROFFLAGS = -g -pg -O2 -std=c99
