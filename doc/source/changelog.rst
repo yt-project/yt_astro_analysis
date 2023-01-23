@@ -13,6 +13,31 @@ The `CREDITS file
 contains the most up-to-date list of everyone who has contributed to the
 yt_astro_analysis source code.
 
+Version 1.1.2
+-------------
+
+Release date: *January 23, 2023*
+
+Bugfixes
+^^^^^^^^
+
+ * Fix compatibility with numpy 1.24 (numpy.float was removed) `PR #169 <https://github.com/yt-project/yt_astro_analysis/pull/169>`__
+ * Build wheels for Python 3.11 `PR #170 <https://github.com/yt-project/yt_astro_analysis/pull/170>`__
+
+Documentation and tests
+^^^^^^^^^^^^^^^^^^^^^^^
+ * Update package name for conda/pip installation. `PR #138 <https://github.com/yt-project/yt_astro_analysis/pull/138>`__
+ * Hotfix CI (workaround upstream change of behaviour) `PR #145 <https://github.com/yt-project/yt_astro_analysis/pull/145>`__
+ * Test on Python 3.11 `PR #163 <https://github.com/yt-project/yt_astro_analysis/pull/163>`__
+ * Switch ubuntu image to 20.04 `PR #167 <https://github.com/yt-project/yt_astro_analysis/pull/167>`__
+
+Requirements
+^^^^^^^^^^^^
+ * Drop support for CPython 3.7 `PR #157 <https://github.com/yt-project/yt_astro_analysis/pull/157>`__
+
+**Full Changelog**: https://github.com/yt-project/yt_astro_analysis/compare/yt_astro_analysis-1.1.1...yt_astro_analysis-1.1.2
+
+
 Version 1.1.1
 -------------
 
