@@ -1,0 +1,10 @@
+# optional dependencies
+astropy
+scipy
+
+# test dependencies
+nose
+nose-timer
+pytest
+girder-client
+codecov

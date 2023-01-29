@@ -1,0 +1,10 @@
+[flake8]
+exclude = */__init__.py, */api.py
+ignore =
+    E203,
+    E266,
+    E302,
+    E501,
+    E741,
+    W503,
+enable-extensions = G  # flake8-logging-format (extension is disabled by default)

@@ -1,11 +1,65 @@
 [build-system]
 requires = [
-  "setuptools>=19.6",
+  "setuptools>=61.2",
   # see https://github.com/numpy/numpy/pull/18389
   "wheel>=0.36.2",
   "Cython>=0.29.21,<3.0",
   "oldest-supported-numpy",
 ]
+
+[project]
+name = "yt_astro_analysis"
+version = "1.2.dev1"
+description = "yt astrophysical analysis modules extension"
+authors = [
+    { name = "The yt project", email = "yt-dev@python.org" },
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: BSD License",
+    "Natural Language :: English",
+    "Operating System :: MacOS :: MacOS X",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: Unix",
+    "Programming Language :: C",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Scientific/Engineering :: Astronomy",
+    "Topic :: Scientific/Engineering :: Physics",
+    "Topic :: Scientific/Engineering :: Visualization",
+]
+keywords = [
+    "astronomy astrophysics visualization amr adaptivemeshrefinement",
+]
+requires-python = ">=3.8"
+dependencies = [
+    "h5py>=3.1.0",
+    "more-itertools>=8.4",
+    "yt>=4.0.1",
+]
+
+[project.readme]
+file = "README.md"
+content-type = "text/markdown"
+
+[project.license]
+text = "BSD 3-Clause"
+
+[project.urls]
+Homepage = "https://yt-project.org/"
+Documentation = "https://yt-astro-analysis.readthedocs.io/"
+Source = "https://github.com/yt-project/yt_astro_analysis/"
+Tracker = "https://github.com/yt-project/yt_astro_analysis/issues"
+
+[tool.setuptools]
+include-package-data = true
+zip-safe = false
 
 [tool.black]
 line-length = 88
