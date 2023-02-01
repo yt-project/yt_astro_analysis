@@ -212,7 +212,7 @@ class PPVCube:
                     weight_field=weight_field,
                     data_source=data_source,
                 )
-                buf = prj.to_frb(width, self.nx, center=self.center)["intensity"]
+                buf = prj.to_frb(width, self.nx, center=self.center)[ftype, "intensity"]
             else:
                 if data_source is None:
                     source = ds
