@@ -117,7 +117,6 @@ class HaloCatalog(ParallelAnalysisInterface):
         finder_kwargs=None,
         output_dir=None,
     ):
-
         super().__init__()
 
         self.halos_ds = halos_ds
@@ -199,7 +198,6 @@ class HaloCatalog(ParallelAnalysisInterface):
         return os.path.join(self.output_basedir, self.output_basename)
 
     def _yield_halos(self, njobs="auto", dynamic=False):
-
         my_size = self.comm.size
 
         if njobs == "auto":
@@ -211,7 +209,6 @@ class HaloCatalog(ParallelAnalysisInterface):
             my_njobs = njobs
 
         for chunk in self.data_source.chunks([], "io"):
-
             if self.comm.rank == 0:
                 chunk.get_data(self.pipeline.field_quantities)
 
@@ -280,7 +277,6 @@ class HaloCatalog(ParallelAnalysisInterface):
             data = {}
             if n_halos > 0:
                 for key in self.quantities:
-
                     if hasattr(self.catalog[0][key], "units"):
                         registry = self.catalog[0][key].units.registry
                         my_arr = functools.partial(unyt_array, registry=registry)

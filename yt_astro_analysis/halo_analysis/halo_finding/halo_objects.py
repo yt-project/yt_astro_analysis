@@ -574,7 +574,6 @@ class FOFHalo(Halo):
 
 
 class HaloList:
-
     _fields = ["particle_position_%s" % ax for ax in "xyz"]
 
     def __init__(self, data_source, redshift=-1, ptype="all"):

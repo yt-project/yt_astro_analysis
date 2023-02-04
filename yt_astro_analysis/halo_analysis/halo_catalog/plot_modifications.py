@@ -121,7 +121,6 @@ class HaloCatalogCallback(PlotCallback):
         font_kwargs=None,
         factor=1.0,
     ):
-
         PlotCallback.__init__(self)
         def_circle_args = {"edgecolor": "white", "facecolor": "None"}
         def_text_args = {"color": "white"}

@@ -104,7 +104,6 @@ class LightCone(CosmologySplice):
         output_dir="LC",
         output_prefix="LightCone",
     ):
-
         self.near_redshift = near_redshift
         self.far_redshift = far_redshift
         self.observer_redshift = observer_redshift

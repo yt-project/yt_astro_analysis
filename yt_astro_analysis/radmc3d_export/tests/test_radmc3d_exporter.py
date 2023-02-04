@@ -40,7 +40,6 @@ class RadMC3DValuesTest(AnswerTestingTest):
         self.decimals = decimals
 
     def run(self):
-
         # Set up in a temp dir
         tmpdir = tempfile.mkdtemp()
         curdir = os.getcwd()
@@ -55,7 +54,6 @@ class RadMC3DValuesTest(AnswerTestingTest):
         total = 0.0
         with open("dust_density.inp") as f:
             for i, line in enumerate(f):
-
                 # skip header
                 if i < 3:
                     continue
