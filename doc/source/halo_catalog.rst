@@ -78,7 +78,6 @@ An example of defining your own filter:
 .. code-block:: python
 
    def my_filter_function(halo):
-
        # Define condition for filter
        filter_value = True
 

@@ -27,7 +27,6 @@ def setup():
 
 
 def test_ppv():
-
     np.random.seed(seed=0x4D3D3D3)
 
     dims = (8, 8, 128)
@@ -83,7 +82,6 @@ def test_ppv():
 
 
 def test_ppv_nothermalbroad():
-
     np.random.seed(seed=0x4D3D3D3)
 
     dims = (16, 16, 128)

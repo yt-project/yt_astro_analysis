@@ -242,7 +242,6 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
         min_halo_size=25,
         restart=False,
     ):
-
         if is_root():
             mylog.info("The citation for the Rockstar halo finder can be found at")
             mylog.info("http://adsabs.harvard.edu/abs/2013ApJ...762..109B")
@@ -343,7 +342,6 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
 
     def _get_hosts(self):
         if self.comm.rank == 0 or self.comm.size == 1:
-
             # Temporary mac hostname fix
             try:
                 server_address = socket.gethostname()

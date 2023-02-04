@@ -157,7 +157,6 @@ class CosmologySplice:
 
         # Use minimum number of datasets to go from z_i to z_f.
         if minimal:
-
             z_Tolerance = 1e-3
             z = far_redshift
 
@@ -171,7 +170,6 @@ class CosmologySplice:
             while (z_target > near_redshift) and (
                 np.abs(z_target - near_redshift) > z_Tolerance
             ):
-
                 # Move forward from last slice in stack until z > z_max.
                 current_slice = cosmology_splice[-1]
 
