@@ -8,7 +8,6 @@ HaloCatalog callbacks
 import os
 
 import numpy as np
-from more_itertools import always_iterable
 
 from yt.data_objects.profiles import create_profile
 from yt.frontends.ytdata.utilities import _hdf5_yt_array, _yt_array_hdf5
@@ -19,6 +18,20 @@ from yt.utilities.on_demand_imports import _h5py as h5py
 from yt.utilities.parallel_tools.parallel_analysis_interface import parallel_root_only
 from yt.visualization.profile_plotter import PhasePlot
 from yt_astro_analysis.halo_analysis.halo_catalog.analysis_operators import add_callback
+
+
+def _always_iterable(obj):
+    # a simplified version of more_itertools.always_iterable
+    if obj is None:
+        return iter(())
+
+    if isinstance(obj, (str, bytes)):
+        return iter((obj,))
+
+    try:
+        return iter(obj)
+    except TypeError:
+        return iter((obj,))
 
 
 def halo_sphere(halo, radius_field="virial_radius", factor=1.0, field_parameters=None):
@@ -208,7 +221,7 @@ def profile(
         output_dir = storage
     output_dir = os.path.join(halo.halo_catalog.output_dir, output_dir)
 
-    bin_fields = list(always_iterable(bin_fields))
+    bin_fields = list(_always_iterable(bin_fields))
     my_profile = create_profile(
         halo.data_object,
         bin_fields,
@@ -430,7 +443,7 @@ def virial_quantities(
 
     fields = [
         halo.data_object._determine_fields(field)[0]
-        for field in always_iterable(fields)
+        for field in _always_iterable(fields)
     ]
 
     dds = halo.halo_catalog.data_ds
