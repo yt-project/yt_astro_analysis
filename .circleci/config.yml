@@ -84,7 +84,7 @@ commands:
                 source $BASH_ENV
                 source $HOME/venv/bin/activate
                 mkdir -p $YT_DATA
-                girder-cli --api-url https://girder.hub.yt/api/v1 download 577c09480d7c6b0001ad5be2 $YT_DATA/enzo_tiny_cosmology
+                girder-client --api-url https://girder.hub.yt/api/v1 download 577c09480d7c6b0001ad5be2 $YT_DATA/enzo_tiny_cosmology
             fi
 
   build-and-test-nose:
