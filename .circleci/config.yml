@@ -15,20 +15,6 @@ commands:
             echo 'export TEST_NAME=astro_analysis' >> $BASH_ENV
             echo 'export TEST_FLAGS="--nologcapture -v --with-answer-testing --local --local-dir $TEST_DIR --answer-name=$TEST_NAME --answer-big-data"' >> $BASH_ENV
 
-  install-dependencies:
-    description: "Install dependencies."
-    steps:
-      - run:
-          name: "Install dependencies."
-          command: |
-            sudo apt update
-            sudo apt upgrade
-            sudo apt install -y dvipng texlive-latex-extra
-            python3 -m venv $HOME/venv
-            source $HOME/venv/bin/activate
-            python -m pip install --upgrade pip
-            python -m pip install -r test_requirements.txt
-
   install-with-yt-dev:
     description: "Install dependencies with yt from source."
     steps:
@@ -40,9 +26,9 @@ commands:
             sudo apt upgrade
             sudo apt install -y dvipng texlive-latex-extra
             sudo apt install -y libopenmpi-dev openmpi-bin gcc-9
-            python3 -m venv $HOME/venv
+            python -m venv $HOME/venv
             source $HOME/venv/bin/activate
-            pip install --upgrade pip
+            python -m pip install --upgrade pip
             pip install mpi4py
             export MAX_BUILD_CORES=2
             python -m pip install git+https://github.com/yt-project/yt
@@ -63,10 +49,12 @@ commands:
             echo $ROCKSTAR_DIR > rockstar.cfg
 
             # never attempt to build h5py from source
-            pip install h5py --only-binary h5py
+            python -m pip install h5py --only-binary h5py
 
             # install yt_astro_analysis with extra dev dependencies
-            pip install .[dev]
+            python -m pip install .
+            python -m pip install --requirement test_requirements.txt
+
             # configure yt
             mkdir -p $HOME/.config/yt # avoid a warning from yt
             yt config set --global yt suppress_stream_logging True
@@ -128,6 +116,8 @@ commands:
           name: "Test the docs build."
           command: |
             source $HOME/venv/bin/activate
+            python -m pip install --upgrade pip
+            python -m pip install --requirement doc/requirements.txt
             cd doc/source
             python -m sphinx -M html "." "_build" -W
 
