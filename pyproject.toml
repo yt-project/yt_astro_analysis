@@ -77,12 +77,24 @@ exclude = '''
 )/
 '''
 
+[tool.ruff]
+target-version = "py38" # https://github.com/charliermarsh/ruff/issues/2039
+exclude = ["*__init__.py", "*api.py"]
+ignore = ["E501"]
+select = [
+    "E",
+    "F",
+    "W",
+    "B",
+    "G",
+    "YTT",
+    "I",
+    "UP",
+]
 
-[tool.isort]
-profile = "black"
-combine_as_imports = true
-skip =  ["venv", "benchmarks"]
-known_third_party = [
+[tool.ruff.isort]
+combine-as-imports = true
+known-third-party = [
   "IPython",
   "nose",
   "numpy",
@@ -98,5 +110,4 @@ known_third_party = [
   "pyx",
   "glue",
 ]
-known_first_party = ["yt", "yt_astro_analysis"]
-sections = ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
+known-first-party = ["yt", "yt_astro_analysis"]

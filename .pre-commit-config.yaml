@@ -1,51 +1,36 @@
-# pre-commit 1.1.0 is required for `exclude`
-# however `minimum_pre_commit_version` itself requires 1.15.0
-minimum_pre_commit_version: "1.15.0"
-
 ci:
-    autofix_prs: true
-    autoupdate_schedule: quarterly
+  autofix_prs: true
+  autoupdate_schedule: quarterly
 
 repos:
--   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
-    hooks:
-    - id: trailing-whitespace
-    - id: end-of-file-fixer
-    - id: no-commit-to-branch
-    - id: check-yaml
--   repo: https://github.com/asottile/pyupgrade
-    rev: v3.3.1
-    hooks:
-    - id: pyupgrade
-      args: [--py38-plus]
--   repo: https://github.com/psf/black
-    rev: 23.1.0
-    hooks:
-    - id: black
--   repo: https://github.com/PyCQA/isort
-    rev: '5.12.0'
-    hooks:
-    - id: isort
-      name: isort (python)
-    - id: isort
-      name: isort (cython)
-      types: [cython]
--   repo: https://github.com/PyCQA/flake8
-    rev: '6.0.0'
-    hooks:
-    - id: flake8
-      additional_dependencies: [
-        flake8-bugbear==23.1.20,
-        flake8-logging-format==0.9.0,
-        flake8-2020==1.7.0,
-      ]
--   repo: https://github.com/asottile/blacken-docs
-    rev: 1.13.0
-    hooks:
-    -   id: blacken-docs
-        additional_dependencies: [black==23.1.0]
--   repo: https://github.com/pre-commit/pygrep-hooks
-    rev: v1.10.0
-    hooks:
-    -   id: rst-backticks
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.4.0
+  hooks:
+  - id: no-commit-to-branch
+  - id: debug-statements
+  - id: check-merge-conflict
+  - id: trailing-whitespace
+  - id: end-of-file-fixer
+  - id: check-toml
+
+- repo: https://github.com/psf/black
+  rev: 23.1.0
+  hooks:
+  - id: black
+
+- repo: https://github.com/asottile/blacken-docs
+  rev: 1.13.0
+  hooks:
+  - id: blacken-docs
+    additional_dependencies: [black==23.1.0]
+
+- repo: https://github.com/charliermarsh/ruff-pre-commit
+  rev: v0.0.239
+  hooks:
+  - id: ruff
+    args: [--fix]
+
+- repo: https://github.com/pre-commit/pygrep-hooks
+  rev: v1.10.0
+  hooks:
+  - id: rst-backticks
