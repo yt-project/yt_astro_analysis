@@ -148,7 +148,7 @@ class RadMC3DWriter:
         )
 
         self.layers.append(base_layer)
-        self.cell_count += np.product(ds.domain_dimensions)
+        self.cell_count += np.prod(ds.domain_dimensions)
 
         sorted_grids = sorted(ds.index.grids, key=lambda x: x.Level)
         for grid in sorted_grids:
@@ -171,7 +171,7 @@ class RadMC3DWriter:
             N = np.array([int(n + 0.5) for n in N])
             new_layer = RadMC3DLayer(grid.Level, parent.id, len(self.layers), LE, RE, N)
             self.layers.append(new_layer)
-            self.cell_count += np.product(N)
+            self.cell_count += np.prod(N)
 
     def write_amr_grid(self):
         """
