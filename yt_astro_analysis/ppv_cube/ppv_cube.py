@@ -10,7 +10,6 @@ Generating PPV FITS cubes
 # The full license is in the file COPYING.txt, distributed with this software.
 # -----------------------------------------------------------------------------
 
-import re
 
 import numpy as np
 
@@ -18,7 +17,6 @@ import yt.units.dimensions as ytdims
 from yt.funcs import get_pbar, is_root, is_sequence
 from yt.units.yt_array import YTQuantity
 from yt.utilities.on_demand_imports import _astropy
-from yt.utilities.orientation import Orientation
 from yt.utilities.parallel_tools.parallel_analysis_interface import (
     parallel_objects,
     parallel_root_only,
@@ -28,7 +26,6 @@ from yt.visualization.fits_image import FITSImageData, sanitize_fits_unit
 from yt.visualization.volume_rendering.off_axis_projection import off_axis_projection
 
 from . import ppv_utils
-
 
 fits_info = {
     "velocity": ("m/s", "VOPT", "v"),
