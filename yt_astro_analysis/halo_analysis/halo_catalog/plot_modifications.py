@@ -153,13 +153,15 @@ class HaloCatalogCallback(PlotCallback):
             circle_args = circle_kwargs
             warnings.warn(
                 "The circle_kwargs keyword is deprecated.  Please "
-                "use the circle_args keyword instead."
+                "use the circle_args keyword instead.",
+                stacklevel=2,
             )
         if font_kwargs is not None:
             text_args = font_kwargs
             warnings.warn(
                 "The font_kwargs keyword is deprecated.  Please use "
-                "the text_args keyword instead."
+                "the text_args keyword instead.",
+                stacklevel=2,
             )
         if circle_args is None:
             circle_args = def_circle_args
