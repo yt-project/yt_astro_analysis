@@ -50,11 +50,11 @@ intersphinx_mapping = {
     "yt": ("http://yt-project.org/docs/dev/", None),
     "trident": ("http://trident.readthedocs.io/en/latest/", None),
     "unyt": ("https://unyt.readthedocs.io/en/stable/", None),
-    "http://docs.python.org/": None,
-    "http://ipython.org/ipython-doc/stable/": None,
-    "http://docs.scipy.org/doc/numpy/": None,
-    "http://matplotlib.org/": None,
-    "http://docs.astropy.org/en/stable": None,
+    "CPython": ("http://docs.python.org/", None),
+    "IPython": ("http://ipython.org/ipython-doc/stable/", None),
+    "numpy": ("http://docs.scipy.org/doc/numpy/", None),
+    "matplotlib": ("http://matplotlib.org/", None),
+    "astropy": ("http://docs.astropy.org/en/stable", None),
 }
 
 # Add any paths that contain templates here, relative to this directory.
