@@ -84,11 +84,12 @@ select = [
     "E",
     "F",
     "W",
-    "B",
-    "G",
-    "YTT",
-    "I",
-    "UP",
+    "C4",  # flake8-comprehensions
+    "B",   # flake8-bugbear
+    "G",   # flake8-logging
+    "YTT", # flake8-2020
+    "I",   # isort
+    "UP",  # pyupgrade
 ]
 
 [tool.ruff.isort]
