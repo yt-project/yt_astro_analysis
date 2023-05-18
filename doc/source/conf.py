@@ -117,15 +117,15 @@ html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
 # documentation.
 #
 # html_theme_options = {}
-html_theme_options = dict(
-    bootstrap_version="3",
-    bootswatch_theme="readable",
-    navbar_links=[
+html_theme_options = {
+    "bootstrap_version": "3",
+    "bootswatch_theme": "readable",
+    "navbar_links": [
         # (<title>, <link>)
     ],
-    navbar_sidebarrel=False,
-    globaltoc_depth=2,
-)
+    "navbar_sidebarrel": False,
+    "globaltoc_depth": 2,
+}
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
