@@ -13,6 +13,7 @@ from unyt import unyt_array
 
 from yt.data_objects.time_series import DatasetSeries
 from yt.frontends.ytdata.utilities import save_as_dataset
+from yt.frontends.halo_catalog.data_structures import YTHaloCatalogDataset
 from yt.funcs import ensure_dir, mylog
 from yt.utilities.parallel_tools.parallel_analysis_interface import (
     ParallelAnalysisInterface,
@@ -301,6 +302,11 @@ class HaloCatalog(ParallelAnalysisInterface):
             save_as_dataset(
                 ds, filename, data, field_types=field_types, extra_attrs=extra_attrs_d
             )
+
+        if self.halos_ds is None:
+            self.halos_ds = YTHaloCatalogDataset(filename)
+        if self.data_source is None:
+            self.data_source = self.halos_ds.all_data()
 
     def create(self, save_halos=False, save_output=True, njobs="auto", dynamic=False):
         r"""
