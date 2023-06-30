@@ -12,8 +12,8 @@ import numpy as np
 from unyt import unyt_array
 
 from yt.data_objects.time_series import DatasetSeries
-from yt.frontends.ytdata.utilities import save_as_dataset
 from yt.frontends.halo_catalog.data_structures import YTHaloCatalogDataset
+from yt.frontends.ytdata.utilities import save_as_dataset
 from yt.funcs import ensure_dir, mylog
 from yt.utilities.parallel_tools.parallel_analysis_interface import (
     ParallelAnalysisInterface,
