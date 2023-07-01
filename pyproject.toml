@@ -110,3 +110,7 @@ known-third-party = [
   "glue",
 ]
 known-first-party = ["yt", "yt_astro_analysis"]
+
+
+[tool.pytest]
+filterwarnings = ["error"]
