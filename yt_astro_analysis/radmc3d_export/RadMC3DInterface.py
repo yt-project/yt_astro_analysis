@@ -364,8 +364,7 @@ class RadMC3DWriter:
             fhandle.write(str(source.radius) + " ")
             fhandle.write(str(source.mass) + " ")
             fhandle.write(
-                "%f %f %f"
-                % (source.position[0], source.position[1], source.position[2])
+                f"{source.position[0]:f} {source.position[1]:f} {source.position[2]:f}"
             )
             fhandle.write("\n")
 

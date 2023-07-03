@@ -68,11 +68,11 @@ def _light_cone_projection(
         )
         if depthLeft < 0:
             cut_mask = (
-                "((obj['index', '%s'] + 0.5*obj['index', 'd%s'] >= 0) & "
-                " (obj['index', '%s'] - 0.5*obj['index', 'd%s'] <= %f)) | "
-                "((obj['index', '%s'] + 0.5*obj['index', 'd%s'] >= %f) & "
-                " (obj['index', '%s'] - 0.5*obj['index', 'd%s'] <= 1))"
-            ) % (
+                "((obj['index', '{}'] + 0.5*obj['index', 'd{}'] >= 0) & "
+                " (obj['index', '{}'] - 0.5*obj['index', 'd{}'] <= {:f})) | "
+                "((obj['index', '{}'] + 0.5*obj['index', 'd{}'] >= {:f}) & "
+                " (obj['index', '{}'] - 0.5*obj['index', 'd{}'] <= 1))"
+            ).format(
                 axis,
                 axis,
                 axis,
@@ -86,11 +86,11 @@ def _light_cone_projection(
             )
         elif depthRight > 1:
             cut_mask = (
-                "((obj['index', '%s'] + 0.5*obj['index', 'd%s'] >= 0) & "
-                "(obj['index', '%s'] - 0.5*obj['index', 'd%s'] <= %f)) | "
-                "((obj['index', '%s'] + 0.5*obj['index', 'd%s'] >= %f) & "
-                "(obj['index', '%s'] - 0.5*obj['index', 'd%s'] <= 1))"
-            ) % (
+                "((obj['index', '{}'] + 0.5*obj['index', 'd{}'] >= 0) & "
+                "(obj['index', '{}'] - 0.5*obj['index', 'd{}'] <= {:f})) | "
+                "((obj['index', '{}'] + 0.5*obj['index', 'd{}'] >= {:f}) & "
+                "(obj['index', '{}'] - 0.5*obj['index', 'd{}'] <= 1))"
+            ).format(
                 axis,
                 axis,
                 axis,
@@ -104,9 +104,9 @@ def _light_cone_projection(
             )
         else:
             cut_mask = (
-                "(obj['index', '%s'] + 0.5*obj['index', 'd%s'] >= %f) & "
-                "(obj['index', '%s'] - 0.5*obj['index', '%s'] <= %f)"
-            ) % (axis, axis, depthLeft, axis, axis, depthRight)
+                "(obj['index', '{}'] + 0.5*obj['index', 'd{}'] >= {:f}) & "
+                "(obj['index', '{}'] - 0.5*obj['index', '{}'] <= {:f})"
+            ).format(axis, axis, depthLeft, axis, axis, depthRight)
 
         these_field_cuts.append(cut_mask)
 
