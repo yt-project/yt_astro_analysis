@@ -305,8 +305,6 @@ class HaloCatalog(ParallelAnalysisInterface):
 
         if self.halos_ds is None:
             self.halos_ds = YTHaloCatalogDataset(filename)
-        if self.data_source is None:
-            self.data_source = self.halos_ds.all_data()
 
     def create(self, save_halos=False, save_output=True, njobs="auto", dynamic=False):
         r"""
