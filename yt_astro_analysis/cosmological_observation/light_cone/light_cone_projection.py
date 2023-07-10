@@ -61,11 +61,11 @@ def _light_cone_projection(
         depthLeft = (
             my_slice["projection_center"][my_slice["projection_axis"]]
             - 0.5 * my_slice["box_depth_fraction"]
-        )
+        ).ndview
         depthRight = (
             my_slice["projection_center"][my_slice["projection_axis"]]
             + 0.5 * my_slice["box_depth_fraction"]
-        )
+        ).ndview
         if depthLeft < 0:
             cut_mask = (
                 f"((obj['index', {axis!r}] + 0.5*obj['index', 'd{axis}'] >= 0) & "
