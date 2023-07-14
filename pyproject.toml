@@ -41,6 +41,8 @@ requires-python = ">=3.8"
 dependencies = [
     "h5py>=3.1.0",
     "yt>=4.0.1",
+    # https://github.com/scipy/oldest-supported-numpy/issues/76#issuecomment-1628865694
+    "numpy>=1.17.5,<2.0",
 ]
 
 [project.readme]
