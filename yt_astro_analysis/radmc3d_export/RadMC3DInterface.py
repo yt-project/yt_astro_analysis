@@ -116,7 +116,7 @@ class RadMC3DWriter:
     >>> x_co = 1.0e-4
     >>> mu_h = un.unyt_quantity(2.34e-24, 'g')
     >>> def _NumberDensityCO(field, data):
-    ...     return (x_co/mu_h)*data["Density"]
+    ...     return (x_co/mu_h)*data["gas", "density"]
     >>> yt.add_field(
     ...    ("gas", "NumberDensityCO"),
     ...    function=_NumberDensityCO,
