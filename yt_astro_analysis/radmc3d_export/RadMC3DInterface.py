@@ -110,13 +110,19 @@ class RadMC3DWriter:
     included in the radiative transfer calculation by radmc3d:
 
     >>> import yt
+    >>> import unyt as un
     >>> from yt.extensions.astro_analysis.radmc3d_export.api import RadMC3DWriter
 
     >>> x_co = 1.0e-4
-    >>> mu_h = yt.Quantity(2.34e-24, 'g')
+    >>> mu_h = un.unyt_quantity(2.34e-24, 'g')
     >>> def _NumberDensityCO(field, data):
-    ...     return (x_co/mu_h)*data["Density"]
-    >>> yt.add_field("NumberDensityCO", function=_NumberDensityCO)
+    ...     return (x_co/mu_h)*data["gas", "density"]
+    >>> yt.add_field(
+    ...    ("gas", "NumberDensityCO"),
+    ...    function=_NumberDensityCO,
+    ...    sampling_type="cell",
+    ...    units="cm**-3",
+    ... )
 
     >>> ds = yt.load("galaxy0030/galaxy0030")
     >>> writer = RadMC3DWriter(ds)
