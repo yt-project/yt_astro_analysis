@@ -43,6 +43,7 @@ dependencies = [
     "yt>=4.0.1",
     # https://github.com/scipy/oldest-supported-numpy/issues/76#issuecomment-1628865694
     "numpy>=1.17.5,<2.0",
+    "packaging>=20.9",
 ]
 
 [project.readme]
