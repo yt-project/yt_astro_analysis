@@ -13,14 +13,23 @@ Create randomly centered, tiled projections to be used in light cones.
 # The full license is in the file COPYING.txt, distributed with this software.
 # -----------------------------------------------------------------------------
 
+from importlib.metadata import version
+
 import numpy as np
+from packaging.version import Version
 
 from yt.funcs import mylog
-from yt.units.yt_array import uconcatenate
 from yt.utilities.parallel_tools.parallel_analysis_interface import (
     parallel_blocking_call,
 )
 from yt.visualization.fixed_resolution import FixedResolutionBuffer
+
+_UNYT_VERSION = Version(version("unyt"))
+
+if _UNYT_VERSION >= Version("3.0"):
+    uconcatenate = np.concatenate
+else:
+    from unyt.array import uconcatenate
 
 
 @parallel_blocking_call
