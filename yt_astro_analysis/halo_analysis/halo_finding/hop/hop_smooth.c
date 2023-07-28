@@ -34,7 +34,7 @@ the case of equal mass particles. */
 int smInit(SMX *psmx,KD kd,int nSmooth,float *fPeriod)
 {
 	SMX smx;
-	PQ_STATIC;
+	int PQ_j;
 	int pi,j;
     fprintf(stderr,"nSmooth = %d kd->nActive = %d\n", nSmooth, kd->nActive);
 	assert(nSmooth <= kd->nActive);
@@ -84,14 +84,12 @@ void smFinish(SMX smx)
 void smBallSearch(SMX smx,float fBall2,float *ri)
 {
 	KDN *c;
-	PARTICLE *p;
 	int cell,cp,ct,pj;
 	float fDist2,dx,dy,dz,lx,ly,lz,sx,sy,sz,x,y,z;
 	PQ *pq;
-	PQ_STATIC;
+	PQ *PQ_t,*PQ_lt;
 
 	c = smx->kd->kdNodes;
-	p = smx->kd->p;
 	pq = smx->pqHead;
 	x = ri[0];
 	y = ri[1];
@@ -175,12 +173,10 @@ void smBallSearch(SMX smx,float fBall2,float *ri)
 int smBallGather(SMX smx,float fBall2,float *ri)
 {
 	KDN *c;
-	PARTICLE *p;
 	int pj,nCnt,cp,nSplit;
 	float dx,dy,dz,x,y,z,lx,ly,lz,sx,sy,sz,fDist2;
 
 	c = smx->kd->kdNodes;
-	p = smx->kd->p;
 	nSplit = smx->kd->nSplit;
 	lx = smx->fPeriod[0];
 	ly = smx->fPeriod[1];
@@ -227,9 +223,9 @@ int smBallGather(SMX smx,float fBall2,float *ri)
 void smSmooth(SMX smx,void (*fncSmooth)(SMX,int,int,int *,float *))
 {
 	KDN *c;
-	PARTICLE *p;
     PQ *pq,*pqLast;
-	PQ_STATIC;
+	PQ *PQ_t,*PQ_lt;
+	int PQ_j,PQ_i;
 	int cell;
 	int pi,pin,pj,pNext,nCnt,nSmooth;
 	float dx,dy,dz,x,y,z,h2,ax,ay,az;
@@ -246,7 +242,6 @@ void smSmooth(SMX smx,void (*fncSmooth)(SMX,int,int,int *,float *))
 		}
 	pqLast = &smx->pq[smx->nSmooth-1];
 	c = smx->kd->kdNodes;
-	p = smx->kd->p;
 	nSmooth = smx->nSmooth;
 	/*
 	 ** Initialize Priority Queue.
@@ -370,11 +365,9 @@ void smSmooth(SMX smx,void (*fncSmooth)(SMX,int,int,int *,float *))
 
 void smReSmooth(SMX smx,void (*fncSmooth)(SMX,int,int,int *,float *))
 {
-	PARTICLE *p;
 	int pi,nSmooth;
     float temp_ri[3];
 
-	p = smx->kd->p;
 	for (pi=0;pi<smx->kd->nActive;++pi) {
 		if (IMARK == 0) continue;
 		/*

@@ -99,7 +99,7 @@ Py_EnzoHop(PyObject *obj, PyObject *args)
     float thresh = 160.0;
     int i, num_particles;
     KD kd;
-    int nBucket = 16, kdcount = 0;
+    int nBucket = 16;
     PyArrayObject *particle_density;
     HC my_comm;
     PyArrayObject *particle_group_id;
