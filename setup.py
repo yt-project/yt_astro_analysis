@@ -41,11 +41,15 @@ if os.name == "nt":
 else:
     std_libs = ["m"]
 
+
+define_macros = [("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")]
+
 cython_extensions = [
     Extension(
         "yt_astro_analysis.ppv_cube.ppv_utils",
         ["yt_astro_analysis/ppv_cube/ppv_utils.pyx"],
         libraries=std_libs,
+        define_macros=define_macros,
     ),
 ]
 
@@ -57,10 +61,12 @@ extensions = [
             "yt_astro_analysis/halo_analysis/halo_finding/fof/kd.c",
         ],
         libraries=std_libs,
+        define_macros=define_macros,
     ),
     Extension(
         "yt_astro_analysis.halo_analysis.halo_finding.hop.EnzoHop",
         glob.glob("yt_astro_analysis/halo_analysis/halo_finding/hop/*.c"),
+        define_macros=define_macros,
     ),
 ]
 
@@ -80,10 +86,12 @@ if os.path.exists("rockstar.cfg"):
         Extension(
             "yt_astro_analysis.halo_analysis.halo_finding.rockstar.rockstar_interface",
             sources=[os.path.join(rockstar_extdir, "rockstar_interface.pyx")],
+            define_macros=define_macros,
         ),
         Extension(
             "yt_astro_analysis.halo_analysis.halo_finding.rockstar.rockstar_groupies",
             sources=[os.path.join(rockstar_extdir, "rockstar_groupies.pyx")],
+            define_macros=define_macros,
         ),
     ]
     for ext in rockstar_extensions:
@@ -94,13 +102,20 @@ if os.path.exists("rockstar.cfg"):
     extensions += rockstar_extensions
 
 
+CYTHONIZE_KWARGS = {
+    "compiler_directives": {"language_level": 3},
+}
+
+
 class build_ext(_build_ext):
     # subclass setuptools extension builder to avoid importing cython and numpy
     # at top level in setup.py. See http://stackoverflow.com/a/21621689/1382869
     def finalize_options(self):
         from Cython.Build import cythonize
 
-        self.distribution.ext_modules[:] = cythonize(self.distribution.ext_modules)
+        self.distribution.ext_modules[:] = cythonize(
+            self.distribution.ext_modules, **CYTHONIZE_KWARGS
+        )
         _build_ext.finalize_options(self)
         # Prevent numpy from thinking it is still in its setup process
         # see http://stackoverflow.com/a/21621493/1382869
@@ -123,7 +138,10 @@ class sdist(_sdist):
         # Make sure the compiled Cython files in the distribution are up-to-date
         from Cython.Build import cythonize
 
-        cythonize(cython_extensions)
+        cythonize(
+            cython_extensions,
+            **CYTHONIZE_KWARGS,
+        )
         _sdist.run(self)
 
 

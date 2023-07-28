@@ -1,9 +1,7 @@
 [build-system]
 requires = [
   "setuptools>=61.2",
-  # see https://github.com/numpy/numpy/pull/18389
-  "wheel>=0.36.2",
-  "Cython>=0.29.21,<3.0",
+  "Cython>=3.0",
   "oldest-supported-numpy",
 ]
 
