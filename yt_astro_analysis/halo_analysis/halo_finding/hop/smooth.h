@@ -64,8 +64,6 @@ typedef struct smContext {
 	float fDensThresh;	/* Density Threshold for group finding */
 	} * SMX;
 
-#define PQ_STATIC	PQ *PQ_t,*PQ_lt;int PQ_j,PQ_i
-
 
 #define PQ_INIT(pq,n)\
 {\

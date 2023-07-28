@@ -58,14 +58,12 @@ void hop_main(KD kd, HC *my_comm, float densthresh)
 {
   /*	KD kd; */
 	SMX smx;
-	int nBucket,nSmooth,i,j;
-	FILE *fp, *fpb;
-	char ach[80],achFile[80], *inputfile, *densfile;
+	int nSmooth,j;
+	char achFile[80];
 	float fPeriod[3];
 	int bDensity,bGroup,bSym,bMerge,nDens,nHop,nMerge,bTopHat;
 	float fDensThresh;
 
-	nBucket = 16;
 	nSmooth = 64;
 	nDens = 64;
 	nHop = -1;
@@ -77,8 +75,6 @@ void hop_main(KD kd, HC *my_comm, float densthresh)
 	bSym = 1;
 	bTopHat = 0;
 	strcpy(achFile,"output_hop");
-	inputfile = NULL;
-	i = 1;
 /*	for (j=0;j<3;++j) fPeriod[j] = HUGE; */
 	for (j=0;j<3;++j) fPeriod[j] = 1.0;
 	nMerge = 4;
@@ -375,7 +371,7 @@ particles are in the assumed group numbering, i.e. 0 to ngroup-1, with
 for searching.  If not, we left the old radius alone.  Either way, we're
 ready to go. */
 {
-    int j, k, g, next, newgroup;
+    int j;
 
     ReSizeSMX(smx, smx->nMerge+2);	/* Alter the smoothing scale on smx */
     smx->nHashLength = smx->nGroups*10+1;
@@ -466,7 +462,7 @@ but leaving the particle information intact. */
 radius) correctly, we won't reduce the size of the fList and pList
 arrays */
 {
-    PQ_STATIC;
+    int PQ_j;
     if (nSmooth>smx->nSmooth) {	/* We're increasing the size */
 	smx->nListSize = nSmooth+RESMOOTH_SAFE;
 	free(smx->fList);
@@ -524,7 +520,7 @@ void binOutHop(SMX smx, HC *my_comm, float densthresh)
 /* Write Group tag for each particle.  Particles should be ordered. */
 /* Binary file: nActive, nGroups, list of Groups */
 {
-    int j,dummy;
+    int j;
     /* FILE *blahfp = fopen("Part-PreMergeGroup.txt","w"); *//* S Skory */
     Grouplist *g = my_comm->gl;
     Slice *s = my_comm->s;

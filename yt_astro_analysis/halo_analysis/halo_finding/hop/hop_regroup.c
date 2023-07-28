@@ -86,9 +86,8 @@ typedef struct controlstruct {
 
 void parsecommandline(float dens_outer, Controls *c)
 {
-    int narg, qmerge;
+    int qmerge;
     char *outname, *rootname;
-    narg = 1;
     rootname = c->dataname = c->densname = c->gmergename = c->tagname =
 	outname = c->outsizename = c->outtagname = c->outgmergename = NULL;
     c->qdenscut = -1;
@@ -213,7 +212,6 @@ void regroup_main(float dens_outer, HC *my_comm)
 {
     Grouplist *gl = my_comm->gl;
     Slice *s = my_comm->s;
-    FILE *f;
     Controls c;
 
     /*    parsecommandline(argc, argv, &c); */
@@ -402,14 +400,11 @@ centers. */
 the idmerge field. */
 /* I think this will work even if saddledensthresh<densthresh */
 {
-    int j, k, g1, g2, ngroups, dummy[3];
+    int j, g1, g2, ngroups, dummy[3];
     Group *gr;
-    float *densestbound, fdum[3], dens;
+    float *densestbound, dens;
     int *densestboundgroup, changes;
-    char line[80]; /*, *tempfilename; */
     char tempfilename[256];
-    FILE *fp;
-    FILE *boundfp;
     float *gdensity = my_comm->gdensity;
     int *g1temp,*g2temp;
     float *denstemp;

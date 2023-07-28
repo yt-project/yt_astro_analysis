@@ -34,7 +34,7 @@ Py_EnzoFOF(PyObject *obj, PyObject *args)
 	int nMembers = 8;
     int i, num_particles;
 	KDFOF kd;
-	int nBucket,j;
+	int nBucket;
 	float fEps;
 	int nGroup,bVerbose=1;
 	int sec,usec;
