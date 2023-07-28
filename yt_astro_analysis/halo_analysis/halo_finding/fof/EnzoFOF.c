@@ -159,8 +159,6 @@ _fail:
     Py_XDECREF(ypos);
     Py_XDECREF(zpos);
 
-    if(kd->p!=NULL)free(kd->p);
-
     return NULL;
 
 }
