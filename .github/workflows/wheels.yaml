@@ -35,7 +35,7 @@ jobs:
           CIBW_SKIP: "*-musllinux_*"  #  numpy doesn't have wheels for musllinux so we can't build some quickly and without bloating
           CIBW_ARCHS_LINUX: "x86_64"
           CIBW_ARCHS_MACOS: "x86_64"
-          CIBW_ARCHS_WINDOWS: "auto"
+          CIBW_ARCHS_WINDOWS: "auto64"
           CIBW_ENVIRONMENT: "LDFLAGS='-static-libstdc++'"
           CIBW_BUILD_VERBOSITY: 1
 
