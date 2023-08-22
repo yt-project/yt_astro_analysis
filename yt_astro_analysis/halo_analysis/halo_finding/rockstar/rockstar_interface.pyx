@@ -180,7 +180,7 @@ cdef import from "config_vars.h":
 # Forward declare
 cdef class RockstarInterface
 
-cdef void rh_analyze_halo(halo *h, particle *hp):
+cdef void rh_analyze_halo(halo *h, particle *hp) noexcept:
     # I don't know why, but sometimes we get halos with 0 particles.
     if h.num_p == 0: return
     cdef particleflat[:] pslice
@@ -190,7 +190,7 @@ cdef void rh_analyze_halo(halo *h, particle *hp):
         cb(rh.ds, parray)
     # This is where we call our functions
 
-cdef void rh_read_particles(char *filename, particle **p, np.int64_t *num_p):
+cdef void rh_read_particles(char *filename, particle **p, np.int64_t *num_p) noexcept:
     global SCALE_NOW
     cdef np.float64_t left_edge[6]
     cdef np.ndarray[np.int64_t, ndim=1] arri # index
