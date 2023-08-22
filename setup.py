@@ -42,7 +42,14 @@ else:
     std_libs = ["m"]
 
 
-define_macros = [("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")]
+define_macros = [
+    ("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION"),
+]
+if sys.version_info >= (3, 9):
+    # keep in sync with runtime requirements (pyproject.toml)
+    define_macros.append(("NPY_TARGET_VERSION", "NPY_1_18_API_VERSION"))
+else:
+    pass
 
 cython_extensions = [
     Extension(
