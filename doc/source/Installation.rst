@@ -49,10 +49,20 @@ Installing with Rockstar support
 Rockstar support requires ``yt_astro_analysis`` to be installed from source.
 Before that, the ``rockstar-galaxies`` code must also be installed.
 
-Using ``conda``
-^^^^^^^^^^^^^^^
+.. warning:: If using the conda version or building from source with `Peter Behroozi's repository
+   <https://bitbucket.org/pbehroozi/rockstar-galaxies/>`__, the following
+   command must be issued after loading the resulting halo catalog in ``yt``:
+
+.. code-block:: python
+
+   ds = yt.load(...)
+   ds.parameters["format_revision"] = 2
+
+Installing ``rockstar-galaxies`` through ``conda``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 If you are using ``conda`` to manage packages, you can install ``rockstar-galaxies`` as follows
+
 .. code-block:: bash
 
    $ conda install -c conda-forge rockstar-galaxies
@@ -64,8 +74,8 @@ Then, go into the ``yt_astro_analysis`` source directory and install it.
    $ cd yt_astro_analysis
    $ pip install -e .
 
-Building ``rockstar-galaxies`` from source
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Installing ``rockstar-galaxies`` from source
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Alternatively, you can install ``rockstar-galaxies`` from source. Two
 recommended repositories exist for installing ``rockstar-galaxies``,
@@ -98,13 +108,3 @@ the location of ``librockstar-galaxies.so`` is in your LD_LIBRARY_PATH.
 .. code-block:: bash
 
    $ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:<path_to_rockstar>
-
-
-.. warning:: If using the conda version or building from source with `Peter Behroozi's repository
-   <https://bitbucket.org/pbehroozi/rockstar-galaxies/>`__, the following
-   command must be issued after loading the resulting halo catalog in ``yt``:
-
-.. code-block:: python
-
-   ds = yt.load(...)
-   ds.parameters["format_revision"] = 2
