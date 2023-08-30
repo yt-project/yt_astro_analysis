@@ -91,11 +91,9 @@ if os.path.exists("rockstar.cfg"):
     _paths_to_try.append(rd)
 
 if "CONDA_PREFIX" in os.environ:
-    _paths_to_try.append(os.path.join(
-        os.environ["CONDA_PREFIX"],
-        "include",
-        "rockstar-galaxies"
-    ))
+    _paths_to_try.append(
+        os.path.join(os.environ["CONDA_PREFIX"], "include", "rockstar-galaxies")
+    )
 
 for rd in _paths_to_try:
     if not os.path.exists(rd):
