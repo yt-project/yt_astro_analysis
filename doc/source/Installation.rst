@@ -47,15 +47,9 @@ Installing with Rockstar support
    versions of ``rockstar`` will not work.
 
 Rockstar support requires ``yt_astro_analysis`` to be installed from source.
-Before that, the ``rockstar-galaxies`` code must also be installed from source
-and the installation path then provided to ``yt_astro_analysis``. Two
-recommended repositories exist for installing ``rockstar-galaxies``,
-`this one <https://bitbucket.org/pbehroozi/rockstar-galaxies/>`__, by the
-original author, Peter Behroozi, and
-`this one <https://bitbucket.org/jwise77/rockstar-galaxies>`__, maintained by
-John Wise.
+Before that, the ``rockstar-galaxies`` code must also be installed.
 
-.. warning:: If using `Peter Behroozi's repository
+.. warning:: If using the conda version or building from source with `Peter Behroozi's repository
    <https://bitbucket.org/pbehroozi/rockstar-galaxies/>`__, the following
    command must be issued after loading the resulting halo catalog in ``yt``:
 
@@ -63,6 +57,32 @@ John Wise.
 
    ds = yt.load(...)
    ds.parameters["format_revision"] = 2
+
+Installing ``rockstar-galaxies`` through ``conda``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If you are using ``conda`` to manage packages, you can install ``rockstar-galaxies`` as follows
+
+.. code-block:: bash
+
+   $ conda install -c conda-forge rockstar-galaxies
+
+Then, go into the ``yt_astro_analysis`` source directory and install it.
+
+.. code-block:: bash
+
+   $ cd yt_astro_analysis
+   $ pip install -e .
+
+Installing ``rockstar-galaxies`` from source
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Alternatively, you can install ``rockstar-galaxies`` from source. Two
+recommended repositories exist for installing ``rockstar-galaxies``,
+`this one <https://bitbucket.org/pbehroozi/rockstar-galaxies/>`__, by the
+original author, Peter Behroozi, and
+`this one <https://bitbucket.org/jwise77/rockstar-galaxies>`__, maintained by
+John Wise.
 
 To install ``rockstar-galaxies``, do the following:
 
@@ -82,8 +102,8 @@ Then, install ``yt_astro_analysis``.
    $ echo <path_to_rockstar> > rockstar.cfg
    $ pip install -e .
 
-Finally, you'll need to make sure that the location of ``librockstar-galaxies.so``
-is in your LD_LIBRARY_PATH.
+Finally, if you installed rockstar-galaxies from source, you'll need to make sure that
+the location of ``librockstar-galaxies.so`` is in your LD_LIBRARY_PATH.
 
 .. code-block:: bash
 

@@ -78,6 +78,7 @@ extensions = [
 ]
 
 # ROCKSTAR
+_paths_to_try = []
 if os.path.exists("rockstar.cfg"):
     try:
         rd = open("rockstar.cfg").read().strip()
@@ -87,7 +88,17 @@ if os.path.exists("rockstar.cfg"):
         print("rockstar-galaxies install in rockstar.cfg and restart.")
         print("(ex: \"echo '/path/to/rockstar-galaxies' > rockstar.cfg\" )")
         sys.exit(1)
+    _paths_to_try.append(rd)
 
+if "CONDA_PREFIX" in os.environ:
+    _paths_to_try.append(
+        os.path.join(os.environ["CONDA_PREFIX"], "include", "rockstar-galaxies")
+    )
+
+for rd in _paths_to_try:
+    if not os.path.exists(rd):
+        continue
+    print(f"BUILDING with ROCKSTAR in {rd}")
     rockstar_extdir = "yt_astro_analysis/halo_analysis/halo_finding/rockstar"
     rockstar_extensions = [
         Extension(
@@ -107,6 +118,8 @@ if os.path.exists("rockstar.cfg"):
         ext.define_macros.append(("THREADSAFE", ""))
         ext.include_dirs += [rd, os.path.join(rd, "io"), os.path.join(rd, "util")]
     extensions += rockstar_extensions
+
+    break
 
 
 CYTHONIZE_KWARGS = {
