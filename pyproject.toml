@@ -3,8 +3,7 @@ requires = [
   "setuptools>=61.2",
   "Cython>=3.0",
   "oldest-supported-numpy ; python_version < '3.9'",
-  "numpy>=1.25,<2.0  ; python_version >= '3.9' and python_version < '3.12.0rc1'",
-  "numpy>=1.26.0b1,<2.0 ; python_version >= '3.12.0rc1'",
+  "numpy>=1.25, <2.0 ; python_version >= '3.9'",
 ]
 
 [project]
