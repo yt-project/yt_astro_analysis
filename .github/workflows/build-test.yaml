@@ -1,0 +1,89 @@
+name: Build and Test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    # run this every Wednesday at 3 am UTC
+    - cron: 0 3 * * 3
+
+jobs:
+
+  get_yt_data:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Fetch yt data
+      run: |
+        pipx run girder-client \
+          --api-url https://girder.hub.yt/api/v1 \
+          download 577c09480d7c6b0001ad5be2 enzo_tiny_cosmology
+
+    - run: ls enzo_tiny_cosmology
+
+    - uses: actions/upload-artifact@v3
+      with:
+        name: enzo_tiny_cosmology
+        path: enzo_tiny_cosmology
+
+  build:
+    name: "py${{ matrix.python-version }} on ${{ matrix.os }}"
+    needs:
+      - get_yt_data
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+        python-version:
+          - '3.9'
+          - '3.10'
+          - '3.11'
+
+    runs-on: ${{ matrix.os }}
+
+    concurrency:
+      # auto-cancel any in-progress job *on the same branch*
+      group: ${{ github.workflow }}-${{ github.ref }}-${{ matrix.tests-type }}-py${{ matrix.python-version }}-${{ matrix.os }}-${{ matrix.test-runner }}
+      cancel-in-progress: true
+
+    steps:
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Checkout repo
+      uses: actions/checkout@v3
+    - name: Set up Conda
+      uses: s-weigand/setup-conda@v1
+      with:
+        update-conda: true
+        conda-channels: conda-forge
+        activate-conda: true
+        python-version: ${{matrix.python-version}}
+
+    - name: Build
+      run: |
+        conda install rockstar-galaxies yt h5py
+        conda install --file=requirements/tests.txt --yes
+        python -m pip install -e . --no-deps
+
+    - run: python -m pip list
+
+    - name: Configure yt
+      run: |
+        yt config set --local yt test_data_dir $(pwd)/yt_data
+        yt config set --local yt suppress_stream_logging True
+        yt config set --local yt log_level 30
+
+    - run: cat yt.toml
+
+    - uses: actions/download-artifact@v3
+      with:
+        name: enzo_tiny_cosmology
+        path: yt_data/enzo_tiny_cosmology
+
+    - run: ls yt_data/enzo_tiny_cosmology
+    - run: pytest --color=yes -ra
