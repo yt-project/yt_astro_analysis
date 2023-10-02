@@ -418,7 +418,6 @@ class PPVCube:
                     / self.dv_cgs
                 )
                 w[w < 0.0] = 0.0
-                # print(self.current_v, w)
                 return data[self.field] * w
 
         return _intensity
