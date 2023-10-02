@@ -374,8 +374,8 @@ class PPVCube:
         w.wcs.ctype = ["LINEAR", "LINEAR", vtype]
 
         fib = FITSImageData(self.data.transpose(), fields=self.field, wcs=w)
-        fib.update_all_headers("bunit", re.sub("()", "", str(self.proj_units)))
-        fib.update_all_headers("btype", self.field)
+        fib.update_header("all", "bunit", re.sub("()", "", str(self.proj_units)))
+        fib.update_header("all", "btype", self.field)
         if sky_scale is not None and sky_center is not None:
             fib.create_sky_wcs(sky_center, sky_scale)
         fib.writeto(filename, overwrite=overwrite, **kwargs)
@@ -418,6 +418,7 @@ class PPVCube:
                     / self.dv_cgs
                 )
                 w[w < 0.0] = 0.0
+                # print(self.current_v, w)
                 return data[self.field] * w
 
         return _intensity
