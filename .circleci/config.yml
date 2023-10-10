@@ -53,7 +53,7 @@ commands:
 
             # install yt_astro_analysis with extra dev dependencies
             python -m pip install .
-            python -m pip install --requirement test_requirements.txt
+            python -m pip install --requirement requirements/tests.txt
 
             # configure yt
             mkdir -p $HOME/.config/yt # avoid a warning from yt
@@ -117,7 +117,7 @@ commands:
           command: |
             source $HOME/venv/bin/activate
             python -m pip install --upgrade pip
-            python -m pip install --requirement doc/requirements.txt
+            python -m pip install --requirement requirements/docs.txt
             cd doc/source
             python -m sphinx -M html "." "_build" -W
 
