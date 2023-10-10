@@ -1,5 +1,10 @@
 version: 2
 updates:
+- package-ecosystem: pip
+  directory: /requirements
+  schedule:
+    interval: monthly
+
 - package-ecosystem: github-actions
   directory: /.github/workflows
   schedule:
