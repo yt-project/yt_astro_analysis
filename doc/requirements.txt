@@ -1,2 +1,4 @@
-sphinx
-sphinx-bootstrap-theme
+sphinx==4.5.0
+sphinx-bootstrap-theme==0.8.1
+jinja2==3.1.2
+markupsafe==2.1.3
