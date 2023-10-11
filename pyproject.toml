@@ -7,7 +7,7 @@ requires = [
 
 [project]
 name = "yt_astro_analysis"
-version = "1.2.dev1"
+version = "1.1.3"
 description = "yt astrophysical analysis modules extension"
 authors = [
     { name = "The yt project", email = "yt-dev@python.org" },
