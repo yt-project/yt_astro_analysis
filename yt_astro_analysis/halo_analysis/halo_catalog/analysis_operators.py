@@ -63,6 +63,12 @@ def add_quantity(name, function):
     quantity_registry[name] = AnalysisQuantity(function)
 
 
+def _remove_quantity(name):
+    # this is useful to avoid test pollution when using add_quantity in tests
+    # but it's not meant as public API
+    quantity_registry.pop(name)
+
+
 class AnalysisQuantity(AnalysisCallback):
     r"""
     An AnalysisQuantity is a function that takes minimally a target object,

@@ -7,13 +7,9 @@ commands:
       - run:
           name:  "Set environment variables."
           command: |
-            echo 'export GOLD_STANDARD=HEAD' >> $BASH_ENV
             echo 'export ROCKSTAR_DIR=$HOME/rockstar-galaxies' >> $BASH_ENV
             echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ROCKSTAR_DIR' >> $BASH_ENV
             echo 'export YT_DATA=$HOME/yt_test' >> $BASH_ENV
-            echo 'export TEST_DIR=$HOME/test_results' >> $BASH_ENV
-            echo 'export TEST_NAME=astro_analysis' >> $BASH_ENV
-            echo 'export TEST_FLAGS="--nologcapture -v --with-answer-testing --local --local-dir $TEST_DIR --answer-name=$TEST_NAME --answer-big-data"' >> $BASH_ENV
 
   install-with-yt-dev:
     description: "Install dependencies with yt from source."
@@ -21,6 +17,7 @@ commands:
       - run:
           name: "Install dependencies with yt from source."
           command: |
+            set -x
             source $BASH_ENV
             sudo apt update
             sudo apt upgrade
@@ -75,30 +72,7 @@ commands:
                 girder-cli --api-url https://girder.hub.yt/api/v1 download 577c09480d7c6b0001ad5be2 $YT_DATA/enzo_tiny_cosmology
             fi
 
-  build-and-test-nose:
-    description: "Build yt_astro_analysis and run tests (nose)."
-    steps:
-      - run:
-          name: "Build yt_astro_analysis and run tests."
-          command: |
-            # tag the tip so we can get back there
-            git tag tip
-            source $BASH_ENV
-            source $HOME/venv/bin/activate
-            # generate answers if not cached
-            if [ ! -f ${TEST_DIR}/${TEST_NAME}/${TEST_NAME} ]; then
-              git checkout $GOLD_STANDARD
-              python -m pip install -e .
-              nosetests $TEST_FLAGS --answer-store
-            fi
-            # return to tip and run comparison tests
-            git checkout tip
-            python -m pip install -e .
-            coverage run `which nosetests` $TEST_FLAGS
-            # code coverage report
-            codecov
-
-  build-and-test-pytest:
+  build-and-test:
     description: "Build yt_astro_analysis and run tests (pytest)."
     steps:
       - run:
@@ -107,7 +81,7 @@ commands:
             source $BASH_ENV
             source $HOME/venv/bin/activate
             python -m pip install -e .
-            pytest
+            pytest --color=yes -ra -s
 
   build-docs:
     description: "Test the docs build."
@@ -175,65 +149,9 @@ jobs:
 
       - restore_cache:
           name: "Restore test answers."
-          key: python-<< parameters.tag >>-test-answers-bonxie
-
-      - build-and-test-nose
-
-      - save_cache:
-          name: "Save test answers cache."
-          key: python-<< parameters.tag >>-test-answers-bonxie
-          paths:
-            - ~/test_results
-
-  run-tests-pytest:
-    # Run a subset of the test suite (yield-based tests are not supported by pytest)
-    # this is necessary to test in Python 3.10+ because it's not compatible with nose
-    parameters:
-      tag:
-        type: string
-        default: latest
-    executor:
-      name: python
-      tag: << parameters.tag >>
-
-    working_directory: ~/yt_astro_analysis
-
-    steps:
-      - checkout
-      - set-env
-
-      - restore_cache:
-          name: "Restore dependencies cache."
-          key: python-<< parameters.tag >>-dependencies-bonxie
-
-      - install-with-yt-dev
-
-      - save_cache:
-          name: "Save dependencies cache"
-          key: python-<< parameters.tag >>-dependencies-bonxie
-          paths:
-            - ~/.cache/pip
-            - ~/venv
-            - ~/yt-git
-            - ~/rockstar-galaxies
-
-      - restore_cache:
-          name: "Restore test data cache."
-          key: test-data-bonxie
-
-      - download-test-data
-
-      - save_cache:
-          name: "Save test data cache."
-          key: test-data-bonxie
-          paths:
-            - ~/yt_test
-
-      - restore_cache:
-          name: "Restore test answers."
           key: python-<< parameters.tag >>-test-answers-bonxie-pytest
 
-      - build-and-test-pytest
+      - build-and-test
 
       - save_cache:
           name: "Save test answers cache."
@@ -282,11 +200,7 @@ workflows:
            name: "Python 3.9 tests"
            tag: "3.9"
 
-       - run-tests-pytest:
-           name: "Python 3.10 tests"
-           tag: "3.10"
-
-       - run-tests-pytest:
+       - run-tests:
            name: "Python 3.11 tests"
            tag: "3.11"
 
@@ -307,7 +221,7 @@ workflows:
            name: "Python 3.9 tests"
            tag: "3.9"
 
-       - run-tests-pytest:
+       - run-tests:
            name: "Python 3.11 tests"
            tag: "3.11"
 
