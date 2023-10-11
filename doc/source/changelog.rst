@@ -13,6 +13,42 @@ The `CREDITS file
 contains the most up-to-date list of everyone who has contributed to the
 yt_astro_analysis source code.
 
+Version 1.1.3
+-------------
+
+Release date: *October 11, 2023*
+
+Bugfixes
+^^^^^^^^
+ * Handle deprecation warning from numpy 1.25 (np.product is deprecated in favour of np.prod) `PR #186 <https://github.com/yt-project/yt_astro_analysis/pull/186>`__
+ * Avoid usage of deprecated unyt API `PR #207 <https://github.com/yt-project/yt_astro_analysis/pull/207>`__
+ * Fix usage of deprecated (and removed) clobber argument from astropy `PR #226 <https://github.com/yt-project/yt_astro_analysis/pull/226>`__
+ * Updated ppv_cube.py to avoid deprecated function 'update_all_headers' `PR #225 <https://github.com/yt-project/yt_astro_analysis/pull/225>`__
+
+Documentation and tests
+^^^^^^^^^^^^^^^^^^^^^^^
+ * Migrate away from configuration key format deprecated in Sphinx 7.0 `PR #195 <https://github.com/yt-project/yt_astro_analysis/pull/195>`__
+ * Treat warnings as errors `PR #201 <https://github.com/yt-project/yt_astro_analysis/pull/201>`__
+ * Fix RadMC3DWriter's docstring (compat with modern yt) `PR #206 <https://github.com/yt-project/yt_astro_analysis/pull/206>`__
+ * Fix a couple bugs in PPVCube notebook `PR #228 <https://github.com/yt-project/yt_astro_analysis/pull/228>`__
+ * Pin doc requirements `PR #235 <https://github.com/yt-project/yt_astro_analysis/pull/235>`__
+ * Upgrade sphinx to latest version and enable automated upgrades for doc dependencies `PR #237 <https://github.com/yt-project/yt_astro_analysis/pull/237>`__
+ * Support installation of rockstar through conda `PR #219 <https://github.com/yt-project/yt_astro_analysis/pull/219>`__
+
+Build and Requirements
+^^^^^^^^^^^^^^^^^^^^^^
+ * Migrate metadata to pyproject.toml, and drop setup.cfg `PR #175 <https://github.com/yt-project/yt_astro_analysis/pull/175>`__
+ * Drop dependency on more_itertools `PR #178 <https://github.com/yt-project/yt_astro_analysis/pull/178>`__
+ * Set upper limit to runtime numpy `PR #205 <https://github.com/yt-project/yt_astro_analysis/pull/205>`__
+ * Stop building wheels for Windows 32 `PR #217 <https://github.com/yt-project/yt_astro_analysis/pull/217>`__
+ * Switch to Cython 3.0, forbid deprecated Numpy C API in generated code `PR #211 <https://github.com/yt-project/yt_astro_analysis/pull/211>`__
+ * Add wheels for CPython 3.12 `PR #216 <https://github.com/yt-project/yt_astro_analysis/pull/216>`__
+ * Migrate from oldest-supported-numpy to NPY_TARGET_VERSION (Python >= 3.9) `PR #218 <https://github.com/yt-project/yt_astro_analysis/pull/218>`__
+ * Drop support for CPython 3.8 `PR #222 <https://github.com/yt-project/yt_astro_analysis/pull/222>`__
+
+**Full Changelog**: https://github.com/yt-project/yt_astro_analysis/compare/yt_astro_analysis-1.1.2...yt_astro_analysis-1.1.3
+
+
 Version 1.1.2
 -------------
 
@@ -20,7 +56,6 @@ Release date: *January 23, 2023*
 
 Bugfixes
 ^^^^^^^^
-
  * Fix compatibility with numpy 1.24 (numpy.float was removed) `PR #169 <https://github.com/yt-project/yt_astro_analysis/pull/169>`__
  * Build wheels for Python 3.11 `PR #170 <https://github.com/yt-project/yt_astro_analysis/pull/170>`__
 
