@@ -27,14 +27,10 @@ class HaloFindingMethod:
     dataset and returns a new dataset that is the loaded halo finder output.
     """
 
-    def __init__(self, function, args=None, kwargs=None):
+    def __init__(self, function, *args, **kwargs):
         self.function = function
         self.args = args
-        if self.args is None:
-            self.args = []
         self.kwargs = kwargs
-        if self.kwargs is None:
-            self.kwargs = {}
 
     def __call__(self, hc):
         return self.function(hc, *self.args, **self.kwargs)

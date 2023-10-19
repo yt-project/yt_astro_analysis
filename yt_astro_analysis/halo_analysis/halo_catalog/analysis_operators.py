@@ -21,14 +21,10 @@ class AnalysisCallback:
     to the target object, write out data, etc, but does not return anything.
     """
 
-    def __init__(self, function, args=None, kwargs=None):
+    def __init__(self, function, *args, **kwargs):
         self.function = function
         self.args = args
-        if self.args is None:
-            self.args = []
         self.kwargs = kwargs
-        if self.kwargs is None:
-            self.kwargs = {}
 
     def __call__(self, target):
         self.function(target, *self.args, **self.kwargs)
@@ -49,9 +45,6 @@ class AnalysisFilter(AnalysisCallback):
     whether analysis is continued.
     """
 
-    def __init__(self, function, *args, **kwargs):
-        AnalysisCallback.__init__(self, function, args, kwargs)
-
     def __call__(self, target):
         return self.function(target, *self.args, **self.kwargs)
 
@@ -68,9 +61,6 @@ class AnalysisQuantity(AnalysisCallback):
     An AnalysisQuantity is a function that takes minimally a target object,
     performs some analysis, and then returns a value.
     """
-
-    def __init__(self, function, *args, **kwargs):
-        AnalysisCallback.__init__(self, function, args, kwargs)
 
     def __call__(self, target):
         return self.function(target, *self.args, **self.kwargs)
@@ -89,14 +79,10 @@ class AnalysisRecipe:
     adds a series of callbacks, quantities, and filters.
     """
 
-    def __init__(self, function, args=None, kwargs=None):
+    def __init__(self, function, *args, **kwargs):
         self.function = function
         self.args = args
-        if self.args is None:
-            self.args = []
         self.kwargs = kwargs
-        if self.kwargs is None:
-            self.kwargs = {}
 
     def __call__(self, pipeline):
         return self.function(pipeline, *self.args, **self.kwargs)
