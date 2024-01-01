@@ -39,9 +39,9 @@ jobs:
           CIBW_ENVIRONMENT: "LDFLAGS='-static-libstdc++'"
           CIBW_BUILD_VERBOSITY: 1
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
-          name: wheels
+          name: wheels-${{ matrix.os }}
           path: ./dist/*.whl
 
   build_sdist:
@@ -53,7 +53,7 @@ jobs:
       - name: Build sdist
         run: pipx run build --sdist
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: tarball
           path: dist/*.tar.gz
@@ -64,15 +64,16 @@ jobs:
     # upload to PyPI on every tag starting with 'yt_astro_analysis-'
     if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags/yt_astro_analysis-')
     steps:
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: tarball
           path: dist
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
-          name: wheels
           path: dist
+          pattern: wheels-*
+          merge-multiple: true
 
       - uses: pypa/gh-action-pypi-publish@v1.8.11
         with:
