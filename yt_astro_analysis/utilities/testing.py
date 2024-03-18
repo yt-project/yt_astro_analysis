@@ -14,33 +14,26 @@ testing utilities
 # -----------------------------------------------------------------------------
 
 import os
-import shutil
-import tempfile
-from unittest import TestCase
+import warnings
 
+import yt
 from yt.config import ytcfg
-from yt.data_objects.time_series import SimulationTimeSeries
-from yt.loaders import load_simulation
-from yt.utilities.answer_testing.framework import AnswerTestingTest
 
 
-class TempDirTest(TestCase):
-    """
-    A test class that runs in a temporary directory and
-    removes it afterward.
-    """
-
-    def setUp(self):
-        self.curdir = os.getcwd()
-        self.tmpdir = tempfile.mkdtemp()
-        os.chdir(self.tmpdir)
-
-    def tearDown(self):
-        os.chdir(self.curdir)
-        shutil.rmtree(self.tmpdir)
+def data_dir_load(fn, *args, **kwargs):
+    # wrap yt.load but only load from test_data_dir
+    path = os.path.join(ytcfg.get("yt", "test_data_dir"), fn)
+    return yt.load(path, *args, **kwargs)
 
 
 def requires_sim(sim_fn, sim_type, file_check=False):
+    warnings.warn(
+        "yt_astro_analysis.utilities.testing.requires_sim "
+        "is deprecated and will be removed in a future version. "
+        "Please consider implementing your own solution.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     from functools import wraps
 
     from nose import SkipTest
@@ -62,6 +55,17 @@ def requires_sim(sim_fn, sim_type, file_check=False):
 
 
 def can_run_sim(sim_fn, sim_type, file_check=False):
+    warnings.warn(
+        "yt_astro_analysis.utilities.testing.can_run_sim "
+        "is deprecated and will be removed in a future version. "
+        "Please consider implementing your own solution.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    from yt.data_objects.time_series import SimulationTimeSeries
+    from yt.loaders import load_simulation
+    from yt.utilities.answer_testing.framework import AnswerTestingTest
+
     result_storage = AnswerTestingTest.result_storage
     if isinstance(sim_fn, SimulationTimeSeries):
         return result_storage is not None
