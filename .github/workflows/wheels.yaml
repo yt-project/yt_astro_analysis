@@ -64,7 +64,7 @@ jobs:
     # upload to PyPI on every tag starting with 'yt_astro_analysis-'
     if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags/yt_astro_analysis-')
     environment:
-      name: pypi
+      name: upload_pypi
       url: https://pypi.org/p/yt-astro-analysis
     permissions:
       id-token: write
