@@ -513,8 +513,7 @@ class Halo:
         te1 = np.cross(te2, e0_vector_copy)
         length = np.abs(
             -np.sum(rr * te1, axis=1)
-            * (1.0 - np.sum(rr * e0_vector_copy, axis=1) ** 2.0 * mag_A**-2.0)
-            ** (-0.5)
+            * (1.0 - np.sum(rr * e0_vector_copy, axis=1) ** 2.0 * mag_A**-2.0) ** (-0.5)
         )
         # This problem apparently happens sometimes, that the NaNs are turned
         # into infs, which messes up the nanargmax below.
