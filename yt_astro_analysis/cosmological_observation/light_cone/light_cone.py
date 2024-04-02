@@ -232,12 +232,12 @@ class LightCone(CosmologySplice):
             else:
                 # Same axis and center as previous slice,
                 # but with depth center shifted.
-                self.light_cone_solution[q][
-                    "projection_axis"
-                ] = self.light_cone_solution[q - 1]["projection_axis"]
-                self.light_cone_solution[q][
-                    "projection_center"
-                ] = self.light_cone_solution[q - 1]["projection_center"].copy()
+                self.light_cone_solution[q]["projection_axis"] = (
+                    self.light_cone_solution[q - 1]["projection_axis"]
+                )
+                self.light_cone_solution[q]["projection_center"] = (
+                    self.light_cone_solution[q - 1]["projection_center"].copy()
+                )
                 self.light_cone_solution[q]["projection_center"][
                     self.light_cone_solution[q]["projection_axis"]
                 ] += 0.5 * (
