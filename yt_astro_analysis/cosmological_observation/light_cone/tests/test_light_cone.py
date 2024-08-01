@@ -14,96 +14,79 @@ light cone generator test
 # -----------------------------------------------------------------------------
 
 import os
-import shutil
-import tempfile
 
+import h5py
 import numpy as np
+import numpy.testing as npt
+import pytest
+import unyt as un
 
-from yt.testing import assert_equal
-from yt.units.yt_array import YTQuantity
-from yt.utilities.answer_testing.framework import AnswerTestingTest
-from yt.utilities.on_demand_imports import _h5py as h5py
+import yt  # noqa
+from yt.testing import requires_file
 from yt_astro_analysis.cosmological_observation.api import LightCone
-from yt_astro_analysis.utilities.testing import requires_sim
 
 ETC = "enzo_tiny_cosmology/32Mpc_32.enzo"
 _funits = {
-    "density": YTQuantity(1, "g/cm**3"),
-    "temperature": YTQuantity(1, "K"),
-    "length": YTQuantity(1, "cm"),
+    "density": un.unyt_quantity(1, "g/cm**3"),
+    "temperature": un.unyt_quantity(1, "K"),
+    "length": un.unyt_quantity(1, "cm"),
 }
 
 
-class LightConeProjectionTest(AnswerTestingTest):
-    _type_name = "LightConeProjection"
-    _attrs = ()
+@requires_file(ETC)
+@pytest.mark.parametrize(
+    "field, weight_field, expected",
+    [
+        (
+            "density",
+            None,
+            [6.0000463633868075e-05, 1.1336502301470154e-05, 0.08970763360935877],
+        ),
+        (
+            "temperature",
+            "density",
+            [37.79481498628398, 0.018410545597485613, 543702.4613479003],
+        ),
+    ],
+)
+def test_light_cone_projection(tmp_path, field, weight_field, expected):
+    parameter_file = ETC
+    simulation_type = "Enzo"
+    field = field
+    weight_field = weight_field
 
-    def __init__(self, parameter_file, simulation_type, field, weight_field=None):
-        self.parameter_file = parameter_file
-        self.simulation_type = simulation_type
-        self.ds = os.path.basename(self.parameter_file)
-        self.field = field
-        self.weight_field = weight_field
+    os.chdir(tmp_path)
+    lc = LightCone(
+        parameter_file,
+        simulation_type,
+        near_redshift=0.0,
+        far_redshift=0.1,
+        observer_redshift=0.0,
+        time_data=False,
+    )
+    lc.calculate_light_cone_solution(seed=123456789, filename="LC/solution.txt")
+    lc.project_light_cone(
+        (600.0, "arcmin"),
+        (60.0, "arcsec"),
+        field,
+        weight_field=weight_field,
+        save_stack=True,
+    )
 
-    @property
-    def storage_name(self):
-        return "_".join(
-            (os.path.basename(self.parameter_file), self.field, str(self.weight_field))
-        )
-
-    def run(self):
-        # Set up in a temp dir
-        tmpdir = tempfile.mkdtemp()
-        curdir = os.getcwd()
-        os.chdir(tmpdir)
-
-        lc = LightCone(
-            self.parameter_file,
-            self.simulation_type,
-            0.0,
-            0.1,
-            observer_redshift=0.0,
-            time_data=False,
-        )
-        lc.calculate_light_cone_solution(seed=123456789, filename="LC/solution.txt")
-        lc.project_light_cone(
-            (600.0, "arcmin"),
-            (60.0, "arcsec"),
-            self.field,
-            weight_field=self.weight_field,
-            save_stack=True,
-        )
-
-        dname = f"{self.field}_{self.weight_field}"
-        fh = h5py.File("LC/LightCone.h5", mode="r")
+    dname = f"{field}_{weight_field}"
+    with h5py.File("LC/LightCone.h5", mode="r") as fh:
         data = fh[dname][()]
         units = fh[dname].attrs["units"]
-        if self.weight_field is None:
-            punits = _funits[self.field] * _funits["length"]
+        if weight_field is None:
+            punits = _funits[field] * _funits["length"]
         else:
-            punits = (
-                _funits[self.field] * _funits[self.weight_field] * _funits["length"]
-            )
-            wunits = fh["weight_field_%s" % self.weight_field].attrs["units"]
-            pwunits = _funits[self.weight_field] * _funits["length"]
+            punits = _funits[field] * _funits[weight_field] * _funits["length"]
+            wunits = fh[f"weight_field_{weight_field}"].attrs["units"]
+            pwunits = _funits[weight_field] * _funits["length"]
             assert wunits == str(pwunits.units)
-        assert units == str(punits.units)
-        fh.close()
+    assert units == str(punits.units)
 
-        # clean up
-        os.chdir(curdir)
-        shutil.rmtree(tmpdir)
-
-        mean = data.mean()
-        mi = data[data.nonzero()].min()
-        ma = data.max()
-        return np.array([mean, mi, ma])
-
-    def compare(self, new_result, old_result):
-        assert_equal(new_result, old_result, verbose=True)
-
-
-@requires_sim(ETC, "Enzo")
-def test_light_cone_projection():
-    yield LightConeProjectionTest(ETC, "Enzo", "density")
-    yield LightConeProjectionTest(ETC, "Enzo", "temperature", weight_field="density")
+    mean = np.nanmean(data)
+    mi = np.nanmin(data[data.nonzero()])
+    ma = np.nanmax(data)
+    npt.assert_equal([mean, mi, ma], expected, verbose=True)
