@@ -39,7 +39,7 @@ def create_vlos(normal, no_shifting):
     elif isinstance(normal, str):
 
         def _v_los(field, data):
-            return -data["gas", "velocity_%s" % normal]
+            return -data["gas", f"velocity_{normal}"]
 
     else:
         orient = Orientation(normal)

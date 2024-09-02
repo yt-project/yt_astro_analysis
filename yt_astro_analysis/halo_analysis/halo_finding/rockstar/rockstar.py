@@ -301,7 +301,7 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
         if ptype not in tds.particle_types and ptype != "all":
             has_particle_filter = tds.add_particle_filter(ptype)
             if not has_particle_filter:
-                raise RuntimeError("Particle type (filter) %s not found." % (ptype))
+                raise RuntimeError(f"Particle type (filter) {ptype} not found.")
 
         dd = tds.all_data()
         # Get DM particle mass.
@@ -370,7 +370,7 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
         if restart:
             restart_file = os.path.join(self.outbase, "restart.cfg")
             if not os.path.exists(restart_file):
-                raise RuntimeError("Restart file %s not found" % (restart_file))
+                raise RuntimeError(f"Restart file {restart_file} not found")
             with open(restart_file) as restart_fh:
                 for par in restart_fh:
                     if par.startswith("RESTART_SNAP"):

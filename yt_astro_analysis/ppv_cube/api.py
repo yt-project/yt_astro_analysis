@@ -11,3 +11,5 @@ API for ppv_cube
 # -----------------------------------------------------------------------------
 
 from yt_astro_analysis.ppv_cube.ppv_cube import PPVCube
+
+__all__ = ["PPVCube"]

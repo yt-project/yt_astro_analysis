@@ -84,7 +84,7 @@ class LightConeProjectionTest(AnswerTestingTest):
             punits = (
                 _funits[self.field] * _funits[self.weight_field] * _funits["length"]
             )
-            wunits = fh["weight_field_%s" % self.weight_field].attrs["units"]
+            wunits = fh[f"weight_field_{self.weight_field}"].attrs["units"]
             pwunits = _funits[self.weight_field] * _funits["length"]
             assert wunits == str(pwunits.units)
         assert units == str(punits.units)

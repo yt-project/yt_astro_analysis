@@ -453,7 +453,7 @@ class LightCone(CosmologySplice):
         mylog.info("Saving light cone solution to %s.", filename)
 
         f = open(filename, "w")
-        f.write("# parameter_filename = %s\n" % self.parameter_filename)
+        f.write(f"# parameter_filename = {self.parameter_filename}\n")
         f.write("\n")
         f.write(
             "# Slice    Dataset    Redshift    depth/box    "
@@ -491,10 +491,10 @@ class LightCone(CosmologySplice):
         )
 
         field_node = f"{field}_{weight_field}"
-        weight_field_node = "weight_field_%s" % weight_field
+        weight_field_node = f"weight_field_{weight_field}"
 
         if filename is None:
-            filename = os.path.join(self.output_dir, "%s_data" % self.output_prefix)
+            filename = os.path.join(self.output_dir, f"{self.output_prefix}_data")
         if not (filename.endswith(".h5")):
             filename += ".h5"
 

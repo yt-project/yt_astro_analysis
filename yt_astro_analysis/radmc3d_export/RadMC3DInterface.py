@@ -376,7 +376,7 @@ class RadMC3DWriter:
 
         # write wavelength information
         for wavelength in wavelengths:
-            fhandle.write("%f \n" % wavelength)
+            fhandle.write(f"{wavelength:f} \n")
 
         # finally write blackbody temperature for each source
         for source in sources:
@@ -394,7 +394,7 @@ class RadMC3DWriter:
 
         fhandle.write("%d \n" % nlam)
         for wavelength in wavelengths:
-            fhandle.write("%f \n" % wavelength)
+            fhandle.write(f"{wavelength:f} \n")
 
         # done with both
         fhandle.close()
