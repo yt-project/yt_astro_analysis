@@ -671,13 +671,13 @@ all the goto's and capitalized names.... */
 #define TYPEOFY int 	/* DJE--To make the variable type of Y customizable */
 			/* because it has to be changed in two places...*/
 
-void ssort(float X[], int Y[], int N, int KFLAG)
+void ssort(float X[], TYPEOFY Y[], int N, int KFLAG)
 /* Note that the second array is an int array.   If you want otherwise,
 alter the type above */
 {
      /* .. Local Scalars .. */
       float R, T, TT;
-      int TTY, TY;
+      TYPEOFY TTY, TY;
       int i, ij, j, k, kk, l, m, nn;
      /* .. Local Arrays .. */
       int IL[31], IU[31];  /* DJE--These were 21, but I suspect that this
