@@ -112,7 +112,7 @@ class Halo:
         self._ds_sort = sp_pid.argsort()
         sp_pid = sp_pid[self._ds_sort]
         # This matches them up.
-        self._particle_mask = np.in1d(sp_pid, pid)
+        self._particle_mask = np.isin(sp_pid, pid)
         return self._particle_mask
 
     def center_of_mass(self):
