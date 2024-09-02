@@ -58,19 +58,19 @@ class CookbookScript(Directive):
         )
 
         im_path = os.path.join(rst_dir, "_static")
-        images = sorted(glob.glob(os.path.join(im_path, "%s__*.png" % script_name)))
+        images = sorted(glob.glob(os.path.join(im_path, f"{script_name}__*.png")))
         lines = []
         lines.append(f"(`{script_bn} <{script_fn}>`__)")
         lines.append("\n")
         lines.append("\n")
-        lines.append(".. literalinclude:: %s" % self.arguments[0])
+        lines.append(f".. literalinclude:: {self.arguments[0]}")
         lines.append("\n")
         lines.append("\n")
         for im in images:
             im_name = os.path.join("_static", os.path.basename(im))
-            lines.append(".. image:: %s" % im_name)
+            lines.append(f".. image:: {im_name}")
             lines.append("   :width: 400")
-            lines.append("   :target: ../_images/%s" % os.path.basename(im))
+            lines.append(f"   :target: ../_images/{os.path.basename(im)}")
             lines.append("\n")
         lines.append("\n")
         for ext in data_patterns:

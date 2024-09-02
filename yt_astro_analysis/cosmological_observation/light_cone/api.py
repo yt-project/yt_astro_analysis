@@ -14,3 +14,5 @@ API for light_cone
 # -----------------------------------------------------------------------------
 
 from .light_cone import LightCone
+
+__all__ = ["LightCone"]

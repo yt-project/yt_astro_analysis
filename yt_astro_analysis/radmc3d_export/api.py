@@ -18,3 +18,5 @@ from yt_astro_analysis.radmc3d_export.RadMC3DInterface import (
     RadMC3DSource,
     RadMC3DWriter,
 )
+
+__all__ = ["read_radmc3d_image", "RadMC3DSource", "RadMC3DWriter"]

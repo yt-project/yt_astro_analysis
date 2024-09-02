@@ -31,7 +31,7 @@ def quantity_value(halo, field, operator, value, units):
     """
 
     if field not in halo.quantities:
-        raise RuntimeError("Halo object does not contain %s quantity." % field)
+        raise RuntimeError(f"Halo object does not contain {field} quantity.")
 
     h_value = halo.quantities[field].in_units(units).to_ndarray()
     return eval(f"{h_value} {operator} {value}")

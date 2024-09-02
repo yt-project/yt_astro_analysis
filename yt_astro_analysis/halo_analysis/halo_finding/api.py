@@ -26,3 +26,5 @@ warnings.warn(
 )
 
 from yt_astro_analysis.halo_finding.halo_objects import FOFHaloFinder, HOPHaloFinder
+
+__all__ = ["FOFHaloFinder", "HOPHaloFinder"]

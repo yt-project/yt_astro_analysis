@@ -25,3 +25,12 @@ warnings.warn(
     VisibleDeprecationWarning,
     stacklevel=2,
 )
+
+__all__ = [
+    "add_quantity",
+    "add_callback",
+    "add_filter",
+    "add_finding_method",
+    "add_recipe",
+    "HaloCatalog",
+]

@@ -57,7 +57,7 @@ def halo_sphere(halo, radius_field="virial_radius", factor=1.0, field_parameters
     """
 
     dds = halo.halo_catalog.data_ds
-    center = dds.arr([halo.quantities["particle_position_%s" % axis] for axis in "xyz"])
+    center = dds.arr([halo.quantities[f"particle_position_{axis}"] for axis in "xyz"])
     radius = factor * halo.quantities[radius_field]
     if radius <= 0.0:
         halo.data_object = None
@@ -255,7 +255,7 @@ def profile(
             field: my_profile.standard_deviation[field]
             for field in my_profile.standard_deviation
         }
-        variance_storage = "%s_variance" % storage
+        variance_storage = f"{storage}_variance"
         if hasattr(halo, variance_storage):
             halo_variance_store = getattr(halo, variance_storage)
         else:
@@ -315,7 +315,7 @@ def save_profiles(halo, storage="profiles", filename=None, output_dir="."):
         if isinstance(my_profile[field], YTArray):
             my_profile[field].convert_to_cgs()
         _yt_array_hdf5(profile_group, str(field), my_profile[field])
-    variance_storage = "%s_variance" % storage
+    variance_storage = f"{storage}_variance"
     if hasattr(halo, variance_storage):
         my_profile = getattr(halo, variance_storage)
         variance_group = fh.create_group("variance")
@@ -364,7 +364,7 @@ def load_profiles(halo, storage="profiles", fields=None, filename=None, output_d
         "%s_%06d.h5" % (filename, halo.quantities["particle_identifier"]),
     )
     if not os.path.exists(output_file):
-        raise RuntimeError("Profile file not found: %s." % output_file)
+        raise RuntimeError(f"Profile file not found: {output_file}.")
     mylog.info(
         "Loading halo %d profile data from %s.",
         halo.quantities["particle_identifier"],
@@ -397,7 +397,7 @@ def load_profiles(halo, storage="profiles", fields=None, filename=None, output_d
             my_variance[field] = _hdf5_yt_array(
                 my_group, field, ds=halo.halo_catalog.halos_ds
             )
-        setattr(halo, "%s_variance" % storage, my_variance)
+        setattr(halo, f"{storage}_variance", my_variance)
 
     fh.close()
 
@@ -451,8 +451,7 @@ def virial_quantities(
 
     if overdensity_field not in profile_data:
         raise RuntimeError(
-            "virial_quantities callback requires profile of %s."
-            % str(overdensity_field)
+            f"virial_quantities callback requires profile of {str(overdensity_field)}."
         )
 
     overdensity = profile_data[overdensity_field]
@@ -630,7 +629,7 @@ def iterative_center_of_mass(
         )
 
     center_orig = halo.halo_catalog.data_ds.arr(
-        [halo.quantities["particle_position_%s" % axis] for axis in "xyz"]
+        [halo.quantities[f"particle_position_{axis}"] for axis in "xyz"]
     )
     sphere = halo.halo_catalog.data_ds.sphere(
         center_orig, outer_radius * halo.quantities[radius_field]
@@ -653,7 +652,7 @@ def iterative_center_of_mass(
     )
 
     for i, axis in enumerate("xyz"):
-        halo.quantities["particle_position_%s" % axis] = sphere.center[i]
+        halo.quantities[f"particle_position_{axis}"] = sphere.center[i]
     del sphere
 
 

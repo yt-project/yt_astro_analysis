@@ -60,7 +60,7 @@ class HaloQuantityTest(AnswerTestingTest):
         hc.add_quantity("nstars")
         hc.create()
 
-        fn = os.path.join(tmpdir, str(dds), "%s.0.h5" % str(dds))
+        fn = os.path.join(tmpdir, str(dds), f"{str(dds)}.0.h5")
         ds = load(fn)
         ad = ds.all_data()
         mi, ma = ad.quantities.extrema("nstars")

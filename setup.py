@@ -20,7 +20,7 @@ def get_version(filename):
         for line in f.readlines():
             if line.startswith("__version__"):
                 return line.split("=")[1].strip()[1:-1]
-    raise RuntimeError("Could not get version from %s." % filename)
+    raise RuntimeError(f"Could not get version from {filename}.")
 
 
 VERSION = get_version("yt_astro_analysis/__init__.py")
