@@ -678,21 +678,21 @@ alter the type above */
      /* .. Local Scalars .. */
       float R, T, TT;
       TYPEOFY TTY, TY;
-      int I, IJ, J, K, KK, L, M, NN;
+      int i, ij, j, k, kk, l, m, nn;
      /* .. Local Arrays .. */
       int IL[31], IU[31];  /* DJE--These were 21, but I suspect that this
 		limits N to 2^21.  Since memory is cheap, I'll set this a
 		little higher */
 
       /* ***FIRST EXECUTABLE STATEMENT  SSORT */
-      NN = N;
-      if (NN < 1) {
+      nn = N;
+      if (nn < 1) {
 	 fprintf(stderr,"The number of values to be sorted is not positive.");
 	 abort();
       }
 
-      KK = abs(KFLAG);
-      if (KK != 1 && KK != 2) {
+      kk = abs(KFLAG);
+      if (kk != 1 && kk != 2) {
 	 fprintf(stderr,"The sort control parameter, K, is not 2, 1, -1, or -2.");
 	 abort();
       }
@@ -700,240 +700,240 @@ alter the type above */
      /* Alter array X to get decreasing order if needed */
 
       if (KFLAG <= -1)
-	 for (I=1; I<=NN; I++)
-            X[I] = -X[I];
+	 for (i=1; i<=nn; i++)
+            X[i] = -X[i];
 
 
-      if (KK == 2) goto line100;
+      if (kk == 2) goto line100;
 
      /* Sort X only */
 
-      M = 1;
-      I = 1;
-      J = NN;
+      m = 1;
+      i = 1;
+      j = nn;
       R = 0.375E0;
 
-line20: if (I == J) goto line60;
+line20: if (i == j) goto line60;
       if (R <= 0.5898437E0)
          R = R+3.90625E-2;
       else R = R-0.21875E0;
 
 
-line30: K = I;
+line30: k = i;
 
      /* Select a central element of the array and save it in location T */
 
-      IJ = I + (int)((J-I)*R);
-      T = X[IJ];
+      ij = i + (int)((j-i)*R);
+      T = X[ij];
 
      /* If first element of array is greater than T, interchange with T */
 
-      if (X[I] > T) {
-         X[IJ] = X[I];
-         X[I] = T;
-         T = X[IJ];
+      if (X[i] > T) {
+         X[ij] = X[i];
+         X[i] = T;
+         T = X[ij];
       }
-      L = J;
+      l = j;
 
      /* If last element of array is less than than T, interchange with T */
 
-      if (X[J] < T) {
-         X[IJ] = X[J];
-         X[J] = T;
-         T = X[IJ];
+      if (X[j] < T) {
+         X[ij] = X[j];
+         X[j] = T;
+         T = X[ij];
 
         /* If first element of array is greater than T, interchange with T */
 
-         if (X[I] > T) {
-            X[IJ] = X[I];
-            X[I] = T;
-            T = X[IJ];
+         if (X[i] > T) {
+            X[ij] = X[i];
+            X[i] = T;
+            T = X[ij];
          }
       }
 
      /* Find an element in the second half of the array which is smaller */
      /* than T */
 
-line40: L = L-1;
-      if (X[L] > T) goto line40;
+line40: l = l-1;
+      if (X[l] > T) goto line40;
 
      /* Find an element in the first half of the array which is greater */
      /* than T */
 
-line50: K = K+1;
-      if (X[K] < T) goto line50;
+line50: k = k+1;
+      if (X[k] < T) goto line50;
 
      /* Interchange these elements */
 
-      if (K <= L) {
-         TT = X[L];
-         X[L] = X[K];
-         X[K] = TT;
+      if (k <= l) {
+         TT = X[l];
+         X[l] = X[k];
+         X[k] = TT;
          goto line40;
       }
 
      /* Save upper and lower subscripts of the array yet to be sorted */
 
-      if (L-I > J-K) {
-         IL[M] = I;
-         IU[M] = L;
-         I = K;
-         M = M+1;
+      if (l-i > j-k) {
+         IL[m] = i;
+         IU[m] = l;
+         i = k;
+         m = m+1;
       } else {
-         IL[M] = K;
-         IU[M] = J;
-         J = L;
-         M = M+1;
+         IL[m] = k;
+         IU[m] = j;
+         j = l;
+         m = m+1;
       }
       goto line70;
 
      /* Begin again on another portion of the unsorted array */
 
-line60: M = M-1;
-      if (M == 0) goto line190;
-      I = IL[M];
-      J = IU[M];
+line60: m = m-1;
+      if (m == 0) goto line190;
+      i = IL[m];
+      j = IU[m];
 
-line70: if (J-I >= 1) goto line30;
-      if (I == 1) goto line20;
-      I = I-1;
+line70: if (j-i >= 1) goto line30;
+      if (i == 1) goto line20;
+      i = i-1;
 
-line80: I = I+1;
-      if (I == J) goto line60;
-      T = X[I+1];
-      if (X[I] <= T) goto line80;
-      K = I;
+line80: i = i+1;
+      if (i == j) goto line60;
+      T = X[i+1];
+      if (X[i] <= T) goto line80;
+      k = i;
 
-line90: X[K+1] = X[K];
-      K = K-1;
-      if (T < X[K]) goto line90;
-      X[K+1] = T;
+line90: X[k+1] = X[k];
+      k = k-1;
+      if (T < X[k]) goto line90;
+      X[k+1] = T;
       goto line80;
 
      /* Sort X and carry Y along */
 
-line100: M = 1;
-      I = 1;
-      J = NN;
+line100: m = 1;
+      i = 1;
+      j = nn;
       R = 0.375E0;
 
-line110: if (I == J) goto line150;
+line110: if (i == j) goto line150;
       if (R <= 0.5898437E0)
          R = R+3.90625E-2;
       else R = R-0.21875E0;
 
-line120: K = I;
+line120: k = i;
 
      /* Select a central element of the array and save it in location T */
 
-      IJ = I + (int)((J-I)*R);
-      T = X[IJ];
-      TY = Y[IJ];
+      ij = i + (int)((j-i)*R);
+      T = X[ij];
+      TY = Y[ij];
 
      /* If first element of array is greater than T, interchange with T */
 
-      if (X[I] > T) {
-         X[IJ] = X[I];
-         X[I] = T;
-         T = X[IJ];
-         Y[IJ] = Y[I];
-         Y[I] = TY;
-         TY = Y[IJ];
+      if (X[i] > T) {
+         X[ij] = X[i];
+         X[i] = T;
+         T = X[ij];
+         Y[ij] = Y[i];
+         Y[i] = TY;
+         TY = Y[ij];
       }
-      L = J;
+      l = j;
 ;
      /* If last element of array is less than T, interchange with T */
 
-      if (X[J] < T) {
-         X[IJ] = X[J];
-         X[J] = T;
-         T = X[IJ];
-         Y[IJ] = Y[J];
-         Y[J] = TY;
-         TY = Y[IJ];
+      if (X[j] < T) {
+         X[ij] = X[j];
+         X[j] = T;
+         T = X[ij];
+         Y[ij] = Y[j];
+         Y[j] = TY;
+         TY = Y[ij];
 
         /* If first element of array is greater than T, interchange with T */
 
-         if (X[I] > T) {
-            X[IJ] = X[I];
-            X[I] = T;
-            T = X[IJ];
-            Y[IJ] = Y[I];
-            Y[I] = TY;
-            TY = Y[IJ];
+         if (X[i] > T) {
+            X[ij] = X[i];
+            X[i] = T;
+            T = X[ij];
+            Y[ij] = Y[i];
+            Y[i] = TY;
+            TY = Y[ij];
          }
       }
 
      /* Find an element in the second half of the array which is smaller */
      /* than T */
 
-line130: L = L-1;
-      if (X[L] > T) goto line130;
+line130: l = l-1;
+      if (X[l] > T) goto line130;
 
      /* Find an element in the first half of the array which is greater */
      /* than T */
 
-line140: K = K+1;
-      if (X[K] < T) goto line140;
+line140: k = k+1;
+      if (X[k] < T) goto line140;
 
      /* Interchange these elements */
 
-      if (K <= L) {
-         TT = X[L];
-         X[L] = X[K];
-         X[K] = TT;
-         TTY = Y[L];
-         Y[L] = Y[K];
-         Y[K] = TTY;
+      if (k <= l) {
+         TT = X[l];
+         X[l] = X[k];
+         X[k] = TT;
+         TTY = Y[l];
+         Y[l] = Y[k];
+         Y[k] = TTY;
          goto line130;
       }
 
      /* Save upper and lower subscripts of the array yet to be sorted */
 
-      if (L-I > J-K) {
-         IL[M] = I;
-         IU[M] = L;
-         I = K;
-         M = M+1;
+      if (l-i > j-k) {
+         IL[m] = i;
+         IU[m] = l;
+         i = k;
+         m = m+1;
       } else {
-         IL[M] = K;
-         IU[M] = J;
-         J = L;
-         M = M+1;
+         IL[m] = k;
+         IU[m] = j;
+         j = l;
+         m = m+1;
       }
       goto line160;
 
      /* Begin again on another portion of the unsorted array */
 
-line150: M = M-1;
-      if (M == 0) goto line190;
-      I = IL[M];
-      J = IU[M];
+line150: m = m-1;
+      if (m == 0) goto line190;
+      i = IL[m];
+      j = IU[m];
 
-line160: if (J-I >= 1) goto line120;
-      if (I == 1) goto line110;
-      I = I-1;
+line160: if (j-i >= 1) goto line120;
+      if (i == 1) goto line110;
+      i = i-1;
 
-line170: I = I+1;
-      if (I == J) goto line150;
-      T = X[I+1];
-      TY = Y[I+1];
-      if (X[I] <= T) goto line170;
-      K = I;
+line170: i = i+1;
+      if (i == j) goto line150;
+      T = X[i+1];
+      TY = Y[i+1];
+      if (X[i] <= T) goto line170;
+      k = i;
 
-line180: X[K+1] = X[K];
-      Y[K+1] = Y[K];
-      K = K-1;
-      if (T < X[K]) goto line180;
-      X[K+1] = T;
-      Y[K+1] = TY;
+line180: X[k+1] = X[k];
+      Y[k+1] = Y[k];
+      k = k-1;
+      if (T < X[k]) goto line180;
+      X[k+1] = T;
+      Y[k+1] = TY;
       goto line170;
 
      /* Clean up */
 
 line190: if (KFLAG <= -1)
-	 for (I=1; I<=NN; I++)
-            X[I] = -X[I];
+	 for (i=1; i<=nn; i++)
+            X[i] = -X[i];
 
      return;
 }
