@@ -279,8 +279,8 @@ workflows:
    normal-tests:
      jobs:
        - run-tests:
-           name: "Python 3.9 tests"
-           tag: "3.9"
+           name: "Python 3.10 tests"
+           tag: "3.10"
 
        - run-tests-pytest:
            name: "Python 3.10 tests"
@@ -292,7 +292,7 @@ workflows:
 
        - docs-test:
            name: "Test docs build"
-           tag: "3.9"
+           tag: "3.10"
 
    weekly:
      triggers:
@@ -304,8 +304,8 @@ workflows:
                 - main
      jobs:
        - run-tests:
-           name: "Python 3.9 tests"
-           tag: "3.9"
+           name: "Python 3.10 tests"
+           tag: "3.10"
 
        - run-tests-pytest:
            name: "Python 3.11 tests"
@@ -313,4 +313,4 @@ workflows:
 
        - docs-test:
            name: "Test docs build"
-           tag: "3.9"
+           tag: "3.10"
