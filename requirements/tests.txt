@@ -3,7 +3,7 @@ astropy
 scipy
 
 # test dependencies
-nose
+pynose
 nose-timer
 pytest
 girder-client
