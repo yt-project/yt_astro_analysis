@@ -25,7 +25,7 @@ def _always_iterable(obj):
     if obj is None:
         return iter(())
 
-    if isinstance(obj, (str, bytes)):
+    if isinstance(obj, str | bytes):
         return iter((obj,))
 
     try:

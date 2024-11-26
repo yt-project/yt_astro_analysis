@@ -311,7 +311,7 @@ class RockstarHaloFinder(ParallelAnalysisInterface):
                 (ptype, self.mass_field), non_zero=True
             )
             particle_mass = pmass_min
-        elif isinstance(particle_mass, (tuple, list)) and len(particle_mass) == 2:
+        elif isinstance(particle_mass, tuple | list) and len(particle_mass) == 2:
             particle_mass = tds.quan(*particle_mass)
         elif not isinstance(particle_mass, unyt_quantity):
             particle_mass = tds.quan(particle_mass, "Msun / h")

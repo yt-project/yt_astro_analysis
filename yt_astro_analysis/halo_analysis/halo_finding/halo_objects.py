@@ -434,6 +434,7 @@ class Halo:
             self["particle_position_x"],
             self["particle_position_y"],
             self["particle_position_z"],
+            strict=False,
         ):
             dist[mark] = periodic_dist(cen, pos, period)
             mark += 1

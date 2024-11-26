@@ -112,13 +112,14 @@ def _parse_halo_list(hc, halo_list):
         "particle_velocity_z",
     ]
     units = ["", "Msun", "kpc"] + ["unitary"] * 3 + ["km/s"] * 3
-    ud = dict(zip(fields, units))
+    ud = dict(zip(fields, units, strict=False))
 
     # Set up a dictionary based on those fields
     # with empty arrays where we will fill in their values
     num_halos = len(halo_list)
     halo_properties = {
-        f: ds.arr(np.empty(num_halos), unit) for f, unit in zip(fields, units)
+        f: ds.arr(np.empty(num_halos), unit)
+        for f, unit in zip(fields, units, strict=False)
     }
 
     save_particles = getattr(halo_list, "save_particles", False)

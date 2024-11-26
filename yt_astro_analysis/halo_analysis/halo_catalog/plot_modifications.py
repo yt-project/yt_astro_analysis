@@ -233,7 +233,7 @@ class HaloCatalogCallback(PlotCallback):
             py = py[indices]
             radius = radius[indices]
 
-        for x, y, r in zip(px, py, radius):
+        for x, y, r in zip(px, py, radius, strict=False):
             plot._axes.add_artist(Circle(xy=(x, y), radius=r, **self.circle_args))
 
         plot._axes.set_xlim(xx0, xx1)
@@ -243,7 +243,7 @@ class HaloCatalogCallback(PlotCallback):
             annotate_dat = halo_data[("all", self.annotate_field)]
             texts = [f"{float(dat):g}" for dat in annotate_dat]
             labels = []
-            for pos_x, pos_y, t in zip(px, py, texts):
+            for pos_x, pos_y, t in zip(px, py, texts, strict=False):
                 labels.append(plot._axes.text(pos_x, pos_y, t, **self.text_args))
 
             # Set the font properties of text from this callback to be

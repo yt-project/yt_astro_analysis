@@ -90,5 +90,5 @@ def _create_parent_dict(data_source, ptype="halos"):
             parents[neighbors] = ids[neighbors[np.argmax(rad[neighbors])]]
 
     parents[ids == parents] = -1
-    parent_dict = dict(zip(ids, parents))
+    parent_dict = dict(zip(ids, parents, strict=False))
     return parent_dict
