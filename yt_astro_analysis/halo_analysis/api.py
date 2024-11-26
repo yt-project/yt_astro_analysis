@@ -7,7 +7,7 @@ API for halo_analysis
 
 import warnings
 
-from numpy import VisibleDeprecationWarning
+from numpy.exceptions import VisibleDeprecationWarning
 
 from yt_astro_analysis.halo_analysis.halo_catalog.analysis_operators import add_quantity
 from yt_astro_analysis.halo_analysis.halo_catalog.halo_callbacks import add_callback

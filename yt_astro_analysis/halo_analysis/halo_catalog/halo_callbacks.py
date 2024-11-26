@@ -299,7 +299,7 @@ def save_profiles(halo, storage="profiles", filename=None, output_dir="."):
     output_file = os.path.join(
         halo.halo_catalog.output_dir,
         output_dir,
-        "%s_%06d.h5" % (filename, halo.quantities["particle_identifier"]),
+        f"{filename}_{halo.quantities['particle_identifier']:06d}.h5",
     )
     mylog.info(
         "Saving halo %d profile data to %s.",
@@ -361,7 +361,7 @@ def load_profiles(halo, storage="profiles", fields=None, filename=None, output_d
     output_file = os.path.join(
         halo.halo_catalog.output_dir,
         output_dir,
-        "%s_%06d.h5" % (filename, halo.quantities["particle_identifier"]),
+        f"{filename}_{halo.quantities['particle_identifier']:06d}.h5",
     )
     if not os.path.exists(output_file):
         raise RuntimeError(f"Profile file not found: {output_file}.")
@@ -464,12 +464,11 @@ def virial_quantities(
         else:
             my_field = field
         v_fields[field] = my_field
-        v_field = "%s_%d" % (my_field, critical_overdensity)
+        v_field = f"{my_field}_{critical_overdensity}"
         if v_field not in halo.halo_catalog.quantities:
             halo.halo_catalog.quantities.append(v_field)
     vquantities = {
-        "%s_%d"
-        % (v_fields[field], critical_overdensity): dds.quan(
+        f"{v_fields[field]}_{critical_overdensity}": dds.quan(
             0, profile_data[field].units
         )
         for field in fields
@@ -513,7 +512,7 @@ def virial_quantities(
             np.exp(slope * np.log(critical_overdensity / vod[index])) * v_prof[index],
             profile_data[field].units,
         )
-        vquantities["%s_%d" % (v_fields[field], critical_overdensity)] = value
+        vquantities[f"{v_fields[field]}_{critical_overdensity}"] = value
 
     halo.quantities.update(vquantities)
 
@@ -551,7 +550,7 @@ def phase_plot(halo, output_dir=".", phase_args=None, phase_kwargs=None):
             os.path.join(
                 halo.halo_catalog.output_dir,
                 output_dir,
-                "halo_%06d" % halo.quantities["particle_identifier"],
+                f"halo_{halo.quantities['particle_identifier']:06d}",
             )
         )
     except ValueError:
