@@ -383,7 +383,7 @@ class PPVCube:
     def __repr__(self):
         return (
             f"PPVCube [{self.nx} {self.ny} {self.nv}] "
-            f"({self.vbins[0]} < {self.axis_type} < {self.vbins[-1]})"
+            f"({self.vbins[0]} < {fits_info[self.axis_type][2]} < {self.vbins[-1]})"
         )
 
     def __getitem__(self, item):
