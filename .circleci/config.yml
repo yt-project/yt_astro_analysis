@@ -14,6 +14,8 @@ commands:
             echo 'export TEST_DIR=$HOME/test_results' >> $BASH_ENV
             echo 'export TEST_NAME=astro_analysis' >> $BASH_ENV
             echo 'export TEST_FLAGS="--nologcapture -v --with-answer-testing --local --local-dir $TEST_DIR --answer-name=$TEST_NAME --answer-big-data"' >> $BASH_ENV
+            echo 'export PRTE_MCA_rmaps_default_mapping_policy=:oversubscribe' >> $BASH_ENV
+            echo 'export OMPI_MCA_rmaps_base_oversubscribe=true' >> $BASH_ENV
 
   install-with-yt-dev:
     description: "Install dependencies with yt from source."
@@ -279,20 +281,20 @@ workflows:
    normal-tests:
      jobs:
        - run-tests:
-           name: "Python 3.9 tests"
-           tag: "3.9"
-
-       - run-tests-pytest:
            name: "Python 3.10 tests"
            tag: "3.10"
 
        - run-tests-pytest:
-           name: "Python 3.11 tests"
-           tag: "3.11"
+           name: "Python 3.13 tests"
+           tag: "3.13"
+
+       - run-tests-pytest:
+           name: "Python 3.12 tests"
+           tag: "3.12"
 
        - docs-test:
            name: "Test docs build"
-           tag: "3.9"
+           tag: "3.13"
 
    weekly:
      triggers:
@@ -304,13 +306,13 @@ workflows:
                 - main
      jobs:
        - run-tests:
-           name: "Python 3.9 tests"
-           tag: "3.9"
+           name: "Python 3.13 tests"
+           tag: "3.13"
 
        - run-tests-pytest:
-           name: "Python 3.11 tests"
-           tag: "3.11"
+           name: "Python 3.13 tests"
+           tag: "3.13"
 
        - docs-test:
            name: "Test docs build"
-           tag: "3.9"
+           tag: "3.13"
