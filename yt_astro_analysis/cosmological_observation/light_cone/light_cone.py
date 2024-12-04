@@ -389,8 +389,7 @@ class LightCone(CosmologySplice):
             if save_slice_images:
                 name = os.path.join(
                     self.output_dir,
-                    "%s_%04d_%04d"
-                    % (self.output_prefix, my_slice, len(self.light_cone_solution)),
+                    f"{self.output_prefix}_{my_slice:04d}_{len(self.light_cone_solution):04d}",
                 )
                 if weight_field is None:
                     my_image = all_storage[my_slice]["field"]
@@ -461,19 +460,12 @@ class LightCone(CosmologySplice):
         )
         for q, output in enumerate(self.light_cone_solution):
             f.write(
-                ("%04d %s %f %f %f %d %f %f %f\n")
-                % (
-                    q,
-                    output["filename"],
-                    output["redshift"],
-                    output["box_depth_fraction"],
-                    output["box_width_per_angle"],
-                    output["projection_axis"],
-                    output["projection_center"][0],
-                    output["projection_center"][1],
-                    output["projection_center"][2],
-                )
+                f"{q:04d} {output['filename']} {output['redshift']} "
+                f"{output['box_depth_fraction']} {output['box_width_per_angle']} "
+                f"{output['projection_axis']} {output['projection_center'][0]} "
+                f"{output['projection_center'][1]} {output['projection_center'][2]}\n"
             )
+
         f.close()
 
     @parallel_root_only

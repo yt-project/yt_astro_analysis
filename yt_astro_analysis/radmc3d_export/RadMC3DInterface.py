@@ -363,7 +363,7 @@ class RadMC3DWriter:
 
         # write header
         fhandle.write("2 \n")  # a format flag that should always be 2
-        fhandle.write("%d    %d \n" % (nstars, nlam))
+        fhandle.write(f"{nstars}    {nlam} \n")
 
         # write source information
         for source in sources:
@@ -383,7 +383,7 @@ class RadMC3DWriter:
             # the negative sign is a flag used internally
             # by RadMC3D to indicate that this is a blackbody
             # source
-            fhandle.write("%f \n" % -source.temperature)
+            fhandle.write(f"{-source.temperature:f} \n")
 
         # done with stars.inp
         fhandle.close()
@@ -392,7 +392,7 @@ class RadMC3DWriter:
         filename = "wavelength_micron.inp"
         fhandle = open(filename, "w")
 
-        fhandle.write("%d \n" % nlam)
+        fhandle.write(f"{nlam} \n")
         for wavelength in wavelengths:
             fhandle.write(f"{wavelength:f} \n")
 

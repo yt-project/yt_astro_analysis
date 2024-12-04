@@ -389,7 +389,7 @@ class HaloCatalog(ParallelAnalysisInterface):
         >>> # Here, a callback is defined and added to the registry.
         >>> def _say_something(halo, message):
         ...     my_id = halo.quantities['particle_identifier']
-        ...     print "Halo %d: here is a message - %s." % (my_id, message)
+        ...     print("Halo %d: here is a message - %s." % (my_id, message))
         >>> add_callback("hello_world", _say_something)
 
         >>> # Now this callback is accessible to the HaloCatalog object
