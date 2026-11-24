@@ -431,17 +431,18 @@ class Halo:
         # Find the distances to the particles. I don't like this much, but I
         # can't see a way to eliminate a loop like this, either here or in yt.
         for pos in zip(
-            self["particle_position_x"],
-            self["particle_position_y"],
-            self["particle_position_z"],
+            self["particle_position_x"].to("code_length"),
+            self["particle_position_y"].to("code_length"),
+            self["particle_position_z"].to("code_length"),
         ):
             dist[mark] = periodic_dist(cen, pos, period)
             mark += 1
         # Set up the radial bins.
+        dist = self.ds.arr(dist, "code_length")
         # Multiply min and max to prevent issues with digitize below.
         self.radial_bins = np.logspace(
-            np.log10(min(dist) * 0.99 + TINY),
-            np.log10(max(dist) * 1.01 + 2 * TINY),
+            np.log10(min(dist.value) * 0.99 + TINY),
+            np.log10(max(dist.value) * 1.01 + 2 * TINY),
             num=self.bin_count + 1,
         )
         self.radial_bins = self.ds.arr(self.radial_bins, "code_length")
