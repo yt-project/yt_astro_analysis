@@ -1,9 +1,10 @@
 [build-system]
 requires = [
-  "setuptools>=61.2",
+  "scikit-build-core>=0.10",
   "Cython>=3.0",
   "numpy>=2.0.0",
 ]
+build-backend = "scikit_build_core.build"
 
 [project]
 name = "yt_astro_analysis"
@@ -15,18 +16,17 @@ classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Environment :: Console",
     "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: BSD License",
     "Natural Language :: English",
     "Operating System :: MacOS :: MacOS X",
     "Operating System :: POSIX :: Linux",
     "Operating System :: Unix",
     "Programming Language :: C",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Scientific/Engineering :: Astronomy",
     "Topic :: Scientific/Engineering :: Physics",
     "Topic :: Scientific/Engineering :: Visualization",
@@ -44,13 +44,13 @@ dependencies = [
 dynamic = [
     "version",
 ]
+license = "BSD-3-Clause"
+
 
 [project.readme]
 file = "README.md"
 content-type = "text/markdown"
 
-[project.license]
-text = "BSD 3-Clause"
 
 [project.urls]
 Homepage = "https://yt-project.org/"
@@ -58,9 +58,25 @@ Documentation = "https://yt-astro-analysis.readthedocs.io/"
 Source = "https://github.com/yt-project/yt_astro_analysis/"
 Tracker = "https://github.com/yt-project/yt_astro_analysis/issues"
 
-[tool.setuptools]
-include-package-data = true
-zip-safe = false
+[tool.scikit-build]
+cmake.version = ">=3.18"
+wheel.packages = ["yt_astro_analysis"]
+build-dir = "build/{wheel_tag}"
+sdist.include = [
+    "CMakeLists.txt",
+    "yt_astro_analysis/**",
+    "doc/**",
+    "README.md",
+    "CREDITS",
+    "COPYING.txt",
+    "CITATION",
+    "CONTRIBUTING.rst",
+]
+
+[[tool.dynamic-metadata]]
+provider = "scikit_build_core.metadata.regex"
+field = "version"
+input = "yt_astro_analysis/__init__.py"
 
 [tool.black]
 include = '\.pyi?$'
@@ -120,8 +136,5 @@ known-third-party = [
 known-first-party = ["yt", "yt_astro_analysis"]
 
 
-[tool.pytest]
+[tool.pytest.ini_options]
 filterwarnings = ["error"]
-
-[tool.setuptools.dynamic]
-version = {attr = "yt_astro_analysis.__version__"}

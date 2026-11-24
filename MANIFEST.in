@@ -1,5 +1,5 @@
-include README* CREDITS COPYING.txt CITATION  setupext.py CONTRIBUTING.rst
-recursive-include yt_astro_analysis *.py *.pyx *.pxd *.h README* *.txt LICENSE* *.cu
+include README* CREDITS COPYING.txt CITATION CONTRIBUTING.rst CMakeLists.txt
+recursive-include yt_astro_analysis *.py *.pyx *.pxd *.h README* *.txt LICENSE* *.cu *.c
 recursive-include doc *.rst *.txt *.py *.ipynb *.png *.jpg *.css *.html
 recursive-include doc *.h *.c *.sh *.svgz *.pdf *.svg *.pyx
 include doc/extensions/README doc/Makefile
